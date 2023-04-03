@@ -1,0 +1,5 @@
+# Docs: https://rust-lang.github.io/rustfmt/?version=v1.5.1&search=
+
+# indent_style = "Visual" # <-- try this one once it comes into stable release channel
+match_arm_leading_pipes = "Preserve"
+match_block_trailing_comma = true
