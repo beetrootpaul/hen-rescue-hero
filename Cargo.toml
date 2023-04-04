@@ -1,0 +1,28 @@
+[package]
+name = "hen_rescue_hero"
+version = "0.1.0"
+edition = "2021"
+rust-version = "1.68"
+authors = ["Beetroot Paul <paul@beetrootpaul.com>"]
+repository = "https://github.com/beetrootpaul/hen-rescue-hero"
+license = "MIT"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[features]
+bevy_dynamic_linking = ["hrh_game/bevy_dynamic_linking"]
+bevy_x11 = ["hrh_game/bevy_x11"]
+
+[dependencies]
+hrh_game = { path = "./hrh_game" }
+
+[workspace]
+members = [
+    "hrh_base",
+    "hrh_game",
+]
+# Required for Bevy (see: https://bevy-cheatbook.github.io/pitfalls/build-errors.html?highlight=worksp#multi-crate-workspaces )
+resolver = "2"
+
+[workspace.dependencies]
+bevy = { version = "0.10.1", default-features = false, features = ["bevy_winit"] }
