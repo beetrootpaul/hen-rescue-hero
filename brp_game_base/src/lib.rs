@@ -18,6 +18,12 @@ pub struct BrpGameBase {
 }
 
 // TODO: rename, cleanup, move to a separate module maybe
+pub type BrpPixelsWrapper = bevy_pixels::PixelsWrapper;
+
+// TODO: rename, cleanup, move to a separate module maybe
+pub type BrpPixelsSet = bevy_pixels::PixelsSet;
+
+// TODO: rename, cleanup, move to a separate module maybe
 #[derive(Resource)]
 struct BrpGameConfigRes(BrpGameConfig);
 
@@ -79,7 +85,6 @@ impl BrpGameBase {
             )
                 .in_base_set(CoreSet::PreUpdate),
         );
-        app.add_system(Self::draw.in_set(bevy_pixels::PixelsSet::Draw));
 
         app
     }
@@ -155,19 +160,5 @@ impl BrpGameBase {
         let _ = wrapper
             .pixels
             .resize_surface(window.physical_width(), window.physical_height());
-    }
-
-    // TODO: rename, cleanup, move to a separate module maybe
-    fn draw(mut wrapper_query: Query<&mut bevy_pixels::PixelsWrapper>) {
-        for mut wrapper in &mut wrapper_query {
-            let frame = wrapper.pixels.frame_mut();
-            let f_len = frame.len();
-            frame[0..(f_len / 2)].copy_from_slice(
-                &[0x48, 0xb2, 0xe8, 0xff, 0x23, 0xe2, 0x78, 0xff].repeat(f_len / 16),
-            );
-            frame[(f_len / 2)..f_len].copy_from_slice(
-                &[0xf5, 0xb2, 0x12, 0xff, 0xd4, 0xe2, 0x33, 0xff].repeat(f_len / 16),
-            );
-        }
     }
 }
