@@ -12,3 +12,4 @@ bevy_x11 = ["bevy/x11"]
 # Yoy can find what crate's dependencies are in its docs, e.g. https://docs.rs/crate/bevy/latest/features .
 [dependencies]
 bevy = { workspace = true }
+bevy_pixels = { workspace = true }
