@@ -1,8 +1,5 @@
-use hrh_game::run_this_lib;
-
-mod zzz;
+use hrh_game::new_hrh_game;
 
 fn main() {
-    println!("entry point!");
-    run_this_lib();
+    new_hrh_game().run();
 }
