@@ -1,5 +1,6 @@
 [package]
 name = "hen_rescue_hero"
+description = "A simple web game in which as a tiny robot you try to rescue as many falling hens as possible. Made for Bevy Jam #3."
 version = "0.1.0"
 edition = "2021"
 rust-version = "1.68"
