@@ -33,4 +33,4 @@ jobs:
       - uses: actions/checkout@v3
       - uses: ./.github/shared-steps
       # --features bevy_x11: we need Bevy's support for X11 in GitHub Actions on Ubuntu
-      - run: cargo clippy --workspace --features bevy_x11 ${{ matrix.command_variant.params }} -- ${{ matrix.command_variant.lint_flags }}
+      - run: cargo clippy --workspace --features bevy_x11 ${{ matrix.command_variant.params }} -- ${{ matrix.command_variant.lint_flags }} --verbose

@@ -19,8 +19,9 @@ hrh_game = { path = "./hrh_game" }
 
 [workspace]
 members = [
-    "hrh_base",
+    "brp_game_base",
     "hrh_game",
+    "hrh_visualize_schedule"
 ]
 # Required for Bevy (see: https://bevy-cheatbook.github.io/pitfalls/build-errors.html?highlight=worksp#multi-crate-workspaces )
 resolver = "2"

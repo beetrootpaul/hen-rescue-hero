@@ -6,23 +6,23 @@ use bevy::prelude::*;
 use bevy::window::{WindowBackendScaleFactorChanged, WindowResized};
 
 #[derive(Clone)]
-pub struct HrhBaseConfig {
+pub struct BrpGameConfig {
     pub title: String,
     pub landscape_canvas_size: UVec2,
     pub portrait_canvas_size: UVec2,
     pub initial_canvas_zoom: u32,
 }
 
-pub struct HrhBase {
-    config: HrhBaseConfig,
+pub struct BrpGameBase {
+    config: BrpGameConfig,
 }
 
 // TODO: rename, cleanup, move to a separate module maybe
 #[derive(Resource)]
-struct HrhBaseConfigRes(HrhBaseConfig);
+struct BrpGameConfigRes(BrpGameConfig);
 
-impl HrhBase {
-    pub fn new(config: HrhBaseConfig) -> Self {
+impl BrpGameBase {
+    pub fn new(config: BrpGameConfig) -> Self {
         Self { config }
     }
 
@@ -70,7 +70,7 @@ impl HrhBase {
                 scale_factor: 1.0,
             }),
         });
-        app.insert_resource(HrhBaseConfigRes(self.config.clone()));
+        app.insert_resource(BrpGameConfigRes(self.config.clone()));
         app.add_systems(
             (
                 Self::window_change,
@@ -112,7 +112,7 @@ impl HrhBase {
             &mut bevy_pixels::PixelsOptions,
             &Window,
         )>,
-        hrh_base_config: Res<HrhBaseConfigRes>,
+        brp_game_config: Res<BrpGameConfigRes>,
     ) {
         for event in window_resized_events.iter() {
             if let Ok((mut wrapper, mut options, window)) = query.get_mut(event.window) {
@@ -121,9 +121,9 @@ impl HrhBase {
 
                 let ratio = win_w / win_h;
                 let new_size = if ratio > 1.0 {
-                    hrh_base_config.0.landscape_canvas_size
+                    brp_game_config.0.landscape_canvas_size
                 } else {
-                    hrh_base_config.0.portrait_canvas_size
+                    brp_game_config.0.portrait_canvas_size
                 };
 
                 // mutate options only when really needed, in order to not trigger `Changed<bevy_pixels::PixelsOptions>` too often
@@ -158,7 +158,7 @@ impl HrhBase {
     }
 
     // TODO: rename, cleanup, move to a separate module maybe
-    fn draw(mut wrapper_query: bevy::prelude::Query<&mut bevy_pixels::PixelsWrapper>) {
+    fn draw(mut wrapper_query: Query<&mut bevy_pixels::PixelsWrapper>) {
         for mut wrapper in &mut wrapper_query {
             let frame = wrapper.pixels.frame_mut();
             let f_len = frame.len();
