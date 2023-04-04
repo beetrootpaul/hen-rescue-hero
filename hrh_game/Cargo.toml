@@ -6,6 +6,7 @@ version = "0.1.0"
 
 [features]
 bevy_dynamic_linking = ["bevy/dynamic_linking", "hrh_base/bevy_dynamic_linking"]
+bevy_x11 = ["bevy/x11", "hrh_base/bevy_x11"]
 
 # You can find more about particular crates on crates.io, e.g. https://crates.io/crates/bevy .
 # Yoy can find what crate's dependencies are in its docs, e.g. https://docs.rs/crate/bevy/latest/features .

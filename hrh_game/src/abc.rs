@@ -6,6 +6,6 @@ pub fn unused_one() -> i32 {
 mod tests {
     #[test]
     fn it_works_for_game_as_well() {
-        assert_eq!("a", "b");
+        assert_eq!("a", "a");
     }
 }

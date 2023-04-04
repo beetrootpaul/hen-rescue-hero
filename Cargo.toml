@@ -11,6 +11,7 @@ license = "MIT"
 
 [features]
 bevy_dynamic_linking = ["hrh_game/bevy_dynamic_linking"]
+bevy_x11 = ["hrh_game/bevy_x11"]
 
 [dependencies]
 hrh_game = { path = "./hrh_game" }
