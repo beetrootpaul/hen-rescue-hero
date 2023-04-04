@@ -9,6 +9,7 @@
       <sourceFolder url="file://$MODULE_DIR$/hrh_visualize_schedule/src" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/hrh_game/abc_def/target" />
       <excludeFolder url="file://$MODULE_DIR$/target" />
+      <excludeFolder url="file://$MODULE_DIR$/tmp" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
