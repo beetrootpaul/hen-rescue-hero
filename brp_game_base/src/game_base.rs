@@ -21,11 +21,11 @@ impl BrpGameBase {
 
         app.add_plugin(bevy::log::LogPlugin::default());
 
+        app.add_plugin(bevy::diagnostic::DiagnosticsPlugin::default());
         #[cfg(debug_assertions)]
-        app.add_plugin(bevy::diagnostic::DiagnosticsPlugin::default())
-            .add_plugin(bevy::diagnostic::LogDiagnosticsPlugin::default())
-            // https://bevy-cheatbook.github.io/cookbook/print-framerate.html
-            .add_plugin(bevy::diagnostic::FrameTimeDiagnosticsPlugin::default());
+        app.add_plugin(bevy::diagnostic::LogDiagnosticsPlugin::default());
+        #[cfg(debug_assertions)]
+        app.add_plugin(bevy::diagnostic::FrameTimeDiagnosticsPlugin::default());
 
         app.add_plugin(WindowPlugin {
             primary_window: Some(Window {
