@@ -43,6 +43,11 @@ clippy:
 	cargo clippy --workspace --release
 	cargo clippy --workspace --profile test
 
+visualize_schedule:
+	# --quiet: required to have only schedule graph copied to the clipboard
+	cargo run --package hrh_visualize_schedule --features bevy_dynamic_linking --quiet | pbcopy
+	echo "Graph data is in your clipboard now. Visit https://edotor.net/ and paste it there 🙂"
+
 # # # # # # # # # #
 # build commands
 #

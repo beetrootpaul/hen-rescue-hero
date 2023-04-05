@@ -1,5 +1,5 @@
-use hrh_game::new_hrh_game;
+use hrh_game::HrhGame;
 
 fn main() {
-    new_hrh_game().run();
+    HrhGame::create_bevy_app().run();
 }

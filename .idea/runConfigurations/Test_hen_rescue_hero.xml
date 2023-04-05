@@ -1,6 +1,6 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="Test hen-rescue-hero" type="CargoCommandRunConfiguration" factoryName="Cargo Command">
-    <option name="command" value="test --workspace --features hrh_base/bevy_dynamic_linking --features bevy_dynamic_linking" />
+    <option name="command" value="test --workspace --features bevy_dynamic_linking" />
     <option name="workingDirectory" value="file://$PROJECT_DIR$" />
     <option name="emulateTerminal" value="false" />
     <option name="channel" value="DEFAULT" />

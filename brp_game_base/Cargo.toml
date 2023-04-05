@@ -1,5 +1,5 @@
 [package]
-name = "hrh_base"
+name = "brp_game_base"
 version = "0.1.0"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
@@ -13,3 +13,4 @@ bevy_x11 = ["bevy/x11"]
 [dependencies]
 bevy = { workspace = true }
 bevy_pixels = { workspace = true }
+image = { workspace = true }
