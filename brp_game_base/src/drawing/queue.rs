@@ -4,15 +4,15 @@ use bevy::math::uvec2;
 use bevy::prelude::*;
 
 use drawing::draw::BrpDraw;
-use {BrpColor, IRect};
+use {BrpColor, Rect};
 
 pub enum BrpDrawCommand {
     Clear(BrpColor),
     Pixel(IVec2, BrpColor),
-    Rect(IRect, BrpColor),
-    RectFilled(IRect, BrpColor),
-    Ellipse(IRect, BrpColor),
-    EllipseFilled(IRect, BrpColor),
+    Rect(Rect, BrpColor),
+    RectFilled(Rect, BrpColor),
+    Ellipse(Rect, BrpColor),
+    EllipseFilled(Rect, BrpColor),
 }
 
 #[derive(Resource, Default)]

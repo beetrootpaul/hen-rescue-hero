@@ -1,24 +1,24 @@
-use bevy::math::{ivec2, IVec2};
+use bevy::math::{ivec2, uvec2, IVec2, UVec2};
 
 #[inline(always)]
-pub const fn irect(w: i32, h: i32) -> IRect {
-    IRect {
+pub const fn rect(w: u32, h: u32) -> Rect {
+    Rect {
         left_top: IVec2::ZERO,
-        size: ivec2(w, h),
+        size: uvec2(w, h),
     }
 }
 
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
-pub struct IRect {
+pub struct Rect {
     pub left_top: IVec2,
-    pub size: IVec2,
+    pub size: UVec2,
 }
 
-impl IRect {
-    pub fn w(self) -> i32 {
+impl Rect {
+    pub fn w(self) -> u32 {
         self.size.x
     }
-    pub fn h(self) -> i32 {
+    pub fn h(self) -> u32 {
         self.size.y
     }
     pub fn l(self) -> i32 {
@@ -28,14 +28,14 @@ impl IRect {
         self.left_top.y
     }
     pub fn r(self) -> i32 {
-        self.left_top.x + self.size.x - 1
+        self.left_top.x + self.size.x as i32 - 1
     }
     pub fn b(self) -> i32 {
-        self.left_top.y + self.size.y - 1
+        self.left_top.y + self.size.y as i32 - 1
     }
 
-    pub const fn at(self, left: i32, top: i32) -> IRect {
-        IRect {
+    pub const fn at(self, left: i32, top: i32) -> Rect {
+        Rect {
             left_top: ivec2(left, top),
             size: self.size,
         }
