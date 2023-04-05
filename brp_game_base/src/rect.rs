@@ -15,23 +15,23 @@ pub struct Rect {
 }
 
 impl Rect {
-    pub fn w(self) -> u32 {
+    pub fn width(self) -> u32 {
         self.size.x
     }
-    pub fn h(self) -> u32 {
+    pub fn height(self) -> u32 {
         self.size.y
     }
-    pub fn l(self) -> i32 {
-        self.left_top.x
-    }
-    pub fn t(self) -> i32 {
+    pub fn top(self) -> i32 {
         self.left_top.y
     }
-    pub fn r(self) -> i32 {
-        self.left_top.x + self.size.x as i32 - 1
-    }
-    pub fn b(self) -> i32 {
+    pub fn bottom(self) -> i32 {
         self.left_top.y + self.size.y as i32 - 1
+    }
+    pub fn left(self) -> i32 {
+        self.left_top.x
+    }
+    pub fn right(self) -> i32 {
+        self.left_top.x + self.size.x as i32 - 1
     }
 
     pub const fn at(self, left: i32, top: i32) -> Rect {

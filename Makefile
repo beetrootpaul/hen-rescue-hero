@@ -61,6 +61,7 @@ visualize_schedule:
 
 build_host_release:
 	$(rust_flags_release) cargo build --release
+	cp -R ./assets/ ./target/release/assets/
 
 # # # # # # # # #
 # run commands
@@ -73,9 +74,7 @@ run_host_release: build_host_release
 	./target/release/hen_rescue_hero
 
 run_web_debug:
-	rm -rf ./dist/
 	$(rust_log_debug) trunk serve
 
 run_web_release:
-	rm -rf ./dist/
 	$(rust_flags_release) trunk serve --release

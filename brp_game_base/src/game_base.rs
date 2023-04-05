@@ -1,7 +1,10 @@
 use bevy::prelude::*;
 
+use assets::BrpAssetSystems;
 use drawing::BrpDrawingPlugin;
 use game_config::BrpGameConfig;
+use game_state::BrpGameState;
+use {BrpImageAssets, BrpSystemSet};
 
 pub struct BrpGameBase {
     config: BrpGameConfig,
@@ -14,9 +17,12 @@ impl BrpGameBase {
 
     pub fn create_bevy_app(&self) -> App {
         let mut app = App::new();
+        self.configure_bevy_for(&mut app);
+        self.configure_own_for(&mut app);
+        app
+    }
 
-        app.insert_resource(self.config.clone());
-
+    fn configure_bevy_for(&self, app: &mut App) {
         app.add_plugins(MinimalPlugins);
 
         app.add_plugin(bevy::log::LogPlugin::default());
@@ -41,16 +47,31 @@ impl BrpGameBase {
         app.add_plugin(bevy::a11y::AccessibilityPlugin);
         app.add_plugin(bevy::winit::WinitPlugin::default());
 
+        app.add_plugin(AssetPlugin::default());
+        app.add_plugin(ImagePlugin::default());
+
         app.add_plugin(bevy::input::InputPlugin::default());
 
         #[cfg(debug_assertions)]
         app.add_system(bevy::window::close_on_esc);
+    }
+
+    fn configure_own_for(&self, app: &mut App) {
+        app.insert_resource(self.config.clone());
 
         app.add_plugin(BrpDrawingPlugin {
             landscape_canvas_size: self.config.landscape_canvas_size,
             portrait_canvas_size: self.config.portrait_canvas_size,
         });
 
-        app
+        app.add_state::<BrpGameState>();
+
+        app.init_resource::<BrpImageAssets>();
+        app.add_startup_system(BrpAssetSystems::start_loading);
+        app.add_system(
+            BrpAssetSystems::wait_for_loading_to_complete
+                .run_if(in_state(BrpGameState::Loading))
+                .in_set(BrpSystemSet::Update),
+        );
     }
 }

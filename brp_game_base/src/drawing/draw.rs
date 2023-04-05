@@ -1,5 +1,7 @@
 use bevy::math::{ivec2, IVec2, UVec2};
+use bevy::render::texture::Image;
 
+use rect;
 use {BrpColor, Rect};
 
 // amount of bytes per pixel in `pixels` crate's frame buffer
@@ -21,12 +23,12 @@ impl BrpDraw {
     }
 
     pub fn draw_rect(&self, frame: &mut [u8], rect: Rect, color: BrpColor, fill: bool) {
-        for y in rect.t()..=rect.b() {
-            if fill || y == rect.t() || y == rect.b() {
-                self.set_pixels_x0x1(frame, ivec2(rect.left_top.x, y), rect.r() + 1, color);
+        for y in rect.top()..=rect.bottom() {
+            if fill || y == rect.top() || y == rect.bottom() {
+                self.set_pixels_x0x1(frame, ivec2(rect.left_top.x, y), rect.right() + 1, color);
             } else {
-                self.set_pixel(frame, ivec2(rect.l(), y), color);
-                self.set_pixel(frame, ivec2(rect.r(), y), color);
+                self.set_pixel(frame, ivec2(rect.left(), y), color);
+                self.set_pixel(frame, ivec2(rect.right(), y), color);
             }
         }
     }
@@ -37,18 +39,18 @@ impl BrpDraw {
             return;
         }
 
-        assert!(bounding_rect.w() > 0);
-        assert!(bounding_rect.h() > 0);
+        assert!(bounding_rect.width() > 0);
+        assert!(bounding_rect.height() > 0);
 
-        let mut x0: i32 = bounding_rect.l();
-        let mut x1: i32 = bounding_rect.r();
-        let mut y0: i32 = bounding_rect.t();
+        let mut x0: i32 = bounding_rect.left();
+        let mut x1: i32 = bounding_rect.right();
+        let mut y0: i32 = bounding_rect.top();
         let mut y1: i32;
 
-        let h: i32 = bounding_rect.h() as i32;
+        let h: i32 = bounding_rect.height() as i32;
 
-        let mut a: i32 = bounding_rect.w() as i32 - 1;
-        let b: i32 = bounding_rect.h() as i32 - 1;
+        let mut a: i32 = bounding_rect.width() as i32 - 1;
+        let b: i32 = bounding_rect.height() as i32 - 1;
         let mut b1: i32 = b & 1;
 
         let mut dx: i32 = 4 * (1 - a) * b * b;
@@ -99,6 +101,35 @@ impl BrpDraw {
             self.set_pixel(frame, ivec2(x0 - 1, y1), color);
             self.set_pixel(frame, ivec2(x1 + 1, y1), color);
             y1 -= 1;
+        }
+    }
+
+    pub fn draw_sprite(&self, frame: &mut [u8], img: &Image) {
+        let target_xy = ivec2(16, 16);
+        let source_rect = rect(30, 30).at(4, 4);
+
+        if let Some(pixel_index) = self.frame_index_of(target_xy) {
+            let sprite_w = source_rect.width() as usize;
+            let sprite_h = source_rect.height() as usize;
+
+            let sprite_bytes: &[u8] = &img.data;
+
+            for sprite_row in 0..sprite_h {
+                for sprite_column in 0..sprite_w {
+                    let target_i = pixel_index
+                        + (sprite_row * (self.canvas_size.x as usize) + sprite_column) * PX_LEN;
+                    let source_i = ((source_rect.top() as usize + sprite_row)
+                        * (img.size().x as usize)
+                        + (source_rect.left() as usize + sprite_column))
+                        * PX_LEN;
+                    let source_rgba = &sprite_bytes[source_i..(source_i + PX_LEN)];
+
+                    frame[target_i] = source_rgba[0];
+                    frame[target_i + 1] = source_rgba[1];
+                    frame[target_i + 2] = source_rgba[2];
+                    frame[target_i + 3] = source_rgba[3];
+                }
+            }
         }
     }
 

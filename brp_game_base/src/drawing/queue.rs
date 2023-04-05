@@ -4,6 +4,7 @@ use bevy::math::uvec2;
 use bevy::prelude::*;
 
 use drawing::draw::BrpDraw;
+use {BrpAssetPath, BrpImageAssets};
 use {BrpColor, Rect};
 
 pub enum BrpDrawCommand {
@@ -13,6 +14,7 @@ pub enum BrpDrawCommand {
     RectFilled(Rect, BrpColor),
     Ellipse(Rect, BrpColor),
     EllipseFilled(Rect, BrpColor),
+    Sprite(BrpAssetPath),
 }
 
 #[derive(Resource, Default)]
@@ -24,6 +26,8 @@ impl BrpDrawQueue {
     pub fn sys_draw_queued_commands(
         mut pixels_query: Query<(&bevy_pixels::PixelsOptions, &mut bevy_pixels::PixelsWrapper)>,
         mut draw_queue: ResMut<BrpDrawQueue>,
+        brp_image_assets: Res<BrpImageAssets>,
+        bevy_image_assets: Res<Assets<Image>>,
     ) {
         if let Ok((pixels_options, mut pixels_wrapper)) = pixels_query.get_single_mut() {
             let draw = BrpDraw {
@@ -49,6 +53,13 @@ impl BrpDrawQueue {
                     },
                     BrpDrawCommand::EllipseFilled(bounding_rect, color) => {
                         draw.draw_ellipse(frame, bounding_rect, color, true);
+                    },
+                    BrpDrawCommand::Sprite(asset_path) => {
+                        let image_handle = brp_image_assets.get(asset_path);
+                        let image = bevy_image_assets
+                            .get(&image_handle)
+                            .expect("should have image for a given handle");
+                        draw.draw_sprite(frame, image);
                     },
                 }
             }
