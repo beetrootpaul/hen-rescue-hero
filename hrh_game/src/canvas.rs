@@ -1,17 +1,18 @@
 use bevy::ecs::system::SystemParam;
-use bevy::math::{ivec2, uvec2};
+use bevy::math::{ivec2, uvec2, vec2};
 use bevy::prelude::*;
 
 use brp_game_base::{BrpCanvasVariant, BrpCurrentCanvasVariant, BrpDrawCommand, BrpDrawQueue};
 use pico8_color::Pico8Color;
+use position::Position;
 use sprites::TILE_SIZE;
 
 const CANVAS_BORDER: u32 = 1;
 const CANVAS_INNER_TOP_LEFT: IVec2 = ivec2(CANVAS_BORDER as i32, CANVAS_BORDER as i32);
 const CANVAS_TILES_LANDSCAPE: UVec2 = uvec2(40, 24);
 const CANVAS_TILES_PORTRAIT: UVec2 = uvec2(24, 36);
-const GAME_AREA_TILES: UVec2 = uvec2(24, 22);
 const TOP_BAR_TILES: UVec2 = uvec2(GAME_AREA_TILES.x, 2);
+pub const GAME_AREA_TILES: UVec2 = uvec2(24, 22);
 
 #[derive(SystemParam)]
 pub struct Canvas<'w> {
@@ -69,6 +70,10 @@ impl<'w> Canvas<'w> {
             left_top: top_bar.left_top + top_bar.size.as_ivec2() * IVec2::Y,
             size: Self::game_area_size(),
         }
+    }
+
+    pub fn xy_of_position_within_game_area(&self, position: &Position) -> IVec2 {
+        self.game_area_rect().left_top + position.0.as_ivec2()
     }
 
     fn variant(&self) -> BrpCanvasVariant {

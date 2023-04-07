@@ -2,8 +2,9 @@ use bevy::math::vec2;
 use bevy::prelude::*;
 
 use brp_game_base::{BrpDrawCommand, BrpDrawQueue};
+use canvas::{Canvas, GAME_AREA_TILES};
 use position::Position;
-use sprites::Sprites;
+use sprites::{Sprites, TILE_SIZE};
 
 #[derive(Component)]
 pub struct RobotToken;
@@ -30,7 +31,7 @@ impl RobotSystems {
     pub fn spawn(mut commands: Commands) {
         commands.spawn(RobotBundle {
             token: RobotToken,
-            position: Position(vec2(150.0, 80.0)),
+            position: Position(vec2(0.0, (GAME_AREA_TILES.y * TILE_SIZE.y) as f32 - 100.0)),
             direction: RobotDirection::None,
         });
     }
@@ -49,10 +50,19 @@ impl RobotSystems {
         }
     }
 
-    pub fn draw(query: Query<&Position, With<RobotToken>>, mut draw_queue: ResMut<BrpDrawQueue>) {
+    pub fn draw(
+        query: Query<&Position, With<RobotToken>>,
+        mut draw_queue: ResMut<BrpDrawQueue>,
+        canvas: Canvas,
+    ) {
         for position in query.iter() {
+            println!(
+                "{:?} -> {:?}",
+                position.0,
+                canvas.xy_of_position_within_game_area(position)
+            );
             draw_queue.enqueue(BrpDrawCommand::Sprite(
-                position.0.as_ivec2(),
+                canvas.xy_of_position_within_game_area(position),
                 Sprites::RobotBody.into(),
             ));
         }

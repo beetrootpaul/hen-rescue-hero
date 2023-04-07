@@ -29,7 +29,7 @@ impl ChickenSystems {
         if timer.0.tick(time.delta()).just_finished() {
             commands.spawn(ChickenBundle {
                 token: ChickenToken,
-                position: Position(vec2(150.0, Self::SPAWN_Y)),
+                position: Position(vec2(0.0, Self::SPAWN_Y)),
             });
         }
     }
@@ -39,8 +39,6 @@ impl ChickenSystems {
         mut query: Query<(Entity, &mut Position), With<ChickenToken>>,
         mut commands: Commands,
     ) {
-        debug!("chickens alive: {}", query.iter().len());
-
         let diff = Self::SPEED_PER_SECOND * time.delta_seconds();
         for (entity, mut position) in query.iter_mut() {
             position.0.y += diff;
@@ -50,10 +48,14 @@ impl ChickenSystems {
         }
     }
 
-    pub fn draw(query: Query<&Position, With<ChickenToken>>, mut draw_queue: ResMut<BrpDrawQueue>) {
+    pub fn draw(
+        query: Query<&Position, With<ChickenToken>>,
+        mut draw_queue: ResMut<BrpDrawQueue>,
+        canvas: Canvas,
+    ) {
         for position in query.iter() {
             draw_queue.enqueue(BrpDrawCommand::Sprite(
-                position.0.as_ivec2(),
+                canvas.xy_of_position_within_game_area(position),
                 Sprites::Chicken.into(),
             ));
         }
