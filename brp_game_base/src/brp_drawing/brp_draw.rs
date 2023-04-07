@@ -1,5 +1,5 @@
 use bevy::math::{ivec2, IVec2, UVec2};
-use bevy::render::texture::Image;
+use bevy::utils::HashMap;
 
 use rect;
 use {BrpColor, Rect};
@@ -104,30 +104,60 @@ impl BrpDraw {
         }
     }
 
-    pub fn draw_sprite(&self, frame: &mut [u8], img: &Image) {
-        let target_xy = ivec2(16, 16);
-        let source_rect = rect(30, 30).at(4, 4);
+    pub fn draw_sprite(
+        &self,
+        frame: &mut [u8],
+        xy: IVec2,
+        image_w: usize,
+        source_image_data: &[u8],
+        source_rect: Rect,
+        color_replacements: HashMap<BrpColor, BrpColor>,
+    ) {
+        let target_rect = source_rect.at(xy.x, xy.y);
+        let clipped_target_rect =
+            target_rect.intersection_with(rect(self.canvas_size.x, self.canvas_size.y));
 
-        if let Some(pixel_index) = self.frame_index_of(target_xy) {
-            let sprite_w = source_rect.width() as usize;
-            let sprite_h = source_rect.height() as usize;
+        let left_top_diff = clipped_target_rect.left_top - target_rect.left_top;
+        let size_diff = clipped_target_rect.size.as_ivec2() - target_rect.size.as_ivec2();
 
-            let sprite_bytes: &[u8] = &img.data;
+        let clipped_source_rect = Rect {
+            left_top: source_rect.left_top + left_top_diff,
+            size: (source_rect.size.as_ivec2() + size_diff).as_uvec2(),
+        };
+
+        if let Some(pixel_index) = self.frame_index_of(clipped_target_rect.left_top) {
+            let sprite_w = clipped_source_rect.width() as usize;
+            let sprite_h = clipped_source_rect.height() as usize;
 
             for sprite_row in 0..sprite_h {
                 for sprite_column in 0..sprite_w {
                     let target_i = pixel_index
                         + (sprite_row * (self.canvas_size.x as usize) + sprite_column) * PX_LEN;
-                    let source_i = ((source_rect.top() as usize + sprite_row)
-                        * (img.size().x as usize)
-                        + (source_rect.left() as usize + sprite_column))
+                    let source_i = ((clipped_source_rect.top() as usize + sprite_row) * image_w
+                        + (clipped_source_rect.left() as usize + sprite_column))
                         * PX_LEN;
-                    let source_rgba = &sprite_bytes[source_i..(source_i + PX_LEN)];
+                    let source_rgba = &source_image_data[source_i..(source_i + PX_LEN)];
 
-                    frame[target_i] = source_rgba[0];
-                    frame[target_i + 1] = source_rgba[1];
-                    frame[target_i + 2] = source_rgba[2];
-                    frame[target_i + 3] = source_rgba[3];
+                    match color_replacements.get(&BrpColor::Solid {
+                        r: source_rgba[0],
+                        g: source_rgba[1],
+                        b: source_rgba[2],
+                    }) {
+                        Some(replacement_color) => {
+                            if let BrpColor::Solid { r, g, b } = replacement_color {
+                                frame[target_i] = *r;
+                                frame[target_i + 1] = *g;
+                                frame[target_i + 2] = *b;
+                                frame[target_i + 3] = 0xff;
+                            }
+                        },
+                        _ => {
+                            frame[target_i] = source_rgba[0];
+                            frame[target_i + 1] = source_rgba[1];
+                            frame[target_i + 2] = source_rgba[2];
+                            frame[target_i + 3] = source_rgba[3];
+                        },
+                    };
                 }
             }
         }
@@ -175,7 +205,7 @@ mod tests {
     use bevy::prelude::IVec2;
     use bevy::utils::HashMap;
 
-    use color::{color_solid, BrpColor};
+    use brp_color::{color_solid, BrpColor};
     use rect;
 
     use super::*;
@@ -507,6 +537,228 @@ mod tests {
         );
     }
 
+    #[test]
+    fn test_draw_sprite() {
+        let mut h = TestHelper::for_canvas_size(6, 4);
+        let color_bg = color_solid(9, 8, 7);
+        let color_1 = color_solid(11, 12, 13);
+        let color_2 = color_solid(21, 22, 23);
+        let color_3 = color_solid(31, 32, 33);
+        let color_symbols = vec![
+            ("-", color_bg),
+            (":", color_1),
+            ("#", color_2),
+            ("%", color_3),
+        ];
+        let img = TestImage::from_pixels(
+            color_symbols.clone(),
+            "
+            :%%%%%:
+            %::%::%
+            %#%:%#%
+            %::%::%
+            :%%%%%:
+        ",
+        );
+
+        h.draw.clear(&mut h.frame, color_bg);
+        h.draw.draw_sprite(
+            &mut h.frame,
+            ivec2(1, 1),
+            img.width,
+            &img.data,
+            rect(4, 2).at(1, 2),
+            HashMap::new(),
+        );
+
+        h.assert_frame_pixels(
+            color_symbols,
+            "
+                ------
+                -#%:%-
+                -::%:-
+                ------
+            ",
+        );
+    }
+
+    #[test]
+    fn test_draw_sprites_clipped() {
+        let mut h = TestHelper::for_canvas_size(5, 5);
+        let color_bg = color_solid(9, 8, 7);
+        let color_1 = color_solid(11, 12, 13);
+        let color_2 = color_solid(21, 22, 23);
+        let color_3 = color_solid(31, 32, 33);
+        let color_4 = color_solid(41, 42, 43);
+        let color_5 = color_solid(51, 52, 53);
+        let color_symbols = vec![
+            ("-", color_bg),
+            (":", color_1),
+            ("#", color_2),
+            ("%", color_3),
+            ("$", color_4),
+            ("!", color_5),
+        ];
+        let img1 = TestImage::from_pixels(
+            color_symbols.clone(),
+            "
+            :::
+            :::
+            :::
+        ",
+        );
+        let img2 = TestImage::from_pixels(
+            color_symbols.clone(),
+            "
+            ###
+            ###
+            ###
+        ",
+        );
+        let img3 = TestImage::from_pixels(
+            color_symbols.clone(),
+            "
+            %%%
+            %%%
+            %%%
+        ",
+        );
+        let img4 = TestImage::from_pixels(
+            color_symbols.clone(),
+            "
+            $$$
+            $$$
+            $$$
+        ",
+        );
+        let img5 = TestImage::from_pixels(
+            color_symbols.clone(),
+            "
+            !!!
+            !!!
+            !!!
+        ",
+        );
+
+        h.draw.clear(&mut h.frame, color_bg);
+        // clipped from the left
+        h.draw.draw_sprite(
+            &mut h.frame,
+            ivec2(-1, 1),
+            img1.width,
+            &img1.data,
+            rect(3, 3),
+            HashMap::new(),
+        );
+        // clipped from the right
+        h.draw.draw_sprite(
+            &mut h.frame,
+            ivec2(3, 1),
+            img2.width,
+            &img2.data,
+            rect(3, 3),
+            HashMap::new(),
+        );
+        // clipped from the top
+        h.draw.draw_sprite(
+            &mut h.frame,
+            ivec2(1, -1),
+            img3.width,
+            &img3.data,
+            rect(3, 3),
+            HashMap::new(),
+        );
+        // clipped from the bottom
+        h.draw.draw_sprite(
+            &mut h.frame,
+            ivec2(1, 3),
+            img4.width,
+            &img4.data,
+            rect(3, 3),
+            HashMap::new(),
+        );
+        // drawn last, but clipped entirely
+        h.draw.draw_sprite(
+            &mut h.frame,
+            ivec2(-3, 0),
+            img5.width,
+            &img5.data,
+            rect(3, 3),
+            HashMap::new(),
+        );
+
+        h.assert_frame_pixels(
+            color_symbols,
+            "
+                -%%%-
+                :%%%#
+                ::-##
+                :$$$#
+                -$$$-
+            ",
+        );
+    }
+    #[test]
+    fn test_draw_sprite_with_color_replacements() {
+        let mut h = TestHelper::for_canvas_size(4, 2);
+        let color_bg = color_solid(9, 8, 7);
+        let color_1 = color_solid(11, 12, 13);
+        let color_2 = color_solid(21, 22, 23);
+        let color_3 = color_solid(31, 32, 33);
+        let color_4 = color_solid(41, 42, 43);
+        let color_5 = color_solid(51, 52, 53);
+        let color_symbols = vec![
+            ("-", color_bg),
+            (":", color_1),
+            ("#", color_2),
+            ("%", color_3),
+            ("$", color_4),
+            ("!", color_5),
+        ];
+        let img = TestImage::from_pixels(
+            color_symbols.clone(),
+            "
+            %:%:
+            :#:#
+        ",
+        );
+
+        h.draw.clear(&mut h.frame, color_bg);
+        h.draw.draw_sprite(
+            &mut h.frame,
+            IVec2::ZERO,
+            img.width,
+            &img.data,
+            rect(4, 2),
+            HashMap::from([(color_1, BrpColor::Transparent), (color_2, color_4)]),
+        );
+
+        h.assert_frame_pixels(
+            color_symbols.clone(),
+            "
+                %-%-
+                -$-$
+            ",
+        );
+
+        h.draw.draw_sprite(
+            &mut h.frame,
+            IVec2::ZERO,
+            img.width,
+            &img.data,
+            rect(4, 2),
+            HashMap::from([(color_1, color_5), (color_2, BrpColor::Transparent)]),
+        );
+
+        h.assert_frame_pixels(
+            color_symbols.clone(),
+            "
+                %!%!
+                !$!$
+            ",
+        );
+    }
+
     struct TestHelper {
         canvas_size: UVec2,
         frame: Vec<u8>,
@@ -534,13 +786,8 @@ mod tests {
                     BrpColor::Solid { r, g, b } => ([*r, *g, *b, 255_u8], *symbol),
                 }));
 
-            let expected_frame_pixels_lines: Vec<&str> = expected_frame_pixels
-                .split('\n')
-                .map(|line| line.trim())
-                .filter(|line| !line.is_empty())
-                .collect();
-
-            let expected_frame_pixels = expected_frame_pixels_lines.join("\n");
+            let expected_frame_pixels =
+                normalized_ascii_pixel_rows(expected_frame_pixels).join("\n");
 
             let mut actual_frame_pixels = "".to_string();
             for y in 0..self.canvas_size.y {
@@ -555,6 +802,9 @@ mod tests {
             }
             let actual_frame_pixels = actual_frame_pixels.as_str().trim();
 
+            println!("=========\n");
+            println!("EXPECTED:\n{}\n", expected_frame_pixels);
+            println!("ACTUAL:\n{}\n", actual_frame_pixels);
             assert_eq!(actual_frame_pixels, expected_frame_pixels);
         }
 
@@ -570,5 +820,58 @@ mod tests {
                 self.frame[idx + 3],
             ]
         }
+    }
+
+    struct TestImage {
+        width: usize,
+        data: Vec<u8>,
+    }
+
+    impl TestImage {
+        fn from_pixels(color_symbols: Vec<(&str, BrpColor)>, image_pixels: &str) -> Self {
+            let color_symbols: HashMap<char, [u8; 4]> =
+                HashMap::from_iter(color_symbols.iter().map(|(symbol, color)| match color {
+                    BrpColor::Transparent => {
+                        (symbol.chars().last().unwrap(), [0_u8, 0_u8, 0_u8, 0_u8])
+                    },
+                    BrpColor::Solid { r, g, b } => {
+                        (symbol.chars().last().unwrap(), [*r, *g, *b, 255_u8])
+                    },
+                }));
+
+            let symbol_lines = normalized_ascii_pixel_rows(image_pixels);
+            let line_width = symbol_lines
+                .first()
+                .expect("should have at least 1 line")
+                .len();
+            assert!(symbol_lines.iter().all(|line| line.len() == line_width));
+
+            let symbols: Vec<char> = symbol_lines.iter().flat_map(|line| line.chars()).collect();
+            let bytes: Vec<u8> = symbols
+                .iter()
+                .flat_map(|symbol| {
+                    let bytes = color_symbols.get(symbol).unwrap_or_else(|| {
+                        panic!(
+                            "should use symbols of defined colors, but used '{}' instead",
+                            symbol
+                        )
+                    });
+                    *bytes
+                })
+                .collect();
+
+            Self {
+                width: line_width,
+                data: bytes,
+            }
+        }
+    }
+
+    fn normalized_ascii_pixel_rows(ascii_pixels: &str) -> Vec<&str> {
+        ascii_pixels
+            .split('\n')
+            .map(|line| line.trim())
+            .filter(|line| !line.is_empty())
+            .collect()
     }
 }

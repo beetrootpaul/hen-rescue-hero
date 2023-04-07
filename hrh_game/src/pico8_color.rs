@@ -1,6 +1,8 @@
 use brp_game_base::BrpColor;
 
 pub enum Pico8Color {
+    None,
+
     // main 16 colors
     Black,
     DarkBlue,
@@ -39,61 +41,69 @@ pub enum Pico8Color {
 }
 
 impl Pico8Color {
-    fn hex(&self) -> &str {
+    fn hex(&self) -> Option<&str> {
         match *self {
+            Pico8Color::None => None,
+
             // hex values taken from https://pico-8.fandom.com/wiki/Palette#The_system_palette
 
             // main 16 colors
-            Pico8Color::Black => "000000",
-            Pico8Color::DarkBlue => "1d2b53",
-            Pico8Color::DarkPurple => "7e2553",
-            Pico8Color::DarkGreen => "008751",
-            Pico8Color::Brown => "ab5236",
-            Pico8Color::DarkGrey => "5f574f",
-            Pico8Color::LightGrey => "c2c3c7",
-            Pico8Color::White => "fff1e8",
-            Pico8Color::Red => "ff004d",
-            Pico8Color::Orange => "ffa300",
-            Pico8Color::Yellow => "ffec27",
-            Pico8Color::Green => "00e436",
-            Pico8Color::Blue => "29adff",
-            Pico8Color::Lavender => "83769c",
-            Pico8Color::Pink => "ff77a8",
-            Pico8Color::LightPeach => "ffccaa",
+            Pico8Color::Black => Some("000000"),
+            Pico8Color::DarkBlue => Some("1d2b53"),
+            Pico8Color::DarkPurple => Some("7e2553"),
+            Pico8Color::DarkGreen => Some("008751"),
+            Pico8Color::Brown => Some("ab5236"),
+            Pico8Color::DarkGrey => Some("5f574f"),
+            Pico8Color::LightGrey => Some("c2c3c7"),
+            Pico8Color::White => Some("fff1e8"),
+            Pico8Color::Red => Some("ff004d"),
+            Pico8Color::Orange => Some("ffa300"),
+            Pico8Color::Yellow => Some("ffec27"),
+            Pico8Color::Green => Some("00e436"),
+            Pico8Color::Blue => Some("29adff"),
+            Pico8Color::Lavender => Some("83769c"),
+            Pico8Color::Pink => Some("ff77a8"),
+            Pico8Color::LightPeach => Some("ffccaa"),
 
             // additional "secret" 16 colors
-            Pico8Color::BrownishBlack => "291814",
-            Pico8Color::DarkerBlue => "111d35",
-            Pico8Color::DarkerPurple => "422136",
-            Pico8Color::BlueGreen => "125359",
-            Pico8Color::DarkBrown => "742f29",
-            Pico8Color::DarkerGrey => "49333b",
-            Pico8Color::MediumGrey => "a28879",
-            Pico8Color::LightYellow => "f3ef7d",
-            Pico8Color::DarkRed => "be1250",
-            Pico8Color::DarkOrange => "ff6c24",
-            Pico8Color::LimeGreen => "a8e72e",
-            Pico8Color::MediumGreen => "00b543",
-            Pico8Color::TrueBlue => "065ab5",
-            Pico8Color::Mauve => "754665",
-            Pico8Color::DarkPeach => "ff6e59",
-            Pico8Color::Peach => "ff9d81",
+            Pico8Color::BrownishBlack => Some("291814"),
+            Pico8Color::DarkerBlue => Some("111d35"),
+            Pico8Color::DarkerPurple => Some("422136"),
+            Pico8Color::BlueGreen => Some("125359"),
+            Pico8Color::DarkBrown => Some("742f29"),
+            Pico8Color::DarkerGrey => Some("49333b"),
+            Pico8Color::MediumGrey => Some("a28879"),
+            Pico8Color::LightYellow => Some("f3ef7d"),
+            Pico8Color::DarkRed => Some("be1250"),
+            Pico8Color::DarkOrange => Some("ff6c24"),
+            Pico8Color::LimeGreen => Some("a8e72e"),
+            Pico8Color::MediumGreen => Some("00b543"),
+            Pico8Color::TrueBlue => Some("065ab5"),
+            Pico8Color::Mauve => Some("754665"),
+            Pico8Color::DarkPeach => Some("ff6e59"),
+            Pico8Color::Peach => Some("ff9d81"),
         }
     }
 
-    fn rgb8(&self) -> (u8, u8, u8) {
-        let hex = self.hex();
-        (
-            u8::from_str_radix(&hex[0..2], 16).expect("should convert from string hex to number"),
-            u8::from_str_radix(&hex[2..4], 16).expect("should convert from string hex to number"),
-            u8::from_str_radix(&hex[4..6], 16).expect("should convert from string hex to number"),
-        )
+    fn rgb8(&self) -> Option<(u8, u8, u8)> {
+        self.hex().map(|hex| {
+            (
+                u8::from_str_radix(&hex[0..2], 16)
+                    .expect("should convert from string hex to number"),
+                u8::from_str_radix(&hex[2..4], 16)
+                    .expect("should convert from string hex to number"),
+                u8::from_str_radix(&hex[4..6], 16)
+                    .expect("should convert from string hex to number"),
+            )
+        })
     }
 }
 
 impl From<Pico8Color> for BrpColor {
     fn from(pico8_color: Pico8Color) -> Self {
-        let (r, g, b) = pico8_color.rgb8();
-        BrpColor::Solid { r, g, b }
+        match pico8_color.rgb8() {
+            Some((r, g, b)) => BrpColor::Solid { r, g, b },
+            None => BrpColor::Transparent,
+        }
     }
 }

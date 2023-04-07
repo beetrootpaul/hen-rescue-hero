@@ -1,9 +1,9 @@
 use bevy::prelude::*;
 
-use assets::BrpAssetSystems;
-use drawing::BrpDrawingPlugin;
-use game_config::BrpGameConfig;
-use game_state::BrpGameState;
+use brp_assets::BrpAssetSystems;
+use brp_drawing::BrpDrawingPlugin;
+use brp_game_config::BrpGameConfig;
+use brp_game_state::BrpGameState;
 use {BrpImageAssets, BrpSystemSet};
 
 pub struct BrpGameBase {
@@ -36,10 +36,15 @@ impl BrpGameBase {
         app.add_plugin(WindowPlugin {
             primary_window: Some(Window {
                 title: self.config.title.clone(),
+                #[cfg(not(target_arch = "wasm32"))]
                 resolution: bevy::window::WindowResolution::new(
                     (self.config.landscape_canvas_size.x * self.config.initial_canvas_zoom) as f32,
                     (self.config.landscape_canvas_size.y * self.config.initial_canvas_zoom) as f32,
                 ),
+                #[cfg(target_arch = "wasm32")]
+                canvas: Some(self.config.html_canvas_selector.clone()),
+                #[cfg(target_arch = "wasm32")]
+                fit_canvas_to_parent: true,
                 ..default()
             }),
             ..default()
@@ -47,7 +52,13 @@ impl BrpGameBase {
         app.add_plugin(bevy::a11y::AccessibilityPlugin);
         app.add_plugin(bevy::winit::WinitPlugin::default());
 
-        app.add_plugin(AssetPlugin::default());
+        app.add_plugin(AssetPlugin {
+            #[cfg(not(target_arch = "wasm32"))]
+            asset_folder: "assets".to_string(),
+            #[cfg(target_arch = "wasm32")]
+            asset_folder: "".to_string(),
+            ..AssetPlugin::default()
+        });
         app.add_plugin(ImagePlugin::default());
 
         app.add_plugin(bevy::input::InputPlugin::default());
@@ -60,6 +71,7 @@ impl BrpGameBase {
         app.insert_resource(self.config.clone());
 
         app.add_plugin(BrpDrawingPlugin {
+            canvas_margin_color: self.config.canvas_margin_color,
             landscape_canvas_size: self.config.landscape_canvas_size,
             portrait_canvas_size: self.config.portrait_canvas_size,
         });

@@ -3,8 +3,9 @@ use std::collections::VecDeque;
 use bevy::math::uvec2;
 use bevy::prelude::*;
 
-use drawing::draw::BrpDraw;
-use {BrpAssetPath, BrpImageAssets};
+use brp_drawing::brp_draw::BrpDraw;
+use BrpImageAssets;
+use BrpSprite;
 use {BrpColor, Rect};
 
 pub enum BrpDrawCommand {
@@ -14,7 +15,7 @@ pub enum BrpDrawCommand {
     RectFilled(Rect, BrpColor),
     Ellipse(Rect, BrpColor),
     EllipseFilled(Rect, BrpColor),
-    Sprite(BrpAssetPath),
+    Sprite(IVec2, BrpSprite),
 }
 
 #[derive(Resource, Default)]
@@ -54,12 +55,26 @@ impl BrpDrawQueue {
                     BrpDrawCommand::EllipseFilled(bounding_rect, color) => {
                         draw.draw_ellipse(frame, bounding_rect, color, true);
                     },
-                    BrpDrawCommand::Sprite(asset_path) => {
-                        let image_handle = brp_image_assets.get(asset_path);
+                    BrpDrawCommand::Sprite(
+                        xy,
+                        BrpSprite {
+                            image_path,
+                            source_rect,
+                            color_replacements,
+                        },
+                    ) => {
+                        let image_handle = brp_image_assets.get(image_path);
                         let image = bevy_image_assets
                             .get(&image_handle)
                             .expect("should have image for a given handle");
-                        draw.draw_sprite(frame, image);
+                        draw.draw_sprite(
+                            frame,
+                            xy,
+                            image.size().x as usize,
+                            &image.data,
+                            source_rect,
+                            color_replacements,
+                        );
                     },
                 }
             }
