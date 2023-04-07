@@ -3,6 +3,7 @@ extern crate bevy_pixels;
 
 pub use brp_color::BrpColor;
 pub use brp_drawing::BrpSprite;
+pub use brp_drawing::{BrpCanvasVariant, BrpCurrentCanvasVariant};
 pub use brp_drawing::{BrpDrawCommand, BrpDrawQueue};
 pub use brp_game_base::BrpGameBase;
 pub use brp_game_config::BrpGameConfig;

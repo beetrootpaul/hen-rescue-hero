@@ -5,6 +5,8 @@ use brp_game_base::{BrpSprite, Rect};
 use images::Images;
 use pico8_color::Pico8Color;
 
+pub const TILE_SIZE: UVec2 = uvec2(8, 8);
+
 pub enum Sprites {
     RobotBody,
 }
@@ -22,8 +24,6 @@ impl From<Sprites> for BrpSprite {
         }
     }
 }
-
-const TILE_SIZE: UVec2 = uvec2(8, 8);
 
 // Param names and structure here are very designed to take small amount of space in IDE on a callee side,
 //   both in terms of actual typed characters, as well as IDE's intline type hints.
