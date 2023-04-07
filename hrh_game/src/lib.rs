@@ -6,12 +6,15 @@ use bevy::prelude::*;
 use brp_game_base::{BrpGameBase, BrpGameConfig, BrpGameState, BrpImageAssets, BrpSystemSet};
 use canvas::{Canvas, CanvasSystems};
 use images::Images;
+use input::KeyboardControlsSystems;
 use pico8_color::Pico8Color;
 use robot::RobotSystems;
 
 mod canvas;
 mod images;
+mod input;
 mod pico8_color;
+mod position;
 mod robot;
 mod sprites;
 
@@ -40,8 +43,22 @@ impl HrhGame {
         })
         .create_bevy_app();
 
+        // RESOURCES
         app.insert_resource(BrpImageAssets::from(Images));
 
+        // STARTUP systems
+        app.add_startup_system(RobotSystems::spawn);
+
+        // UPDATE systems
+        app.add_systems(
+            (
+                KeyboardControlsSystems::handle_keyboard_input,
+                RobotSystems::update.after(KeyboardControlsSystems::handle_keyboard_input),
+            )
+                .in_set(BrpSystemSet::Update),
+        );
+
+        // DRAW systems
         app.add_systems(
             (
                 CanvasSystems::draw_bg.run_if(not(in_state(BrpGameState::Loading))),
