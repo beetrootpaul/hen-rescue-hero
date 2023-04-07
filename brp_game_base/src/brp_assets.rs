@@ -2,7 +2,7 @@ use bevy::asset::LoadState;
 use bevy::prelude::*;
 use bevy::utils::HashMap;
 
-use game_state::BrpGameState;
+use brp_game_state::BrpGameState;
 
 pub type BrpAssetPath = &'static str;
 

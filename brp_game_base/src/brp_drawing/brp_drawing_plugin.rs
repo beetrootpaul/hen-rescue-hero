@@ -1,8 +1,8 @@
 use bevy::prelude::*;
 use bevy::window::{WindowBackendScaleFactorChanged, WindowResized};
 
-use drawing::queue::BrpDrawQueue;
-use game_config::BrpGameConfig;
+use brp_drawing::brp_draw_queue::BrpDrawQueue;
+use brp_game_config::BrpGameConfig;
 use BrpColor;
 
 pub struct BrpDrawingPlugin {

@@ -1,9 +1,9 @@
 use bevy::prelude::*;
 
-use assets::BrpAssetSystems;
-use drawing::BrpDrawingPlugin;
-use game_config::BrpGameConfig;
-use game_state::BrpGameState;
+use brp_assets::BrpAssetSystems;
+use brp_drawing::BrpDrawingPlugin;
+use brp_game_config::BrpGameConfig;
+use brp_game_state::BrpGameState;
 use {BrpImageAssets, BrpSystemSet};
 
 pub struct BrpGameBase {

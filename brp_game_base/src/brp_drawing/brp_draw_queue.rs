@@ -3,7 +3,7 @@ use std::collections::VecDeque;
 use bevy::math::uvec2;
 use bevy::prelude::*;
 
-use drawing::draw::BrpDraw;
+use brp_drawing::brp_draw::BrpDraw;
 use {BrpAssetPath, BrpImageAssets};
 use {BrpColor, Rect};
 

@@ -175,7 +175,7 @@ mod tests {
     use bevy::prelude::IVec2;
     use bevy::utils::HashMap;
 
-    use color::{color_solid, BrpColor};
+    use brp_color::{color_solid, BrpColor};
     use rect;
 
     use super::*;
