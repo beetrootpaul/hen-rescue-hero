@@ -60,6 +60,10 @@ impl RobotSystems {
                 canvas.xy_of_position_within_game_area(position),
                 Sprites::RobotBody.into(),
             ));
+            draw_queue.enqueue(BrpDrawCommand::Sprite(
+                canvas.xy_of_position_within_game_area(position),
+                Sprites::RobotFace1.into(),
+            ));
         }
     }
 }
