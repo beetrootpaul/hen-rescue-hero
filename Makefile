@@ -4,7 +4,7 @@
 
 rust_flags_release := RUSTFLAGS="-D warnings -A dead_code -A unused-imports -A unused_mut -A unused-variables"
 
-rust_log_debug := RUST_LOG=warn,bevy=debug,bevy_pixels_web_game_poc=debug
+rust_log_debug := RUST_LOG=warn,bevy=debug,hen_rescue_hero=debug,hrh_game=debug,brp_game_base=debug
 
 # # # # # # # # # # #
 # initial commands
