@@ -9,8 +9,10 @@ pub const TILE_SIZE: UVec2 = uvec2(8, 8);
 
 pub enum Sprites {
     RobotBody,
+    RobotLeg,
     RobotFace1,
     Chicken,
+    Chain,
 }
 
 impl From<Sprites> for BrpSprite {
@@ -19,6 +21,14 @@ impl From<Sprites> for BrpSprite {
             Sprites::RobotBody => s(
                 [0, 0, 3, 2],
                 [12, 16],
+                [
+                    (Pico8Color::Yellow, Pico8Color::None),
+                    (Pico8Color::Peach, Pico8Color::None),
+                ],
+            ),
+            Sprites::RobotLeg => s(
+                [2, 2, 1, 1],
+                [4, 0],
                 [
                     (Pico8Color::Yellow, Pico8Color::None),
                     (Pico8Color::Peach, Pico8Color::None),
@@ -38,6 +48,14 @@ impl From<Sprites> for BrpSprite {
                 [
                     (Pico8Color::Yellow, Pico8Color::None),
                     (Pico8Color::LimeGreen, Pico8Color::None),
+                ],
+            ),
+            Sprites::Chain => s(
+                [2, 3, 1, 1],
+                [0, 0],
+                [
+                    (Pico8Color::Yellow, Pico8Color::None),
+                    (Pico8Color::Peach, Pico8Color::None),
                 ],
             ),
         }

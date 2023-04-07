@@ -1,4 +1,6 @@
-use bevy::math::vec2;
+use std::ops::{Mul, Sub};
+
+use bevy::math::{ivec2, uvec2};
 use bevy::prelude::*;
 
 use brp_game_base::{BrpDrawCommand, BrpDrawQueue};
@@ -31,7 +33,13 @@ impl RobotSystems {
     pub fn spawn(mut commands: Commands) {
         commands.spawn(RobotBundle {
             token: RobotToken,
-            position: Position(vec2(0.0, (GAME_AREA_TILES.y * TILE_SIZE.y) as f32 - 100.0)),
+            position: Position(
+                uvec2(0, GAME_AREA_TILES.y - 2)
+                    .as_ivec2()
+                    .mul(TILE_SIZE.as_ivec2())
+                    .sub(ivec2(0, 2))
+                    .as_vec2(),
+            ),
             direction: RobotDirection::None,
         });
     }
@@ -56,6 +64,10 @@ impl RobotSystems {
         canvas: Canvas,
     ) {
         for position in query.iter() {
+            draw_queue.enqueue(BrpDrawCommand::Sprite(
+                canvas.xy_of_position_within_game_area(position),
+                Sprites::RobotLeg.into(),
+            ));
             draw_queue.enqueue(BrpDrawCommand::Sprite(
                 canvas.xy_of_position_within_game_area(position),
                 Sprites::RobotBody.into(),
