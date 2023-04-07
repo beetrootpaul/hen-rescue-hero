@@ -1,4 +1,5 @@
 use bevy::prelude::*;
+
 use robot::{RobotDirection, RobotToken};
 
 pub struct KeyboardControlsSystems;
@@ -13,10 +14,11 @@ impl KeyboardControlsSystems {
 
         for mut direction in query.iter_mut() {
             *direction = match (left, right) {
-                (true, true) => RobotDirection::None,
+                // (true, true) => RobotDirection::None,
                 (true, false) => RobotDirection::Left,
                 (false, true) => RobotDirection::Right,
-                (false, false) => RobotDirection::None,
+                // (false, false) => RobotDirection::None,
+                _ => direction.clone(),
             };
         }
     }

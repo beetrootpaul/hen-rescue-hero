@@ -20,4 +20,6 @@ mod brp_drawing;
 mod brp_game_base;
 mod brp_game_config;
 mod brp_game_state;
+#[cfg(debug_assertions)]
+mod debug;
 mod rect;

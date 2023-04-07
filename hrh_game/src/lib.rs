@@ -53,7 +53,9 @@ impl HrhGame {
         app.add_systems(
             (
                 KeyboardControlsSystems::handle_keyboard_input,
-                RobotSystems::update.after(KeyboardControlsSystems::handle_keyboard_input),
+                RobotSystems::update
+                    .after(KeyboardControlsSystems::handle_keyboard_input)
+                    .run_if(in_state(BrpGameState::InGame)),
             )
                 .in_set(BrpSystemSet::Update),
         );

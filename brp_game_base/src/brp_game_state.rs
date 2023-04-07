@@ -5,4 +5,8 @@ pub enum BrpGameState {
     #[default]
     Loading,
     InGame,
+    #[cfg(debug_assertions)]
+    DebugPause,
+    #[cfg(debug_assertions)]
+    DebugPauseResumeFor1Frame,
 }
