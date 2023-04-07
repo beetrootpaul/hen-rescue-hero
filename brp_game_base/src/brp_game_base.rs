@@ -52,7 +52,13 @@ impl BrpGameBase {
         app.add_plugin(bevy::a11y::AccessibilityPlugin);
         app.add_plugin(bevy::winit::WinitPlugin::default());
 
-        app.add_plugin(AssetPlugin::default());
+        app.add_plugin(AssetPlugin {
+            #[cfg(not(target_arch = "wasm32"))]
+            asset_folder: "assets".to_string(),
+            #[cfg(target_arch = "wasm32")]
+            asset_folder: "".to_string(),
+            ..AssetPlugin::default()
+        });
         app.add_plugin(ImagePlugin::default());
 
         app.add_plugin(bevy::input::InputPlugin::default());
