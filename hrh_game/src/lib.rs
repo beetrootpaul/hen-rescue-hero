@@ -15,6 +15,7 @@ use robot::RobotSystems;
 mod images;
 mod pico8_color;
 mod robot;
+mod sprites;
 
 const GAME_TITLE: &str = "Hen Rescue Hero";
 const TILE_SIZE: UVec2 = uvec2(16, 16);

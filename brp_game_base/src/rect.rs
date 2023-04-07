@@ -40,4 +40,20 @@ impl Rect {
             size: self.size,
         }
     }
+
+    pub fn intersection_with(self, another_rect: Rect) -> Rect {
+        let xy0 = self.left_top.clamp(
+            another_rect.left_top,
+            another_rect.left_top + another_rect.size.as_ivec2(),
+        );
+        let xy1 = (self.left_top + self.size.as_ivec2()).clamp(
+            another_rect.left_top,
+            another_rect.left_top + another_rect.size.as_ivec2(),
+        );
+        assert!(xy1.cmpge(xy0).all());
+        Rect {
+            left_top: xy0,
+            size: (xy1 - xy0).as_uvec2(),
+        }
+    }
 }
