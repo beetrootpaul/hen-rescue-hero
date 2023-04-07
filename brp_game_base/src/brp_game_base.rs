@@ -45,6 +45,8 @@ impl BrpGameBase {
                 canvas: Some(self.config.html_canvas_selector.clone()),
                 #[cfg(target_arch = "wasm32")]
                 fit_canvas_to_parent: true,
+                #[cfg(target_arch = "wasm32")]
+                prevent_default_event_handling: false,
                 ..default()
             }),
             ..default()

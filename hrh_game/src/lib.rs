@@ -24,7 +24,7 @@ const GAME_TITLE: &str = "Hen Rescue Hero";
 const INITIAL_CANVAS_ZOOM: u32 = 3;
 
 #[cfg(target_arch = "wasm32")]
-const HTML_CANVAS_SELECTOR: &str = "#hen_rescue_hero_canvas";
+const HTML_CANVAS_SELECTOR: &str = "#hen_rescue_hero__canvas";
 
 pub struct HrhGame {}
 
