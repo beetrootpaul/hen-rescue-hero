@@ -15,47 +15,64 @@ impl BrpDrawingPlugin {
         mut window_backend_scale_factor_changed_events: EventReader<
             WindowBackendScaleFactorChanged,
         >,
-        mut query: Query<(&mut bevy_pixels::PixelsWrapper, &Window)>,
+        mut query: Query<&mut bevy_pixels::PixelsWrapper, With<Window>>,
+        winit_windows: NonSend<bevy::winit::WinitWindows>,
     ) {
         for event in window_backend_scale_factor_changed_events.iter() {
-            if let Ok((mut wrapper, window)) = query.get_mut(event.window) {
-                Self::resize_pixels_surface_to_window(&mut wrapper, window);
+            if let Ok(mut wrapper) = query.get_mut(event.window) {
+                if let Some(resized_winit_window) = winit_windows.get_window(event.window) {
+                    Self::resize_pixels_surface_to_window(
+                        &mut wrapper,
+                        resized_winit_window.inner_size().width,
+                        resized_winit_window.inner_size().height,
+                    );
+                }
             }
         }
     }
 
     fn sys_update_pixels_on_window_resize(
         mut window_resized_events: EventReader<WindowResized>,
-        mut query: Query<(
-            &mut bevy_pixels::PixelsWrapper,
-            &mut bevy_pixels::PixelsOptions,
-            &Window,
-        )>,
+        mut query: Query<
+            (
+                &mut bevy_pixels::PixelsWrapper,
+                &mut bevy_pixels::PixelsOptions,
+            ),
+            With<Window>,
+        >,
+        winit_windows: NonSend<bevy::winit::WinitWindows>,
         game_config: Res<BrpGameConfig>,
     ) {
         if let Some(event) = window_resized_events.iter().last() {
-            if let Ok((mut wrapper, mut options, window)) = query.get_mut(event.window) {
-                let new_canvas_size = if window.width() > window.height() {
-                    game_config.landscape_canvas_size
-                } else {
-                    game_config.portrait_canvas_size
-                };
+            if let Ok((mut wrapper, mut options)) = query.get_mut(event.window) {
+                if let Some(resized_winit_window) = winit_windows.get_window(event.window) {
+                    let window_w = resized_winit_window.inner_size().width;
+                    let window_h = resized_winit_window.inner_size().height;
 
-                // mutate options only when really needed, in order to not trigger `Changed<bevy_pixels::PixelsOptions>` too often
-                if options.width != new_canvas_size.x || options.height != new_canvas_size.y {
-                    options.width = new_canvas_size.x;
-                    options.height = new_canvas_size.y;
+                    let new_canvas_size = if window_w > window_h {
+                        game_config.landscape_canvas_size
+                    } else {
+                        game_config.portrait_canvas_size
+                    };
+
+                    // mutate options only when really needed, in order to not trigger `Changed<bevy_pixels::PixelsOptions>` too often
+                    if options.width != new_canvas_size.x || options.height != new_canvas_size.y {
+                        options.width = new_canvas_size.x;
+                        options.height = new_canvas_size.y;
+                    }
+
+                    Self::resize_pixels_surface_to_window(&mut wrapper, window_w, window_h);
                 }
-
-                Self::resize_pixels_surface_to_window(&mut wrapper, window);
             }
         }
     }
 
-    fn resize_pixels_surface_to_window(wrapper: &mut bevy_pixels::PixelsWrapper, window: &Window) {
-        let _ = wrapper
-            .pixels
-            .resize_surface(window.physical_width(), window.physical_height());
+    fn resize_pixels_surface_to_window(
+        wrapper: &mut bevy_pixels::PixelsWrapper,
+        window_w: u32,
+        window_h: u32,
+    ) {
+        let _ = wrapper.pixels.resize_surface(window_w, window_h);
     }
 
     fn sys_resize_pixels_buffer_if_needed(

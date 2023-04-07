@@ -20,7 +20,10 @@ const GAME_TITLE: &str = "Hen Rescue Hero";
 const TILE_SIZE: UVec2 = uvec2(16, 16);
 const CANVAS_TILES_LANDSCAPE: UVec2 = uvec2(20, 12);
 const CANVAS_TILES_PORTRAIT: UVec2 = uvec2(12, 18);
+#[cfg(not(target_arch = "wasm32"))]
 const INITIAL_CANVAS_ZOOM: u32 = 3;
+#[cfg(target_arch = "wasm32")]
+const HTML_CANVAS_SELECTOR: &str = "#hen_rescue_hero_canvas";
 
 pub struct HrhGame {}
 
@@ -30,7 +33,10 @@ impl HrhGame {
             title: GAME_TITLE.to_string(),
             landscape_canvas_size: CANVAS_TILES_LANDSCAPE * TILE_SIZE,
             portrait_canvas_size: CANVAS_TILES_PORTRAIT * TILE_SIZE,
+            #[cfg(not(target_arch = "wasm32"))]
             initial_canvas_zoom: INITIAL_CANVAS_ZOOM,
+            #[cfg(target_arch = "wasm32")]
+            html_canvas_selector: HTML_CANVAS_SELECTOR.to_string(),
         })
         .create_bevy_app();
 

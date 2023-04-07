@@ -36,10 +36,15 @@ impl BrpGameBase {
         app.add_plugin(WindowPlugin {
             primary_window: Some(Window {
                 title: self.config.title.clone(),
+                #[cfg(not(target_arch = "wasm32"))]
                 resolution: bevy::window::WindowResolution::new(
                     (self.config.landscape_canvas_size.x * self.config.initial_canvas_zoom) as f32,
                     (self.config.landscape_canvas_size.y * self.config.initial_canvas_zoom) as f32,
                 ),
+                #[cfg(target_arch = "wasm32")]
+                canvas: Some(self.config.html_canvas_selector.clone()),
+                #[cfg(target_arch = "wasm32")]
+                fit_canvas_to_parent: true,
                 ..default()
             }),
             ..default()

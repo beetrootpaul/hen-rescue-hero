@@ -5,5 +5,8 @@ pub struct BrpGameConfig {
     pub title: String,
     pub landscape_canvas_size: UVec2,
     pub portrait_canvas_size: UVec2,
+    #[cfg(not(target_arch = "wasm32"))]
     pub initial_canvas_zoom: u32,
+    #[cfg(target_arch = "wasm32")]
+    pub html_canvas_selector: String,
 }
