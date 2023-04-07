@@ -9,6 +9,7 @@ pub const TILE_SIZE: UVec2 = uvec2(8, 8);
 
 pub enum Sprites {
     RobotBody,
+    Chicken,
 }
 
 impl From<Sprites> for BrpSprite {
@@ -19,6 +20,13 @@ impl From<Sprites> for BrpSprite {
                 [
                     (Pico8Color::Yellow, Pico8Color::None),
                     (Pico8Color::Peach, Pico8Color::None),
+                ],
+            ),
+            Sprites::Chicken => s(
+                [3, 0, 2, 2],
+                [
+                    (Pico8Color::Yellow, Pico8Color::None),
+                    (Pico8Color::LimeGreen, Pico8Color::None),
                 ],
             ),
         }
@@ -32,7 +40,7 @@ fn s<const N: usize>(xywh: [i32; 4], cr: [(Pico8Color, Pico8Color); N]) -> BrpSp
     BrpSprite {
         image_path: Images::SPRITE_SHEET,
         source_rect: Rect {
-            left_top: ivec2(x, y),
+            left_top: ivec2(x, y) * TILE_SIZE.as_ivec2(),
             size: ivec2(w, h).as_uvec2() * TILE_SIZE,
         },
         color_replacements: HashMap::from(cr.map(|(c1, c2)| (c1.into(), c2.into()))),

@@ -19,11 +19,23 @@ pub struct Canvas<'w> {
 }
 
 impl<'w> Canvas<'w> {
-    pub fn canvas_size_landscape() -> UVec2 {
-        CANVAS_TILES_LANDSCAPE * TILE_SIZE + 2 * CANVAS_BORDER
+    pub const fn canvas_size_landscape() -> UVec2 {
+        uvec2(
+            CANVAS_TILES_LANDSCAPE.x * TILE_SIZE.x + 2 * CANVAS_BORDER,
+            CANVAS_TILES_LANDSCAPE.y * TILE_SIZE.y + 2 * CANVAS_BORDER,
+        )
     }
-    pub fn canvas_size_portrait() -> UVec2 {
-        CANVAS_TILES_PORTRAIT * TILE_SIZE + 2 * CANVAS_BORDER
+    pub const fn canvas_size_portrait() -> UVec2 {
+        uvec2(
+            CANVAS_TILES_PORTRAIT.x * TILE_SIZE.x + 2 * CANVAS_BORDER,
+            CANVAS_TILES_PORTRAIT.y * TILE_SIZE.y + 2 * CANVAS_BORDER,
+        )
+    }
+    pub const fn game_area_size() -> UVec2 {
+        uvec2(
+            GAME_AREA_TILES.x * TILE_SIZE.x,
+            GAME_AREA_TILES.y * TILE_SIZE.y,
+        )
     }
 
     pub fn canvas_size(&self) -> UVec2 {
@@ -55,7 +67,7 @@ impl<'w> Canvas<'w> {
         let top_bar = self.top_bar_rect();
         brp_game_base::Rect {
             left_top: top_bar.left_top + top_bar.size.as_ivec2() * IVec2::Y,
-            size: GAME_AREA_TILES * TILE_SIZE,
+            size: Self::game_area_size(),
         }
     }
 

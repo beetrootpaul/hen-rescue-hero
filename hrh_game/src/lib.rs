@@ -5,12 +5,14 @@ use bevy::prelude::*;
 
 use brp_game_base::{BrpGameBase, BrpGameConfig, BrpGameState, BrpImageAssets, BrpSystemSet};
 use canvas::{Canvas, CanvasSystems};
+use chicken::{ChickenSpawnTimer, ChickenSystems};
 use images::Images;
 use input::KeyboardControlsSystems;
 use pico8_color::Pico8Color;
 use robot::RobotSystems;
 
 mod canvas;
+mod chicken;
 mod images;
 mod input;
 mod pico8_color;
@@ -45,6 +47,10 @@ impl HrhGame {
 
         // RESOURCES
         app.insert_resource(BrpImageAssets::from(Images));
+        app.insert_resource(ChickenSpawnTimer(Timer::from_seconds(
+            2.0,
+            TimerMode::Repeating,
+        )));
 
         // STARTUP systems
         app.add_startup_system(RobotSystems::spawn);
@@ -56,6 +62,8 @@ impl HrhGame {
                 RobotSystems::update
                     .after(KeyboardControlsSystems::handle_keyboard_input)
                     .run_if(in_state(BrpGameState::InGame)),
+                ChickenSystems::spawn.run_if(in_state(BrpGameState::InGame)),
+                ChickenSystems::update.run_if(in_state(BrpGameState::InGame)),
             )
                 .in_set(BrpSystemSet::Update),
         );
@@ -64,6 +72,7 @@ impl HrhGame {
         app.add_systems(
             (
                 CanvasSystems::draw_bg.run_if(not(in_state(BrpGameState::Loading))),
+                ChickenSystems::draw.run_if(not(in_state(BrpGameState::Loading))),
                 RobotSystems::draw.run_if(not(in_state(BrpGameState::Loading))),
             )
                 .chain()
