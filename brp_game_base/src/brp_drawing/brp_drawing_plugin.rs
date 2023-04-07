@@ -1,5 +1,6 @@
 use bevy::prelude::*;
 use bevy::window::{WindowBackendScaleFactorChanged, WindowResized};
+use brp_drawing::brp_canvas_variant::{BrpCanvasVariant, BrpCurrentCanvasVariant};
 
 use brp_drawing::brp_draw_queue::BrpDrawQueue;
 use brp_game_config::BrpGameConfig;
@@ -12,7 +13,6 @@ pub struct BrpDrawingPlugin {
 }
 
 impl BrpDrawingPlugin {
-    // TODO: test if it works at all (e.g. by changed DPI in web build)
     fn sys_update_pixels_on_window_scale_factor_changed(
         mut window_backend_scale_factor_changed_events: EventReader<
             WindowBackendScaleFactorChanged,
@@ -43,6 +43,7 @@ impl BrpDrawingPlugin {
             With<Window>,
         >,
         winit_windows: NonSend<bevy::winit::WinitWindows>,
+        mut current_canvas_variant: ResMut<BrpCurrentCanvasVariant>,
         game_config: Res<BrpGameConfig>,
     ) {
         if let Some(event) = window_resized_events.iter().last() {
@@ -51,19 +52,22 @@ impl BrpDrawingPlugin {
                     let window_w = resized_winit_window.inner_size().width;
                     let window_h = resized_winit_window.inner_size().height;
 
-                    let new_canvas_size = if window_w > window_h {
-                        game_config.landscape_canvas_size
-                    } else {
-                        game_config.portrait_canvas_size
-                    };
+                    Self::resize_pixels_surface_to_window(&mut wrapper, window_w, window_h);
 
-                    // mutate options only when really needed, in order to not trigger `Changed<bevy_pixels::PixelsOptions>` too often
-                    if options.width != new_canvas_size.x || options.height != new_canvas_size.y {
+                    let canvas_variant = match window_w > window_h {
+                        true => BrpCanvasVariant::Landscape,
+                        false => BrpCanvasVariant::Portrait,
+                    };
+                    // mutate things only when really needed, in order to not trigger systems based on `Changed<_>` queries w/o need
+                    if canvas_variant != current_canvas_variant.0 {
+                        let new_canvas_size = match canvas_variant {
+                            BrpCanvasVariant::Landscape => game_config.landscape_canvas_size,
+                            BrpCanvasVariant::Portrait => game_config.portrait_canvas_size,
+                        };
                         options.width = new_canvas_size.x;
                         options.height = new_canvas_size.y;
+                        current_canvas_variant.0 = canvas_variant;
                     }
-
-                    Self::resize_pixels_surface_to_window(&mut wrapper, window_w, window_h);
                 }
             }
         }
@@ -120,6 +124,8 @@ impl Plugin for BrpDrawingPlugin {
                 }
             },
         );
+
+        app.init_resource::<BrpCurrentCanvasVariant>();
 
         app.add_systems(
             (

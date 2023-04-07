@@ -1,30 +1,32 @@
 extern crate bevy;
 extern crate brp_game_base;
 
-use bevy::math::{uvec2, UVec2};
 use bevy::prelude::*;
 
-use brp_game_base::{
-    BrpDrawCommand, BrpDrawQueue, BrpGameBase, BrpGameConfig, BrpGameState, BrpImageAssets,
-    BrpSystemSet,
-};
+use brp_game_base::{BrpGameBase, BrpGameConfig, BrpGameState, BrpImageAssets, BrpSystemSet};
+use canvas::{Canvas, CanvasSystems};
+use chicken::{ChickenSpawnTimer, ChickenSystems};
 use images::Images;
+use input::KeyboardControlsSystems;
 use pico8_color::Pico8Color;
 use robot::RobotSystems;
 
+mod canvas;
+mod chicken;
 mod images;
+mod input;
 mod pico8_color;
+mod position;
 mod robot;
 mod sprites;
 
 const GAME_TITLE: &str = "Hen Rescue Hero";
-const TILE_SIZE: UVec2 = uvec2(16, 16);
-const CANVAS_TILES_LANDSCAPE: UVec2 = uvec2(20, 12);
-const CANVAS_TILES_PORTRAIT: UVec2 = uvec2(12, 18);
+
 #[cfg(not(target_arch = "wasm32"))]
 const INITIAL_CANVAS_ZOOM: u32 = 3;
+
 #[cfg(target_arch = "wasm32")]
-const HTML_CANVAS_SELECTOR: &str = "#hen_rescue_hero_canvas";
+const HTML_CANVAS_SELECTOR: &str = "#hen_rescue_hero__canvas";
 
 pub struct HrhGame {}
 
@@ -32,9 +34,10 @@ impl HrhGame {
     pub fn create_bevy_app() -> App {
         let mut app = BrpGameBase::new(BrpGameConfig {
             title: GAME_TITLE.to_string(),
+            // Same color as the one used for background around HTML canvas in web build
             canvas_margin_color: Pico8Color::DarkBlue.into(),
-            landscape_canvas_size: CANVAS_TILES_LANDSCAPE * TILE_SIZE,
-            portrait_canvas_size: CANVAS_TILES_PORTRAIT * TILE_SIZE,
+            landscape_canvas_size: Canvas::canvas_size_landscape(),
+            portrait_canvas_size: Canvas::canvas_size_portrait(),
             #[cfg(not(target_arch = "wasm32"))]
             initial_canvas_zoom: INITIAL_CANVAS_ZOOM,
             #[cfg(target_arch = "wasm32")]
@@ -42,26 +45,44 @@ impl HrhGame {
         })
         .create_bevy_app();
 
+        // RESOURCES
         app.insert_resource(BrpImageAssets::from(Images));
+        app.insert_resource(ChickenSpawnTimer(Timer::from_seconds(
+            2.0,
+            TimerMode::Repeating,
+        )));
 
+        // STARTUP systems
+        app.add_startup_system(RobotSystems::spawn);
+
+        // UPDATE systems
         app.add_systems(
             (
-                Self::draw_bg,
+                KeyboardControlsSystems::handle_keyboard_input,
+                RobotSystems::update
+                    .after(KeyboardControlsSystems::handle_keyboard_input)
+                    .run_if(in_state(BrpGameState::InGame)),
+                ChickenSystems::spawn.run_if(in_state(BrpGameState::InGame)),
+                ChickenSystems::update.run_if(in_state(BrpGameState::InGame)),
+            )
+                .in_set(BrpSystemSet::Update),
+        );
+
+        // DRAW systems
+        app.add_systems(
+            (
+                CanvasSystems::draw_bg.run_if(not(in_state(BrpGameState::Loading))),
+                CanvasSystems::start_clipping_to_game_area
+                    .run_if(not(in_state(BrpGameState::Loading))),
+                ChickenSystems::draw.run_if(not(in_state(BrpGameState::Loading))),
                 RobotSystems::draw.run_if(not(in_state(BrpGameState::Loading))),
+                CanvasSystems::end_clipping_to_game_area
+                    .run_if(not(in_state(BrpGameState::Loading))),
             )
                 .chain()
                 .in_set(BrpSystemSet::Draw),
         );
 
         app
-    }
-
-    fn draw_bg(current_state: Res<State<BrpGameState>>, mut draw_queue: ResMut<BrpDrawQueue>) {
-        let color = match *current_state {
-            // Same color as the one used for background around HTML canvas in web build
-            State(BrpGameState::Loading) => Pico8Color::DarkBlue,
-            State(_) => Pico8Color::Blue,
-        };
-        draw_queue.enqueue(BrpDrawCommand::Clear(color.into()));
     }
 }

@@ -4,6 +4,8 @@ use brp_assets::BrpAssetSystems;
 use brp_drawing::BrpDrawingPlugin;
 use brp_game_config::BrpGameConfig;
 use brp_game_state::BrpGameState;
+#[cfg(debug_assertions)]
+use debug::DebugPausePlugin;
 use {BrpImageAssets, BrpSystemSet};
 
 pub struct BrpGameBase {
@@ -45,6 +47,8 @@ impl BrpGameBase {
                 canvas: Some(self.config.html_canvas_selector.clone()),
                 #[cfg(target_arch = "wasm32")]
                 fit_canvas_to_parent: true,
+                #[cfg(target_arch = "wasm32")]
+                prevent_default_event_handling: false,
                 ..default()
             }),
             ..default()
@@ -69,6 +73,9 @@ impl BrpGameBase {
 
     fn configure_own_for(&self, app: &mut App) {
         app.insert_resource(self.config.clone());
+
+        #[cfg(debug_assertions)]
+        app.add_plugin(DebugPausePlugin);
 
         app.add_plugin(BrpDrawingPlugin {
             canvas_margin_color: self.config.canvas_margin_color,
