@@ -72,8 +72,8 @@ impl<'w> Canvas<'w> {
         }
     }
 
-    pub fn xy_of_position_within_game_area(&self, position: &Position) -> IVec2 {
-        self.game_area_rect().left_top + position.0.as_ivec2()
+    pub fn xy_of_position_within_game_area(&self, game_area_position: &Position) -> IVec2 {
+        self.game_area_rect().left_top + game_area_position.0.as_ivec2()
     }
 
     fn variant(&self) -> BrpCanvasVariant {

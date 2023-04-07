@@ -54,9 +54,10 @@ impl ChickenSystems {
         canvas: Canvas,
     ) {
         for position in query.iter() {
+            let brp_sprite = Sprites::Chicken.into();
             draw_queue.enqueue(BrpDrawCommand::Sprite(
                 canvas.xy_of_position_within_game_area(position),
-                Sprites::Chicken.into(),
+                brp_sprite,
             ));
         }
     }

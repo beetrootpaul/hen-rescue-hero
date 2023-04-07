@@ -60,6 +60,7 @@ impl BrpDrawQueue {
                         BrpSprite {
                             image_path,
                             source_rect,
+                            anchor,
                             color_replacements,
                         },
                     ) => {
@@ -69,7 +70,7 @@ impl BrpDrawQueue {
                             .expect("should have image for a given handle");
                         draw.draw_sprite(
                             frame,
-                            xy,
+                            xy - anchor,
                             image.size().x as usize,
                             &image.data,
                             source_rect,
