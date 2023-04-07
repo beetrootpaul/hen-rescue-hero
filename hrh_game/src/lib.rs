@@ -4,10 +4,17 @@ extern crate brp_game_base;
 use bevy::math::{uvec2, UVec2};
 use bevy::prelude::*;
 
-use brp_game_base::{BrpDrawCommand, BrpDrawQueue, BrpGameBase, BrpGameConfig, BrpSystemSet};
+use brp_game_base::{
+    BrpDrawCommand, BrpDrawQueue, BrpGameBase, BrpGameConfig, BrpGameState, BrpImageAssets,
+    BrpSystemSet,
+};
+use images::Images;
 use pico8_color::Pico8Color;
+use robot::RobotSystems;
 
+mod images;
 mod pico8_color;
+mod robot;
 
 const GAME_TITLE: &str = "Hen Rescue Hero";
 const TILE_SIZE: UVec2 = uvec2(16, 16);
@@ -27,7 +34,16 @@ impl HrhGame {
         })
         .create_bevy_app();
 
-        app.add_system(Self::draw_bg.in_set(BrpSystemSet::Draw));
+        app.insert_resource(BrpImageAssets::from(Images));
+
+        app.add_systems(
+            (
+                Self::draw_bg,
+                RobotSystems::draw.run_if(in_state(BrpGameState::InGame)),
+            )
+                .chain()
+                .in_set(BrpSystemSet::Draw),
+        );
 
         app
     }

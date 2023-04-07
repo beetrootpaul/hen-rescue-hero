@@ -5,6 +5,9 @@
 # output from Cargo
 /target/
 
+# output from trunkn
+/dist/
+
 # # # # #
 # other
 #

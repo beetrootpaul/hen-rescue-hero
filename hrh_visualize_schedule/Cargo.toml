@@ -8,5 +8,6 @@ version = "0.1.0"
 bevy_dynamic_linking = ["hrh_game/bevy_dynamic_linking"]
 
 [dependencies]
+bevy = { workspace = true }
 bevy_mod_debugdump = "0.7.0"
 hrh_game = { path = "../hrh_game" }

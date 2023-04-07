@@ -1,6 +1,8 @@
 use bevy::math::{ivec2, IVec2, UVec2};
+use bevy::render::texture::Image;
 
-use {BrpColor, IRect};
+use rect;
+use {BrpColor, Rect};
 
 // amount of bytes per pixel in `pixels` crate's frame buffer
 const PX_LEN: usize = 4;
@@ -20,41 +22,35 @@ impl BrpDraw {
         self.set_pixel(frame, xy, color);
     }
 
-    pub fn draw_rect(&self, frame: &mut [u8], rect: IRect, color: BrpColor, fill: bool) {
-        for y in rect.t()..=rect.b() {
-            if fill || y == rect.t() || y == rect.b() {
-                self.set_pixels_x0x1(frame, ivec2(rect.left_top.x, y), rect.r() + 1, color);
+    pub fn draw_rect(&self, frame: &mut [u8], rect: Rect, color: BrpColor, fill: bool) {
+        for y in rect.top()..=rect.bottom() {
+            if fill || y == rect.top() || y == rect.bottom() {
+                self.set_pixels_x0x1(frame, ivec2(rect.left_top.x, y), rect.right() + 1, color);
             } else {
-                self.set_pixel(frame, ivec2(rect.l(), y), color);
-                self.set_pixel(frame, ivec2(rect.r(), y), color);
+                self.set_pixel(frame, ivec2(rect.left(), y), color);
+                self.set_pixel(frame, ivec2(rect.right(), y), color);
             }
         }
     }
 
     // Based on https://github.com/aseprite/aseprite/blob/25fbe786f8353a2ddb57de3bcc5db00066cc9ca6/src/doc/algo.cpp#L216-L315 (license: MIT)
-    pub fn draw_ellipse(
-        &self,
-        frame: &mut [u8],
-        bounding_rect: IRect,
-        color: BrpColor,
-        fill: bool,
-    ) {
+    pub fn draw_ellipse(&self, frame: &mut [u8], bounding_rect: Rect, color: BrpColor, fill: bool) {
         if let BrpColor::Transparent = color {
             return;
         }
 
-        assert!(bounding_rect.w() > 0);
-        assert!(bounding_rect.h() > 0);
+        assert!(bounding_rect.width() > 0);
+        assert!(bounding_rect.height() > 0);
 
-        let mut x0: i32 = bounding_rect.l();
-        let mut x1: i32 = bounding_rect.r();
-        let mut y0: i32 = bounding_rect.t();
+        let mut x0: i32 = bounding_rect.left();
+        let mut x1: i32 = bounding_rect.right();
+        let mut y0: i32 = bounding_rect.top();
         let mut y1: i32;
 
-        let h = bounding_rect.h();
+        let h: i32 = bounding_rect.height() as i32;
 
-        let mut a: i32 = bounding_rect.w() - 1;
-        let b: i32 = bounding_rect.h() - 1;
+        let mut a: i32 = bounding_rect.width() as i32 - 1;
+        let b: i32 = bounding_rect.height() as i32 - 1;
         let mut b1: i32 = b & 1;
 
         let mut dx: i32 = 4 * (1 - a) * b * b;
@@ -108,6 +104,35 @@ impl BrpDraw {
         }
     }
 
+    pub fn draw_sprite(&self, frame: &mut [u8], img: &Image) {
+        let target_xy = ivec2(16, 16);
+        let source_rect = rect(30, 30).at(4, 4);
+
+        if let Some(pixel_index) = self.frame_index_of(target_xy) {
+            let sprite_w = source_rect.width() as usize;
+            let sprite_h = source_rect.height() as usize;
+
+            let sprite_bytes: &[u8] = &img.data;
+
+            for sprite_row in 0..sprite_h {
+                for sprite_column in 0..sprite_w {
+                    let target_i = pixel_index
+                        + (sprite_row * (self.canvas_size.x as usize) + sprite_column) * PX_LEN;
+                    let source_i = ((source_rect.top() as usize + sprite_row)
+                        * (img.size().x as usize)
+                        + (source_rect.left() as usize + sprite_column))
+                        * PX_LEN;
+                    let source_rgba = &sprite_bytes[source_i..(source_i + PX_LEN)];
+
+                    frame[target_i] = source_rgba[0];
+                    frame[target_i + 1] = source_rgba[1];
+                    frame[target_i + 2] = source_rgba[2];
+                    frame[target_i + 3] = source_rgba[3];
+                }
+            }
+        }
+    }
+
     fn set_pixel(&self, frame: &mut [u8], xy: IVec2, color: BrpColor) {
         if let BrpColor::Solid { r, g, b } = color {
             if let Some(idx) = self.frame_index_of(xy) {
@@ -151,7 +176,7 @@ mod tests {
     use bevy::utils::HashMap;
 
     use color::{color_solid, BrpColor};
-    use irect;
+    use rect;
 
     use super::*;
 
@@ -222,7 +247,7 @@ mod tests {
 
         h.draw.clear(&mut h.frame, color_bg);
         h.draw
-            .draw_rect(&mut h.frame, irect(5, 4).at(1, 1), color_fg, false);
+            .draw_rect(&mut h.frame, rect(5, 4).at(1, 1), color_fg, false);
 
         h.assert_frame_pixels(
             vec![("-", color_bg), ("#", color_fg)],
@@ -245,7 +270,7 @@ mod tests {
 
         h.draw.clear(&mut h.frame, color_bg);
         h.draw
-            .draw_rect(&mut h.frame, irect(5, 4).at(1, 1), color_fg, true);
+            .draw_rect(&mut h.frame, rect(5, 4).at(1, 1), color_fg, true);
 
         h.assert_frame_pixels(
             vec![("-", color_bg), ("#", color_fg)],
@@ -273,19 +298,19 @@ mod tests {
         h.draw.clear(&mut h.frame, color_bg);
         // clipped from the left
         h.draw
-            .draw_rect(&mut h.frame, irect(3, 3).at(-1, 1), color_1, true);
+            .draw_rect(&mut h.frame, rect(3, 3).at(-1, 1), color_1, true);
         // clipped from the right
         h.draw
-            .draw_rect(&mut h.frame, irect(3, 3).at(3, 1), color_2, true);
+            .draw_rect(&mut h.frame, rect(3, 3).at(3, 1), color_2, true);
         // clipped from the top
         h.draw
-            .draw_rect(&mut h.frame, irect(3, 3).at(1, -1), color_3, true);
+            .draw_rect(&mut h.frame, rect(3, 3).at(1, -1), color_3, true);
         // clipped from the bottom
         h.draw
-            .draw_rect(&mut h.frame, irect(3, 3).at(1, 3), color_4, true);
+            .draw_rect(&mut h.frame, rect(3, 3).at(1, 3), color_4, true);
         // drawn last, but clipped entirely
         h.draw
-            .draw_rect(&mut h.frame, irect(3, 3).at(-3, 0), color_5, true);
+            .draw_rect(&mut h.frame, rect(3, 3).at(-3, 0), color_5, true);
 
         h.assert_frame_pixels(
             vec![
@@ -314,7 +339,7 @@ mod tests {
 
         h.draw.clear(&mut h.frame, color_bg);
         h.draw
-            .draw_ellipse(&mut h.frame, irect(1, 1).at(1, 1), color_fg, false);
+            .draw_ellipse(&mut h.frame, rect(1, 1).at(1, 1), color_fg, false);
 
         h.assert_frame_pixels(
             vec![("-", color_bg), ("#", color_fg)],
@@ -334,7 +359,7 @@ mod tests {
 
         h.draw.clear(&mut h.frame, color_bg);
         h.draw
-            .draw_ellipse(&mut h.frame, irect(1, 1).at(1, 1), color_fg, true);
+            .draw_ellipse(&mut h.frame, rect(1, 1).at(1, 1), color_fg, true);
 
         h.assert_frame_pixels(
             vec![("-", color_bg), ("#", color_fg)],
@@ -354,7 +379,7 @@ mod tests {
 
         h.draw.clear(&mut h.frame, color_bg);
         h.draw
-            .draw_ellipse(&mut h.frame, irect(2, 2).at(1, 1), color_fg, false);
+            .draw_ellipse(&mut h.frame, rect(2, 2).at(1, 1), color_fg, false);
 
         h.assert_frame_pixels(
             vec![("-", color_bg), ("#", color_fg)],
@@ -375,7 +400,7 @@ mod tests {
 
         h.draw.clear(&mut h.frame, color_bg);
         h.draw
-            .draw_ellipse(&mut h.frame, irect(2, 2).at(1, 1), color_fg, true);
+            .draw_ellipse(&mut h.frame, rect(2, 2).at(1, 1), color_fg, true);
 
         h.assert_frame_pixels(
             vec![("-", color_bg), ("#", color_fg)],
@@ -396,7 +421,7 @@ mod tests {
 
         h.draw.clear(&mut h.frame, color_bg);
         h.draw
-            .draw_ellipse(&mut h.frame, irect(12, 5).at(1, 1), color_fg, false);
+            .draw_ellipse(&mut h.frame, rect(12, 5).at(1, 1), color_fg, false);
 
         h.assert_frame_pixels(
             vec![("-", color_bg), ("#", color_fg)],
@@ -420,7 +445,7 @@ mod tests {
 
         h.draw.clear(&mut h.frame, color_bg);
         h.draw
-            .draw_ellipse(&mut h.frame, irect(12, 5).at(1, 1), color_fg, true);
+            .draw_ellipse(&mut h.frame, rect(12, 5).at(1, 1), color_fg, true);
 
         h.assert_frame_pixels(
             vec![("-", color_bg), ("#", color_fg)],
@@ -449,19 +474,19 @@ mod tests {
         h.draw.clear(&mut h.frame, color_bg);
         // clipped from the left
         h.draw
-            .draw_ellipse(&mut h.frame, irect(3, 3).at(-1, 1), color_1, false);
+            .draw_ellipse(&mut h.frame, rect(3, 3).at(-1, 1), color_1, false);
         // clipped from the right
         h.draw
-            .draw_ellipse(&mut h.frame, irect(3, 3).at(3, 1), color_2, false);
+            .draw_ellipse(&mut h.frame, rect(3, 3).at(3, 1), color_2, false);
         // clipped from the top
         h.draw
-            .draw_ellipse(&mut h.frame, irect(3, 3).at(1, -1), color_3, false);
+            .draw_ellipse(&mut h.frame, rect(3, 3).at(1, -1), color_3, false);
         // clipped from the bottom
         h.draw
-            .draw_ellipse(&mut h.frame, irect(3, 3).at(1, 3), color_4, false);
+            .draw_ellipse(&mut h.frame, rect(3, 3).at(1, 3), color_4, false);
         // drawn last, but clipped entirely
         h.draw
-            .draw_ellipse(&mut h.frame, irect(3, 3).at(-2, -2), color_5, false);
+            .draw_ellipse(&mut h.frame, rect(3, 3).at(-2, -2), color_5, false);
 
         h.assert_frame_pixels(
             vec![
