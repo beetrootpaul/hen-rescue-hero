@@ -39,7 +39,7 @@ impl HrhGame {
         app.add_systems(
             (
                 Self::draw_bg,
-                RobotSystems::draw.run_if(in_state(BrpGameState::InGame)),
+                RobotSystems::draw.run_if(not(in_state(BrpGameState::Loading))),
             )
                 .chain()
                 .in_set(BrpSystemSet::Draw),
@@ -48,7 +48,12 @@ impl HrhGame {
         app
     }
 
-    fn draw_bg(mut draw_queue: ResMut<BrpDrawQueue>) {
-        draw_queue.enqueue(BrpDrawCommand::Clear(Pico8Color::Blue.into()));
+    fn draw_bg(current_state: Res<State<BrpGameState>>, mut draw_queue: ResMut<BrpDrawQueue>) {
+        let color = match *current_state {
+            // Same color as the one used for background around HTML canvas in web build
+            State(BrpGameState::Loading) => Pico8Color::DarkBlue,
+            State(_) => Pico8Color::Blue,
+        };
+        draw_queue.enqueue(BrpDrawCommand::Clear(color.into()));
     }
 }
