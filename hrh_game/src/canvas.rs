@@ -1,5 +1,5 @@
 use bevy::ecs::system::SystemParam;
-use bevy::math::{ivec2, uvec2, vec2};
+use bevy::math::{ivec2, uvec2};
 use bevy::prelude::*;
 
 use brp_game_base::{BrpCanvasVariant, BrpCurrentCanvasVariant, BrpDrawCommand, BrpDrawQueue};
@@ -84,6 +84,13 @@ impl<'w> Canvas<'w> {
 pub struct CanvasSystems;
 
 impl CanvasSystems {
+    pub fn start_clipping_to_game_area(canvas: Canvas, mut draw_queue: ResMut<BrpDrawQueue>) {
+        draw_queue.enqueue(BrpDrawCommand::StartClipping(canvas.game_area_rect()));
+    }
+    pub fn end_clipping_to_game_area(mut draw_queue: ResMut<BrpDrawQueue>) {
+        draw_queue.enqueue(BrpDrawCommand::StopClipping);
+    }
+
     pub fn draw_bg(canvas: Canvas, mut draw_queue: ResMut<BrpDrawQueue>) {
         draw_queue.enqueue(BrpDrawCommand::Clear(Pico8Color::BrownishBlack.into()));
         draw_queue.enqueue(BrpDrawCommand::RectFilled(

@@ -9,6 +9,7 @@ const PX_LEN: usize = 4;
 
 pub struct BrpDraw {
     pub canvas_size: UVec2,
+    pub clipping_rect: Option<Rect>,
 }
 
 impl BrpDraw {
@@ -18,10 +19,12 @@ impl BrpDraw {
         }
     }
 
+    // TODO: make use of self.clipping_rect
     pub fn draw_pixel(&self, frame: &mut [u8], xy: IVec2, color: BrpColor) {
         self.set_pixel(frame, xy, color);
     }
 
+    // TODO: make use of self.clipping_rect
     pub fn draw_rect(&self, frame: &mut [u8], rect: Rect, color: BrpColor, fill: bool) {
         for y in rect.top()..=rect.bottom() {
             if fill || y == rect.top() || y == rect.bottom() {
@@ -33,6 +36,7 @@ impl BrpDraw {
         }
     }
 
+    // TODO: make use of self.clipping_rect
     // Based on https://github.com/aseprite/aseprite/blob/25fbe786f8353a2ddb57de3bcc5db00066cc9ca6/src/doc/algo.cpp#L216-L315 (license: MIT)
     pub fn draw_ellipse(&self, frame: &mut [u8], bounding_rect: Rect, color: BrpColor, fill: bool) {
         if let BrpColor::Transparent = color {
@@ -116,6 +120,10 @@ impl BrpDraw {
         let target_rect = source_rect.at(xy.x, xy.y);
         let clipped_target_rect =
             target_rect.intersection_with(rect(self.canvas_size.x, self.canvas_size.y));
+        let clipped_target_rect = match self.clipping_rect {
+            Some(clipping_rect) => clipped_target_rect.intersection_with(clipping_rect),
+            None => clipped_target_rect,
+        };
 
         let left_top_diff = clipped_target_rect.left_top - target_rect.left_top;
         let size_diff = clipped_target_rect.size.as_ivec2() - target_rect.size.as_ivec2();
@@ -771,7 +779,11 @@ mod tests {
             Self {
                 canvas_size,
                 frame: vec![0; PX_LEN * (w as usize) * (h as usize)],
-                draw: BrpDraw { canvas_size },
+                draw: BrpDraw {
+                    canvas_size,
+                    // TODO: test it
+                    clipping_rect: None,
+                },
             }
         }
 

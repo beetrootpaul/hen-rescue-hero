@@ -10,12 +10,16 @@ use {BrpColor, Rect};
 
 pub enum BrpDrawCommand {
     Clear(BrpColor),
+    //
     Pixel(IVec2, BrpColor),
     Rect(Rect, BrpColor),
     RectFilled(Rect, BrpColor),
     Ellipse(Rect, BrpColor),
     EllipseFilled(Rect, BrpColor),
     Sprite(IVec2, BrpSprite),
+    //
+    StartClipping(Rect),
+    StopClipping,
 }
 
 #[derive(Resource, Default)]
@@ -31,8 +35,9 @@ impl BrpDrawQueue {
         bevy_image_assets: Res<Assets<Image>>,
     ) {
         if let Ok((pixels_options, mut pixels_wrapper)) = pixels_query.get_single_mut() {
-            let draw = BrpDraw {
+            let mut draw = BrpDraw {
                 canvas_size: uvec2(pixels_options.width, pixels_options.height),
+                clipping_rect: None,
             };
             while let Some(draw_command) = draw_queue.deque.pop_front() {
                 let frame = pixels_wrapper.pixels.frame_mut();
@@ -40,6 +45,7 @@ impl BrpDrawQueue {
                     BrpDrawCommand::Clear(color) => {
                         draw.clear(frame, color);
                     },
+                    //
                     BrpDrawCommand::Pixel(xy, color) => {
                         draw.draw_pixel(frame, xy, color);
                     },
@@ -76,6 +82,13 @@ impl BrpDrawQueue {
                             source_rect,
                             color_replacements,
                         );
+                    },
+                    //
+                    BrpDrawCommand::StartClipping(clipping_rect) => {
+                        draw.clipping_rect = Some(clipping_rect);
+                    },
+                    BrpDrawCommand::StopClipping => {
+                        draw.clipping_rect = None;
                     },
                 }
             }

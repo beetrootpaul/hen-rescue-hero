@@ -1,4 +1,4 @@
-use bevy::math::{ivec2, uvec2, IVec2, UVec2};
+use bevy::math::{ivec2, uvec2, UVec2};
 use bevy::utils::HashMap;
 
 use brp_game_base::{BrpSprite, Rect};

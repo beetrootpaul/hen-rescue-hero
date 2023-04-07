@@ -72,8 +72,12 @@ impl HrhGame {
         app.add_systems(
             (
                 CanvasSystems::draw_bg.run_if(not(in_state(BrpGameState::Loading))),
+                CanvasSystems::start_clipping_to_game_area
+                    .run_if(not(in_state(BrpGameState::Loading))),
                 ChickenSystems::draw.run_if(not(in_state(BrpGameState::Loading))),
                 RobotSystems::draw.run_if(not(in_state(BrpGameState::Loading))),
+                CanvasSystems::end_clipping_to_game_area
+                    .run_if(not(in_state(BrpGameState::Loading))),
             )
                 .chain()
                 .in_set(BrpSystemSet::Draw),
