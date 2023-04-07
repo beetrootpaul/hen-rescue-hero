@@ -8,6 +8,9 @@ pub struct RobotSystems;
 
 impl RobotSystems {
     pub fn draw(mut draw_queue: ResMut<BrpDrawQueue>) {
-        draw_queue.enqueue(BrpDrawCommand::Sprite(ivec2(50, 50), Sprites::ROBOT_BODY));
+        draw_queue.enqueue(BrpDrawCommand::Sprite(
+            ivec2(50, 50),
+            Sprites::RobotBody.into(),
+        ));
     }
 }

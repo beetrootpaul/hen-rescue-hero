@@ -1,4 +1,5 @@
 use bevy::math::{ivec2, IVec2, UVec2};
+use bevy::utils::HashMap;
 
 use rect;
 use {BrpColor, Rect};
@@ -110,6 +111,7 @@ impl BrpDraw {
         image_w: usize,
         source_image_data: &[u8],
         source_rect: Rect,
+        color_replacements: HashMap<BrpColor, BrpColor>,
     ) {
         let target_rect = source_rect.at(xy.x, xy.y);
         let clipped_target_rect =
@@ -136,10 +138,26 @@ impl BrpDraw {
                         * PX_LEN;
                     let source_rgba = &source_image_data[source_i..(source_i + PX_LEN)];
 
-                    frame[target_i] = source_rgba[0];
-                    frame[target_i + 1] = source_rgba[1];
-                    frame[target_i + 2] = source_rgba[2];
-                    frame[target_i + 3] = source_rgba[3];
+                    match color_replacements.get(&BrpColor::Solid {
+                        r: source_rgba[0],
+                        g: source_rgba[1],
+                        b: source_rgba[2],
+                    }) {
+                        Some(replacement_color) => {
+                            if let BrpColor::Solid { r, g, b } = replacement_color {
+                                frame[target_i] = *r;
+                                frame[target_i + 1] = *g;
+                                frame[target_i + 2] = *b;
+                                frame[target_i + 3] = 0xff;
+                            }
+                        },
+                        _ => {
+                            frame[target_i] = source_rgba[0];
+                            frame[target_i + 1] = source_rgba[1];
+                            frame[target_i + 2] = source_rgba[2];
+                            frame[target_i + 3] = source_rgba[3];
+                        },
+                    };
                 }
             }
         }
@@ -550,6 +568,7 @@ mod tests {
             img.width,
             &img.data,
             rect(4, 2).at(1, 2),
+            HashMap::new(),
         );
 
         h.assert_frame_pixels(
@@ -629,6 +648,7 @@ mod tests {
             img1.width,
             &img1.data,
             rect(3, 3),
+            HashMap::new(),
         );
         // clipped from the right
         h.draw.draw_sprite(
@@ -637,6 +657,7 @@ mod tests {
             img2.width,
             &img2.data,
             rect(3, 3),
+            HashMap::new(),
         );
         // clipped from the top
         h.draw.draw_sprite(
@@ -645,6 +666,7 @@ mod tests {
             img3.width,
             &img3.data,
             rect(3, 3),
+            HashMap::new(),
         );
         // clipped from the bottom
         h.draw.draw_sprite(
@@ -653,6 +675,7 @@ mod tests {
             img4.width,
             &img4.data,
             rect(3, 3),
+            HashMap::new(),
         );
         // drawn last, but clipped entirely
         h.draw.draw_sprite(
@@ -661,6 +684,7 @@ mod tests {
             img5.width,
             &img5.data,
             rect(3, 3),
+            HashMap::new(),
         );
 
         h.assert_frame_pixels(
@@ -671,6 +695,66 @@ mod tests {
                 ::-##
                 :$$$#
                 -$$$-
+            ",
+        );
+    }
+    #[test]
+    fn test_draw_sprite_with_color_replacements() {
+        let mut h = TestHelper::for_canvas_size(4, 2);
+        let color_bg = color_solid(9, 8, 7);
+        let color_1 = color_solid(11, 12, 13);
+        let color_2 = color_solid(21, 22, 23);
+        let color_3 = color_solid(31, 32, 33);
+        let color_4 = color_solid(41, 42, 43);
+        let color_5 = color_solid(51, 52, 53);
+        let color_symbols = vec![
+            ("-", color_bg),
+            (":", color_1),
+            ("#", color_2),
+            ("%", color_3),
+            ("$", color_4),
+            ("!", color_5),
+        ];
+        let img = TestImage::from_pixels(
+            color_symbols.clone(),
+            "
+            %:%:
+            :#:#
+        ",
+        );
+
+        h.draw.clear(&mut h.frame, color_bg);
+        h.draw.draw_sprite(
+            &mut h.frame,
+            IVec2::ZERO,
+            img.width,
+            &img.data,
+            rect(4, 2),
+            HashMap::from([(color_1, BrpColor::Transparent), (color_2, color_4)]),
+        );
+
+        h.assert_frame_pixels(
+            color_symbols.clone(),
+            "
+                %-%-
+                -$-$
+            ",
+        );
+
+        h.draw.draw_sprite(
+            &mut h.frame,
+            IVec2::ZERO,
+            img.width,
+            &img.data,
+            rect(4, 2),
+            HashMap::from([(color_1, color_5), (color_2, BrpColor::Transparent)]),
+        );
+
+        h.assert_frame_pixels(
+            color_symbols.clone(),
+            "
+                %!%!
+                !$!$
             ",
         );
     }

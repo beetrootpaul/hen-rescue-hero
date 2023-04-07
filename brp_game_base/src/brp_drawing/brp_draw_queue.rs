@@ -60,6 +60,7 @@ impl BrpDrawQueue {
                         BrpSprite {
                             image_path,
                             source_rect,
+                            color_replacements,
                         },
                     ) => {
                         let image_handle = brp_image_assets.get(image_path);
@@ -72,6 +73,7 @@ impl BrpDrawQueue {
                             image.size().x as usize,
                             &image.data,
                             source_rect,
+                            color_replacements,
                         );
                     },
                 }
