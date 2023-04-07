@@ -31,6 +31,7 @@ impl HrhGame {
     pub fn create_bevy_app() -> App {
         let mut app = BrpGameBase::new(BrpGameConfig {
             title: GAME_TITLE.to_string(),
+            canvas_margin_color: Pico8Color::DarkBlue.into(),
             landscape_canvas_size: CANVAS_TILES_LANDSCAPE * TILE_SIZE,
             portrait_canvas_size: CANVAS_TILES_PORTRAIT * TILE_SIZE,
             #[cfg(not(target_arch = "wasm32"))]

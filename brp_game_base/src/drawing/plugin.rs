@@ -3,8 +3,10 @@ use bevy::window::{WindowBackendScaleFactorChanged, WindowResized};
 
 use drawing::queue::BrpDrawQueue;
 use game_config::BrpGameConfig;
+use BrpColor;
 
 pub struct BrpDrawingPlugin {
+    pub canvas_margin_color: BrpColor,
     pub landscape_canvas_size: UVec2,
     pub portrait_canvas_size: UVec2,
 }
@@ -104,6 +106,21 @@ impl Plugin for BrpDrawingPlugin {
                 scale_factor: 1.0,
             }),
         });
+
+        let canvas_margin_color: BrpColor = self.canvas_margin_color;
+        app.add_system(
+            move |mut query: Query<
+                &mut bevy_pixels::PixelsWrapper,
+                Added<bevy_pixels::PixelsOptions>,
+            >| {
+                for mut pixels_wrapper in query.iter_mut() {
+                    let wgpu_color =
+                        bevy_pixels::pixels::wgpu::Color::from(Color::from(canvas_margin_color));
+                    pixels_wrapper.pixels.clear_color(wgpu_color);
+                }
+            },
+        );
+
         app.add_systems(
             (
                 Self::sys_update_pixels_on_window_scale_factor_changed,

@@ -65,6 +65,7 @@ impl BrpGameBase {
         app.insert_resource(self.config.clone());
 
         app.add_plugin(BrpDrawingPlugin {
+            canvas_margin_color: self.config.canvas_margin_color,
             landscape_canvas_size: self.config.landscape_canvas_size,
             portrait_canvas_size: self.config.portrait_canvas_size,
         });
