@@ -14,11 +14,10 @@ impl KeyboardControlsSystems {
 
         for mut direction in query.iter_mut() {
             *direction = match (left, right) {
-                // (true, true) => RobotDirection::None,
+                (true, true) => RobotDirection::None,
                 (true, false) => RobotDirection::Left,
                 (false, true) => RobotDirection::Right,
-                // (false, false) => RobotDirection::None,
-                _ => direction.clone(),
+                (false, false) => RobotDirection::None,
             };
         }
     }
