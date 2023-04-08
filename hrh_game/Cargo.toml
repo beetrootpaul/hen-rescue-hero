@@ -13,3 +13,4 @@ bevy_x11 = ["bevy/x11", "brp_game_base/bevy_x11"]
 [dependencies]
 bevy = { workspace = true }
 brp_game_base = { path = "../brp_game_base" }
+rand = { workspace = true }

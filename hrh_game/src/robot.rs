@@ -23,14 +23,14 @@ struct RobotBundle {
     direction: RobotDirection,
 }
 
-pub struct RobotSystems;
+pub struct RobotEcs;
 
-impl RobotSystems {
+impl RobotEcs {
     const SPEED_PER_SECOND: f32 = 200.0;
     const BOUNDARY_OFFSET_LEFT: f32 = 10.0;
     const BOUNDARY_OFFSET_RIGHT: f32 = -10.0;
 
-    pub fn spawn(mut commands: Commands) {
+    pub fn ss_spawn(mut commands: Commands) {
         commands.spawn(RobotBundle {
             token: RobotToken,
             position: Position(
@@ -44,7 +44,7 @@ impl RobotSystems {
         });
     }
 
-    pub fn update(
+    pub fn s_update(
         time: Res<Time>,
         mut query: Query<(&mut Position, &RobotDirection), With<RobotToken>>,
     ) {
@@ -62,7 +62,7 @@ impl RobotSystems {
         }
     }
 
-    pub fn draw(
+    pub fn s_draw(
         query: Query<&Position, With<RobotToken>>,
         mut draw_queue: ResMut<BrpDrawQueue>,
         canvas: Canvas,

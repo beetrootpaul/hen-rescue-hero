@@ -8,10 +8,10 @@ use canvas::Canvas;
 use position::Position;
 use sprites::Sprites;
 
-pub struct RailSystems;
+pub struct RailEcs;
 
-impl RailSystems {
-    pub fn draw(mut draw_queue: ResMut<BrpDrawQueue>, canvas: Canvas) {
+impl RailEcs {
+    pub fn s_draw(mut draw_queue: ResMut<BrpDrawQueue>, canvas: Canvas) {
         for tile_x in 0..Canvas::GAME_AREA_TILES.x {
             let position = Position(
                 uvec2(tile_x, Canvas::GAME_AREA_TILES.y - 2)

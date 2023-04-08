@@ -1,5 +1,7 @@
 use bevy::math::vec2;
 use bevy::prelude::*;
+use rand::Rng;
+use std::ops::Range;
 
 use brp_game_base::{BrpDrawCommand, BrpDrawQueue};
 use canvas::Canvas;
@@ -18,23 +20,39 @@ struct ChickenBundle {
     position: Position,
 }
 
-pub struct ChickenSystems;
+pub struct ChickenEcs;
 
-impl ChickenSystems {
-    const SPEED_PER_SECOND: f32 = 100.0;
-    const SPAWN_Y: f32 = 20.0;
-    const DESPAWN_Y: f32 = Canvas::GAME_AREA_SIZE.y as f32 - 30.0;
+impl ChickenEcs {
+    const SPAWN_INTERVAL: f32 = 1.0;
 
-    pub fn spawn(time: Res<Time>, mut timer: ResMut<ChickenSpawnTimer>, mut commands: Commands) {
+    const NO_SPAWN_BORDER_W: f32 = Sprites::TILE_ISIZE.y as f32 * 4.0;
+    const SPAWN_X_RANGE: Range<f32> = (6.0 + Self::NO_SPAWN_BORDER_W)
+        ..(Canvas::GAME_AREA_SIZE.x as f32 - 6.0 - Self::NO_SPAWN_BORDER_W);
+    const SPAWN_Y: f32 = 0.0;
+    const DESPAWN_Y: f32 = Canvas::GAME_AREA_SIZE.y as f32 + 11.0;
+
+    const SPEED_PER_SECOND: f32 = 80.0;
+
+    pub fn r_spawn_timer() -> ChickenSpawnTimer {
+        ChickenSpawnTimer(Timer::from_seconds(
+            Self::SPAWN_INTERVAL,
+            TimerMode::Repeating,
+        ))
+    }
+
+    pub fn s_spawn(time: Res<Time>, mut timer: ResMut<ChickenSpawnTimer>, mut commands: Commands) {
         if timer.0.tick(time.delta()).just_finished() {
             commands.spawn(ChickenBundle {
                 token: ChickenToken,
-                position: Position(vec2(0.0, Self::SPAWN_Y)),
+                position: Position(vec2(
+                    rand::thread_rng().gen_range(Self::SPAWN_X_RANGE),
+                    Self::SPAWN_Y,
+                )),
             });
         }
     }
 
-    pub fn update(
+    pub fn s_update(
         time: Res<Time>,
         mut query: Query<(Entity, &mut Position), With<ChickenToken>>,
         mut commands: Commands,
@@ -48,7 +66,7 @@ impl ChickenSystems {
         }
     }
 
-    pub fn draw(
+    pub fn s_draw(
         query: Query<&Position, With<ChickenToken>>,
         mut draw_queue: ResMut<BrpDrawQueue>,
         canvas: Canvas,

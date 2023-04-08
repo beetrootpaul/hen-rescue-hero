@@ -7,7 +7,7 @@ pub use brp_drawing::{BrpCanvasVariant, BrpCurrentCanvasVariant};
 pub use brp_drawing::{BrpDrawCommand, BrpDrawQueue};
 pub use brp_game_base::BrpGameBase;
 pub use brp_game_config::BrpGameConfig;
-pub use brp_game_state::BrpGameState;
+pub use brp_game_state::{BrpGameState, BrpGameStateEcs};
 pub use rect::{rect, Rect};
 
 pub use crate::brp_assets::{BrpAssetPath, BrpImageAssets};

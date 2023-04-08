@@ -19,12 +19,10 @@ impl BrpDraw {
         }
     }
 
-    // TODO: make use of self.clipping_rect
     pub fn draw_pixel(&self, frame: &mut [u8], xy: IVec2, color: BrpColor) {
         self.set_pixel(frame, xy, color);
     }
 
-    // TODO: make use of self.clipping_rect
     pub fn draw_rect(&self, frame: &mut [u8], rect: Rect, color: BrpColor, fill: bool) {
         for y in rect.top()..=rect.bottom() {
             if fill || y == rect.top() || y == rect.bottom() {
@@ -36,7 +34,6 @@ impl BrpDraw {
         }
     }
 
-    // TODO: make use of self.clipping_rect
     // Based on https://github.com/aseprite/aseprite/blob/25fbe786f8353a2ddb57de3bcc5db00066cc9ca6/src/doc/algo.cpp#L216-L315 (license: MIT)
     pub fn draw_ellipse(&self, frame: &mut [u8], bounding_rect: Rect, color: BrpColor, fill: bool) {
         if let BrpColor::Transparent = color {
@@ -781,7 +778,6 @@ mod tests {
                 frame: vec![0; PX_LEN * (w as usize) * (h as usize)],
                 draw: BrpDraw {
                     canvas_size,
-                    // TODO: test it
                     clipping_rect: None,
                 },
             }
