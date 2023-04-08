@@ -67,8 +67,8 @@ impl Game {
                 // CanvasEcs::s_draw_bg,
                 CanvasEcs::s_start_clipping_to_game_area,
                 RailEcs::s_draw,
-                ChickenEcs::s_draw,
                 RobotEcs::s_draw,
+                ChickenEcs::s_draw,
                 CanvasEcs::s_end_clipping_to_game_area,
             )
                 .chain()
