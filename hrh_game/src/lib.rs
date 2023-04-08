@@ -39,8 +39,8 @@ impl HrhGame {
             title: GAME_TITLE.to_string(),
             // Same color as the one used for background around HTML canvas in web build
             canvas_margin_color: Pico8Color::DarkBlue.into(),
-            landscape_canvas_size: Canvas::canvas_size_landscape(),
-            portrait_canvas_size: Canvas::canvas_size_portrait(),
+            landscape_canvas_size: Canvas::CANVAS_SIZE_LANDSCAPE,
+            portrait_canvas_size: Canvas::CANVAS_SIZE_PORTRAIT,
             #[cfg(not(target_arch = "wasm32"))]
             initial_canvas_zoom: INITIAL_CANVAS_ZOOM,
             #[cfg(target_arch = "wasm32")]

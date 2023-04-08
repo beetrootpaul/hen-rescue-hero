@@ -1,12 +1,10 @@
-use std::ops::{Mul, Sub};
-
-use bevy::math::{ivec2, uvec2};
+use bevy::math::ivec2;
 use bevy::prelude::*;
 
 use brp_game_base::{BrpDrawCommand, BrpDrawQueue};
-use canvas::{Canvas, GAME_AREA_TILES};
+use canvas::Canvas;
 use position::Position;
-use sprites::{Sprites, TILE_SIZE};
+use sprites::Sprites;
 
 #[derive(Component)]
 pub struct RobotToken;
@@ -29,16 +27,18 @@ pub struct RobotSystems;
 
 impl RobotSystems {
     const SPEED_PER_SECOND: f32 = 200.0;
+    const BOUNDARY_OFFSET_LEFT: f32 = 10.0;
+    const BOUNDARY_OFFSET_RIGHT: f32 = -10.0;
 
     pub fn spawn(mut commands: Commands) {
         commands.spawn(RobotBundle {
             token: RobotToken,
             position: Position(
-                uvec2(0, GAME_AREA_TILES.y - 2)
-                    .as_ivec2()
-                    .mul(TILE_SIZE.as_ivec2())
-                    .sub(ivec2(0, 2))
-                    .as_vec2(),
+                ivec2(
+                    Canvas::GAME_AREA_SIZE.x as i32 / 2,
+                    (Canvas::GAME_AREA_TILES.y as i32 - 2) * Sprites::TILE_ISIZE.y - 2,
+                )
+                .as_vec2(),
             ),
             direction: RobotDirection::None,
         });
@@ -55,6 +55,10 @@ impl RobotSystems {
                 RobotDirection::Right => position.0.x += diff,
                 RobotDirection::None => {},
             }
+            position.0.x = position.0.x.clamp(
+                Self::BOUNDARY_OFFSET_LEFT,
+                Canvas::GAME_AREA_SIZE.x as f32 + Self::BOUNDARY_OFFSET_RIGHT,
+            );
         }
     }
 

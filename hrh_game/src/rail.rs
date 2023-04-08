@@ -4,19 +4,19 @@ use bevy::math::uvec2;
 use bevy::prelude::*;
 
 use brp_game_base::{BrpDrawCommand, BrpDrawQueue};
-use canvas::{Canvas, GAME_AREA_TILES};
+use canvas::Canvas;
 use position::Position;
-use sprites::{Sprites, TILE_SIZE};
+use sprites::Sprites;
 
 pub struct RailSystems;
 
 impl RailSystems {
     pub fn draw(mut draw_queue: ResMut<BrpDrawQueue>, canvas: Canvas) {
-        for tile_x in 0..GAME_AREA_TILES.x {
+        for tile_x in 0..Canvas::GAME_AREA_TILES.x {
             let position = Position(
-                uvec2(tile_x, GAME_AREA_TILES.y - 2)
+                uvec2(tile_x, Canvas::GAME_AREA_TILES.y - 2)
                     .as_ivec2()
-                    .mul(TILE_SIZE.as_ivec2())
+                    .mul(Sprites::TILE_ISIZE)
                     .as_vec2(),
             );
             draw_queue.enqueue(BrpDrawCommand::Sprite(
