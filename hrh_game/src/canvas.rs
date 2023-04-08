@@ -5,14 +5,7 @@ use bevy::prelude::*;
 use brp_game_base::{BrpCanvasVariant, BrpCurrentCanvasVariant, BrpDrawCommand, BrpDrawQueue};
 use pico8_color::Pico8Color;
 use position::Position;
-use sprites::TILE_SIZE;
-
-const CANVAS_BORDER: u32 = 1;
-const CANVAS_INNER_TOP_LEFT: IVec2 = ivec2(CANVAS_BORDER as i32, CANVAS_BORDER as i32);
-const CANVAS_TILES_LANDSCAPE: UVec2 = uvec2(40, 24);
-const CANVAS_TILES_PORTRAIT: UVec2 = uvec2(24, 36);
-const TOP_BAR_TILES: UVec2 = uvec2(GAME_AREA_TILES.x, 2);
-pub const GAME_AREA_TILES: UVec2 = uvec2(24, 22);
+use sprites::Sprites;
 
 #[derive(SystemParam)]
 pub struct Canvas<'w> {
@@ -20,29 +13,34 @@ pub struct Canvas<'w> {
 }
 
 impl<'w> Canvas<'w> {
-    pub const fn canvas_size_landscape() -> UVec2 {
-        uvec2(
-            CANVAS_TILES_LANDSCAPE.x * TILE_SIZE.x + 2 * CANVAS_BORDER,
-            CANVAS_TILES_LANDSCAPE.y * TILE_SIZE.y + 2 * CANVAS_BORDER,
-        )
-    }
-    pub const fn canvas_size_portrait() -> UVec2 {
-        uvec2(
-            CANVAS_TILES_PORTRAIT.x * TILE_SIZE.x + 2 * CANVAS_BORDER,
-            CANVAS_TILES_PORTRAIT.y * TILE_SIZE.y + 2 * CANVAS_BORDER,
-        )
-    }
-    pub const fn game_area_size() -> UVec2 {
-        uvec2(
-            GAME_AREA_TILES.x * TILE_SIZE.x,
-            GAME_AREA_TILES.y * TILE_SIZE.y,
-        )
-    }
+    const CANVAS_BORDER: u32 = 1;
+
+    const CANVAS_INNER_TOP_LEFT: IVec2 =
+        ivec2(Self::CANVAS_BORDER as i32, Self::CANVAS_BORDER as i32);
+
+    const CANVAS_TILES_LANDSCAPE: UVec2 = uvec2(40, 24);
+    const CANVAS_TILES_PORTRAIT: UVec2 = uvec2(24, 36);
+    pub const CANVAS_SIZE_LANDSCAPE: UVec2 = uvec2(
+        Self::CANVAS_TILES_LANDSCAPE.x * Sprites::TILE_USIZE.x + 2 * Self::CANVAS_BORDER,
+        Self::CANVAS_TILES_LANDSCAPE.y * Sprites::TILE_USIZE.y + 2 * Self::CANVAS_BORDER,
+    );
+    pub const CANVAS_SIZE_PORTRAIT: UVec2 = uvec2(
+        Self::CANVAS_TILES_PORTRAIT.x * Sprites::TILE_USIZE.x + 2 * Self::CANVAS_BORDER,
+        Self::CANVAS_TILES_PORTRAIT.y * Sprites::TILE_USIZE.y + 2 * Self::CANVAS_BORDER,
+    );
+
+    const TOP_BAR_TILES: UVec2 = uvec2(Self::GAME_AREA_TILES.x, 2);
+
+    pub const GAME_AREA_TILES: UVec2 = uvec2(24, 22);
+    pub const GAME_AREA_SIZE: UVec2 = uvec2(
+        Self::GAME_AREA_TILES.x * Sprites::TILE_USIZE.x,
+        Self::GAME_AREA_TILES.y * Sprites::TILE_USIZE.y,
+    );
 
     pub fn canvas_size(&self) -> UVec2 {
         match self.variant() {
-            BrpCanvasVariant::Landscape => Self::canvas_size_landscape(),
-            BrpCanvasVariant::Portrait => Self::canvas_size_portrait(),
+            BrpCanvasVariant::Landscape => Self::CANVAS_SIZE_LANDSCAPE,
+            BrpCanvasVariant::Portrait => Self::CANVAS_SIZE_PORTRAIT,
         }
     }
 
@@ -59,8 +57,8 @@ impl<'w> Canvas<'w> {
             BrpCanvasVariant::Portrait => ivec2(0, 0),
         };
         brp_game_base::Rect {
-            left_top: CANVAS_INNER_TOP_LEFT + offset_left * TILE_SIZE.as_ivec2(),
-            size: TOP_BAR_TILES * TILE_SIZE,
+            left_top: Self::CANVAS_INNER_TOP_LEFT + offset_left * Sprites::TILE_ISIZE,
+            size: Self::TOP_BAR_TILES * Sprites::TILE_USIZE,
         }
     }
 
@@ -68,7 +66,7 @@ impl<'w> Canvas<'w> {
         let top_bar = self.top_bar_rect();
         brp_game_base::Rect {
             left_top: top_bar.left_top + top_bar.size.as_ivec2() * IVec2::Y,
-            size: Self::game_area_size(),
+            size: Self::GAME_AREA_SIZE,
         }
     }
 

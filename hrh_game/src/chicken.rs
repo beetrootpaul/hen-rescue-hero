@@ -23,7 +23,7 @@ pub struct ChickenSystems;
 impl ChickenSystems {
     const SPEED_PER_SECOND: f32 = 100.0;
     const SPAWN_Y: f32 = 20.0;
-    const DESPAWN_Y: f32 = Canvas::game_area_size().y as f32 - 30.0;
+    const DESPAWN_Y: f32 = Canvas::GAME_AREA_SIZE.y as f32 - 30.0;
 
     pub fn spawn(time: Res<Time>, mut timer: ResMut<ChickenSpawnTimer>, mut commands: Commands) {
         if timer.0.tick(time.delta()).just_finished() {

@@ -9,6 +9,7 @@ use chicken::{ChickenSpawnTimer, ChickenSystems};
 use images::Images;
 use input::KeyboardControlsSystems;
 use pico8_color::Pico8Color;
+use rail::RailSystems;
 use robot::RobotSystems;
 
 mod canvas;
@@ -17,6 +18,7 @@ mod images;
 mod input;
 mod pico8_color;
 mod position;
+mod rail;
 mod robot;
 mod sprites;
 
@@ -28,6 +30,7 @@ const INITIAL_CANVAS_ZOOM: u32 = 3;
 #[cfg(target_arch = "wasm32")]
 const HTML_CANVAS_SELECTOR: &str = "#hen_rescue_hero__canvas";
 
+// TODO: move from lib.rs to hrh_game.rs
 pub struct HrhGame {}
 
 impl HrhGame {
@@ -36,8 +39,8 @@ impl HrhGame {
             title: GAME_TITLE.to_string(),
             // Same color as the one used for background around HTML canvas in web build
             canvas_margin_color: Pico8Color::DarkBlue.into(),
-            landscape_canvas_size: Canvas::canvas_size_landscape(),
-            portrait_canvas_size: Canvas::canvas_size_portrait(),
+            landscape_canvas_size: Canvas::CANVAS_SIZE_LANDSCAPE,
+            portrait_canvas_size: Canvas::CANVAS_SIZE_PORTRAIT,
             #[cfg(not(target_arch = "wasm32"))]
             initial_canvas_zoom: INITIAL_CANVAS_ZOOM,
             #[cfg(target_arch = "wasm32")]
@@ -74,6 +77,7 @@ impl HrhGame {
                 CanvasSystems::draw_bg.run_if(not(in_state(BrpGameState::Loading))),
                 CanvasSystems::start_clipping_to_game_area
                     .run_if(not(in_state(BrpGameState::Loading))),
+                RailSystems::draw.run_if(not(in_state(BrpGameState::Loading))),
                 ChickenSystems::draw.run_if(not(in_state(BrpGameState::Loading))),
                 RobotSystems::draw.run_if(not(in_state(BrpGameState::Loading))),
                 CanvasSystems::end_clipping_to_game_area
