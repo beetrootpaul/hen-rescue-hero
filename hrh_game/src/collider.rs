@@ -31,7 +31,7 @@ impl Collider {
 #[cfg(debug_assertions)]
 #[derive(Resource)]
 pub struct CollidersDebugConfig {
-    is_debug_draw_enabled: bool,
+    pub is_debug_draw_enabled: bool,
 }
 
 #[cfg(debug_assertions)]
@@ -43,17 +43,6 @@ impl ColliderEcs {
     pub fn r_debug_config() -> CollidersDebugConfig {
         CollidersDebugConfig {
             is_debug_draw_enabled: false,
-        }
-    }
-
-    #[cfg(debug_assertions)]
-    pub fn s_toggle_debug_draw(
-        keyboard_input: Res<Input<KeyCode>>,
-        mut config: ResMut<CollidersDebugConfig>,
-    ) {
-        // c = toggle debug draw of [c]olliders
-        if keyboard_input.just_pressed(KeyCode::C) {
-            config.is_debug_draw_enabled = !config.is_debug_draw_enabled;
         }
     }
 

@@ -53,14 +53,7 @@ impl Game {
         app.add_startup_system(RobotEcs::ss_spawn);
 
         // UPDATE systems
-        app.add_systems(
-            (
-                KeyboardControlsEcs::s_handle_keyboard_input,
-                #[cfg(debug_assertions)]
-                ColliderEcs::s_toggle_debug_draw,
-            )
-                .in_set(BrpSystemSet::Update),
-        );
+        app.add_system(KeyboardControlsEcs::s_handle_keyboard_input.in_set(BrpSystemSet::Update));
         app.add_systems(
             (
                 RobotEcs::s_update.after(KeyboardControlsEcs::s_handle_keyboard_input),
