@@ -3,8 +3,9 @@ use bevy::prelude::*;
 use rand::Rng;
 use std::ops::Range;
 
-use brp_game_base::{BrpDrawCommand, BrpDrawQueue};
+use brp_game_base::{rect, BrpDrawCommand, BrpDrawQueue};
 use canvas::Canvas;
+use collider::Collider;
 use position::Position;
 use sprites::Sprites;
 
@@ -18,6 +19,7 @@ pub struct ChickenToken;
 struct ChickenBundle {
     token: ChickenToken,
     position: Position,
+    collider: Collider,
 }
 
 pub struct ChickenEcs;
@@ -48,6 +50,9 @@ impl ChickenEcs {
                     rand::thread_rng().gen_range(Self::SPAWN_X_RANGE),
                     Self::SPAWN_Y,
                 )),
+                collider: Collider {
+                    rect: rect(12, 11).at(-6, -11),
+                },
             });
         }
     }
