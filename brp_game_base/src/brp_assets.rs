@@ -21,17 +21,20 @@ impl BrpImageAssets {
     }
 }
 
-pub struct BrpAssetSystems;
+pub struct BrpAssetEcs;
 
-impl BrpAssetSystems {
-    pub fn start_loading(mut image_assets: ResMut<BrpImageAssets>, asset_server: Res<AssetServer>) {
+impl BrpAssetEcs {
+    pub fn ss_start_loading(
+        mut image_assets: ResMut<BrpImageAssets>,
+        asset_server: Res<AssetServer>,
+    ) {
         let paths: Vec<BrpAssetPath> = image_assets.0.keys().copied().collect();
         for path in paths {
             image_assets.0.insert(path, Some(asset_server.load(path)));
         }
     }
 
-    pub fn wait_for_loading_to_complete(
+    pub fn s_wait_for_loading_to_complete(
         image_assets: Res<BrpImageAssets>,
         asset_server: Res<AssetServer>,
         mut next_state: ResMut<NextState<BrpGameState>>,

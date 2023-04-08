@@ -2,10 +2,10 @@ use bevy::prelude::*;
 
 use robot::{RobotDirection, RobotToken};
 
-pub struct KeyboardControlsSystems;
+pub struct KeyboardControlsEcs;
 
-impl KeyboardControlsSystems {
-    pub fn handle_keyboard_input(
+impl KeyboardControlsEcs {
+    pub fn s_handle_keyboard_input(
         keyboard_input: Res<Input<KeyCode>>,
         mut query: Query<&mut RobotDirection, With<RobotToken>>,
     ) {

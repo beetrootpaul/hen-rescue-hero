@@ -1,16 +1,17 @@
 extern crate bevy;
 extern crate brp_game_base;
+extern crate rand;
 
 use bevy::prelude::*;
 
 use brp_game_base::{BrpGameBase, BrpGameConfig, BrpGameState, BrpImageAssets, BrpSystemSet};
-use canvas::{Canvas, CanvasSystems};
-use chicken::{ChickenSpawnTimer, ChickenSystems};
+use canvas::{Canvas, CanvasEcs};
+use chicken::ChickenEcs;
 use images::Images;
-use input::KeyboardControlsSystems;
+use input::KeyboardControlsEcs;
 use pico8_color::Pico8Color;
-use rail::RailSystems;
-use robot::RobotSystems;
+use rail::RailEcs;
+use robot::RobotEcs;
 
 mod canvas;
 mod chicken;
@@ -30,7 +31,6 @@ const INITIAL_CANVAS_ZOOM: u32 = 3;
 #[cfg(target_arch = "wasm32")]
 const HTML_CANVAS_SELECTOR: &str = "#hen_rescue_hero__canvas";
 
-// TODO: move from lib.rs to hrh_game.rs
 pub struct HrhGame {}
 
 impl HrhGame {
@@ -50,23 +50,20 @@ impl HrhGame {
 
         // RESOURCES
         app.insert_resource(BrpImageAssets::from(Images));
-        app.insert_resource(ChickenSpawnTimer(Timer::from_seconds(
-            2.0,
-            TimerMode::Repeating,
-        )));
+        app.insert_resource(ChickenEcs::r_spawn_timer());
 
         // STARTUP systems
-        app.add_startup_system(RobotSystems::spawn);
+        app.add_startup_system(RobotEcs::ss_spawn);
 
         // UPDATE systems
         app.add_systems(
             (
-                KeyboardControlsSystems::handle_keyboard_input,
-                RobotSystems::update
-                    .after(KeyboardControlsSystems::handle_keyboard_input)
+                KeyboardControlsEcs::s_handle_keyboard_input,
+                RobotEcs::s_update
+                    .after(KeyboardControlsEcs::s_handle_keyboard_input)
                     .run_if(in_state(BrpGameState::InGame)),
-                ChickenSystems::spawn.run_if(in_state(BrpGameState::InGame)),
-                ChickenSystems::update.run_if(in_state(BrpGameState::InGame)),
+                ChickenEcs::s_spawn.run_if(in_state(BrpGameState::InGame)),
+                ChickenEcs::s_update.run_if(in_state(BrpGameState::InGame)),
             )
                 .in_set(BrpSystemSet::Update),
         );
@@ -74,14 +71,13 @@ impl HrhGame {
         // DRAW systems
         app.add_systems(
             (
-                CanvasSystems::draw_bg.run_if(not(in_state(BrpGameState::Loading))),
-                CanvasSystems::start_clipping_to_game_area
+                CanvasEcs::s_draw_bg.run_if(not(in_state(BrpGameState::Loading))),
+                CanvasEcs::s_start_clipping_to_game_area
                     .run_if(not(in_state(BrpGameState::Loading))),
-                RailSystems::draw.run_if(not(in_state(BrpGameState::Loading))),
-                ChickenSystems::draw.run_if(not(in_state(BrpGameState::Loading))),
-                RobotSystems::draw.run_if(not(in_state(BrpGameState::Loading))),
-                CanvasSystems::end_clipping_to_game_area
-                    .run_if(not(in_state(BrpGameState::Loading))),
+                RailEcs::s_draw.run_if(not(in_state(BrpGameState::Loading))),
+                ChickenEcs::s_draw.run_if(not(in_state(BrpGameState::Loading))),
+                RobotEcs::s_draw.run_if(not(in_state(BrpGameState::Loading))),
+                CanvasEcs::s_end_clipping_to_game_area.run_if(not(in_state(BrpGameState::Loading))),
             )
                 .chain()
                 .in_set(BrpSystemSet::Draw),

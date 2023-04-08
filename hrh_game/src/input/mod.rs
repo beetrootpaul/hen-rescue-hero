@@ -1,3 +1,3 @@
-pub use crate::input::keyboard_controls::KeyboardControlsSystems;
+pub use crate::input::keyboard_controls::KeyboardControlsEcs;
 
 mod keyboard_controls;

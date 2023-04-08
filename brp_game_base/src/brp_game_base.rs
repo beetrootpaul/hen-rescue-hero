@@ -1,6 +1,6 @@
 use bevy::prelude::*;
 
-use brp_assets::BrpAssetSystems;
+use brp_assets::BrpAssetEcs;
 use brp_drawing::BrpDrawingPlugin;
 use brp_game_config::BrpGameConfig;
 use brp_game_state::BrpGameState;
@@ -86,9 +86,9 @@ impl BrpGameBase {
         app.add_state::<BrpGameState>();
 
         app.init_resource::<BrpImageAssets>();
-        app.add_startup_system(BrpAssetSystems::start_loading);
+        app.add_startup_system(BrpAssetEcs::ss_start_loading);
         app.add_system(
-            BrpAssetSystems::wait_for_loading_to_complete
+            BrpAssetEcs::s_wait_for_loading_to_complete
                 .run_if(in_state(BrpGameState::Loading))
                 .in_set(BrpSystemSet::Update),
         );

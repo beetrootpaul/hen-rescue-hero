@@ -79,17 +79,17 @@ impl<'w> Canvas<'w> {
     }
 }
 
-pub struct CanvasSystems;
+pub struct CanvasEcs;
 
-impl CanvasSystems {
-    pub fn start_clipping_to_game_area(canvas: Canvas, mut draw_queue: ResMut<BrpDrawQueue>) {
+impl CanvasEcs {
+    pub fn s_start_clipping_to_game_area(canvas: Canvas, mut draw_queue: ResMut<BrpDrawQueue>) {
         draw_queue.enqueue(BrpDrawCommand::StartClipping(canvas.game_area_rect()));
     }
-    pub fn end_clipping_to_game_area(mut draw_queue: ResMut<BrpDrawQueue>) {
+    pub fn s_end_clipping_to_game_area(mut draw_queue: ResMut<BrpDrawQueue>) {
         draw_queue.enqueue(BrpDrawCommand::StopClipping);
     }
 
-    pub fn draw_bg(canvas: Canvas, mut draw_queue: ResMut<BrpDrawQueue>) {
+    pub fn s_draw_bg(canvas: Canvas, mut draw_queue: ResMut<BrpDrawQueue>) {
         draw_queue.enqueue(BrpDrawCommand::Clear(Pico8Color::BrownishBlack.into()));
         draw_queue.enqueue(BrpDrawCommand::RectFilled(
             canvas.game_area_rect(),
