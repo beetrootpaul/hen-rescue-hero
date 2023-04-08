@@ -28,7 +28,7 @@ pub struct BrpDrawQueue {
 }
 
 impl BrpDrawQueue {
-    pub fn sys_draw_queued_commands(
+    pub fn s_draw_queued_commands(
         mut pixels_query: Query<(&bevy_pixels::PixelsOptions, &mut bevy_pixels::PixelsWrapper)>,
         mut draw_queue: ResMut<BrpDrawQueue>,
         brp_image_assets: Res<BrpImageAssets>,
