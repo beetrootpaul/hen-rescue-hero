@@ -11,8 +11,8 @@ impl DebugPausePlugin {
         mut next_state: ResMut<NextState<BrpGameState>>,
         mut was_resumed_for_1_frame: Local<bool>,
     ) {
-        // d = enter [d]ebug pause
-        if keyboard_input.just_pressed(KeyCode::D) {
+        // ";" = enter debug pause
+        if keyboard_input.just_pressed(KeyCode::Semicolon) {
             match *current_state {
                 State(BrpGameState::InGame) => {
                     next_state.set(BrpGameState::DebugPause);
@@ -24,7 +24,7 @@ impl DebugPausePlugin {
             };
             return;
         }
-        // . = resume game for 1 frame
+        // "." = resume game for 1 frame
         if let State(BrpGameState::DebugPause) = *current_state {
             if keyboard_input.just_pressed(KeyCode::Period) {
                 *was_resumed_for_1_frame = true;
