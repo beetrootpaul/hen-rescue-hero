@@ -2,7 +2,7 @@ use bevy::prelude::*;
 
 #[cfg(debug_assertions)]
 use collider::CollidersDebugConfig;
-use robot::{RobotDirection, RobotToken};
+use game_objects::robot::{RobotDirection, RobotToken};
 
 pub struct KeyboardControlsEcs;
 

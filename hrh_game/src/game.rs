@@ -8,15 +8,15 @@ use brp_game_base::{
     BrpGameBase, BrpGameConfig, BrpGameState, BrpGameStateEcs, BrpImageAssets, BrpSystemSet,
 };
 use canvas::{Canvas, CanvasEcs};
-use chicken::ChickenEcs;
 #[cfg(debug_assertions)]
 use collider::ColliderEcs;
+use game_objects::chicken::ChickenEcs;
+use game_objects::rail::RailEcs;
+use game_objects::robot::RobotEcs;
 use images::Images;
 use input::KeyboardControlsEcs;
 use logic::chickens_catching::ChickensCatchingEcs;
 use pico8_color::Pico8Color;
-use rail::RailEcs;
-use robot::RobotEcs;
 
 const GAME_TITLE: &str = "Hen Rescue Hero";
 

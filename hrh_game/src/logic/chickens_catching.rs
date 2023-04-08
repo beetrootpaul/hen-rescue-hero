@@ -1,8 +1,8 @@
 use bevy::prelude::*;
-use chicken::ChickenToken;
 use collider::Collider;
+use game_objects::chicken::ChickenToken;
+use game_objects::robot::RobotToken;
 use position::Position;
-use robot::RobotToken;
 
 pub struct ChickensCatchingEcs;
 
