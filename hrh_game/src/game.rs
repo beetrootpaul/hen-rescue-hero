@@ -4,7 +4,9 @@ extern crate rand;
 
 use bevy::prelude::*;
 
-use brp_game_base::{BrpGameBase, BrpGameConfig, BrpGameState, BrpImageAssets, BrpSystemSet};
+use brp_game_base::{
+    BrpGameBase, BrpGameConfig, BrpGameState, BrpGameStateEcs, BrpImageAssets, BrpSystemSet,
+};
 use canvas::{Canvas, CanvasEcs};
 use chicken::ChickenEcs;
 use images::Images;
@@ -57,19 +59,21 @@ impl Game {
                 .distributive_run_if(in_state(BrpGameState::InGame)),
         );
 
+        app.add_system(CanvasEcs::s_draw_bg.in_set(BrpSystemSet::Update));
+
         // DRAW systems
         app.add_systems(
             (
-                CanvasEcs::s_draw_bg.run_if(not(in_state(BrpGameState::Loading))),
-                CanvasEcs::s_start_clipping_to_game_area
-                    .run_if(not(in_state(BrpGameState::Loading))),
-                RailEcs::s_draw.run_if(not(in_state(BrpGameState::Loading))),
-                ChickenEcs::s_draw.run_if(not(in_state(BrpGameState::Loading))),
-                RobotEcs::s_draw.run_if(not(in_state(BrpGameState::Loading))),
-                CanvasEcs::s_end_clipping_to_game_area.run_if(not(in_state(BrpGameState::Loading))),
+                // CanvasEcs::s_draw_bg,
+                CanvasEcs::s_start_clipping_to_game_area,
+                RailEcs::s_draw,
+                ChickenEcs::s_draw,
+                RobotEcs::s_draw,
+                CanvasEcs::s_end_clipping_to_game_area,
             )
                 .chain()
-                .in_set(BrpSystemSet::Draw),
+                .in_set(BrpSystemSet::Draw)
+                .distributive_run_if(BrpGameStateEcs::c_is_game_loaded),
         );
 
         app
