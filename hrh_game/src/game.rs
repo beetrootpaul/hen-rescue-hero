@@ -46,16 +46,15 @@ impl Game {
         app.add_startup_system(RobotEcs::ss_spawn);
 
         // UPDATE systems
+        app.add_system(KeyboardControlsEcs::s_handle_keyboard_input.in_set(BrpSystemSet::Update));
         app.add_systems(
             (
-                KeyboardControlsEcs::s_handle_keyboard_input,
-                RobotEcs::s_update
-                    .after(KeyboardControlsEcs::s_handle_keyboard_input)
-                    .run_if(in_state(BrpGameState::InGame)),
-                ChickenEcs::s_spawn.run_if(in_state(BrpGameState::InGame)),
-                ChickenEcs::s_update.run_if(in_state(BrpGameState::InGame)),
+                RobotEcs::s_update.after(KeyboardControlsEcs::s_handle_keyboard_input),
+                ChickenEcs::s_spawn,
+                ChickenEcs::s_update,
             )
-                .in_set(BrpSystemSet::Update),
+                .in_set(BrpSystemSet::Update)
+                .distributive_run_if(in_state(BrpGameState::InGame)),
         );
 
         // DRAW systems
