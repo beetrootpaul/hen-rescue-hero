@@ -3,6 +3,7 @@ extern crate brp_game_base;
 extern crate rand;
 
 mod canvas;
+mod collider;
 mod chicken;
 mod game;
 mod images;

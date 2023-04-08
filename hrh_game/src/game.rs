@@ -9,6 +9,7 @@ use brp_game_base::{
 };
 use canvas::{Canvas, CanvasEcs};
 use chicken::ChickenEcs;
+use collider::ColliderEcs;
 use images::Images;
 use input::KeyboardControlsEcs;
 use pico8_color::Pico8Color;
@@ -59,17 +60,17 @@ impl Game {
                 .distributive_run_if(in_state(BrpGameState::InGame)),
         );
 
-        app.add_system(CanvasEcs::s_draw_bg.in_set(BrpSystemSet::Update));
-
         // DRAW systems
         app.add_systems(
             (
-                // CanvasEcs::s_draw_bg,
+                CanvasEcs::s_draw_bg,
                 CanvasEcs::s_start_clipping_to_game_area,
                 RailEcs::s_draw,
                 RobotEcs::s_draw,
                 ChickenEcs::s_draw,
                 CanvasEcs::s_end_clipping_to_game_area,
+                #[cfg(debug_assertions)]
+                ColliderEcs::s_debug_draw_colliders,
             )
                 .chain()
                 .in_set(BrpSystemSet::Draw)

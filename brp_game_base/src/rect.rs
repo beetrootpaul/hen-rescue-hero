@@ -41,6 +41,13 @@ impl Rect {
         }
     }
 
+    pub fn move_by(self, offset: IVec2) -> Rect {
+        Rect {
+            left_top: self.left_top + offset,
+            size: self.size,
+        }
+    }
+
     pub fn intersection_with(self, another_rect: Rect) -> Rect {
         let xy0 = self.left_top.clamp(
             another_rect.left_top,

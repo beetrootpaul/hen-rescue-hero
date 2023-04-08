@@ -1,8 +1,9 @@
 use bevy::math::ivec2;
 use bevy::prelude::*;
 
-use brp_game_base::{BrpDrawCommand, BrpDrawQueue};
+use brp_game_base::{rect, BrpDrawCommand, BrpDrawQueue};
 use canvas::Canvas;
+use collider::Collider;
 use position::Position;
 use sprites::Sprites;
 
@@ -21,6 +22,7 @@ struct RobotBundle {
     token: RobotToken,
     position: Position,
     direction: RobotDirection,
+    collider: Collider,
 }
 
 pub struct RobotEcs;
@@ -41,6 +43,9 @@ impl RobotEcs {
                 .as_vec2(),
             ),
             direction: RobotDirection::None,
+            collider: Collider {
+                rect: rect(16, 4).at(-8, -13),
+            },
         });
     }
 
