@@ -11,6 +11,7 @@ use canvas::{Canvas, CanvasEcs};
 #[cfg(debug_assertions)]
 use collider::ColliderEcs;
 use game_objects::chicken::ChickenEcs;
+use game_objects::pile_of_chickens::PileOfChickensEcs;
 use game_objects::rail::RailEcs;
 use game_objects::robot::RobotEcs;
 use images::Images;
@@ -72,6 +73,7 @@ impl Game {
                 CanvasEcs::s_start_clipping_to_game_area,
                 RailEcs::s_draw,
                 RobotEcs::s_draw,
+                PileOfChickensEcs::s_draw,
                 ChickenEcs::s_draw,
                 CanvasEcs::s_end_clipping_to_game_area,
                 #[cfg(debug_assertions)]
