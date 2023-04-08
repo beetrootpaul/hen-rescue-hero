@@ -1,7 +1,11 @@
 use bevy::prelude::*;
 
-use brp_game_base::{BrpDrawCommand, BrpDrawQueue, Rect};
+use brp_game_base::Rect;
+#[cfg(debug_assertions)]
+use brp_game_base::{BrpDrawCommand, BrpDrawQueue};
+#[cfg(debug_assertions)]
 use canvas::Canvas;
+#[cfg(debug_assertions)]
 use pico8_color::Pico8Color;
 use position::Position;
 
@@ -10,14 +14,30 @@ pub struct Collider {
     pub rect: Rect,
 }
 
+impl Collider {
+    pub fn are_colliding(
+        collider_1: &Collider,
+        position_1: &Position,
+        collider_2: &Collider,
+        position_2: &Position,
+    ) -> bool {
+        let rect_1 = collider_1.rect.move_by(position_1.0.as_ivec2());
+        let rect_2 = collider_2.rect.move_by(position_2.0.as_ivec2());
+        let common_rect = rect_1.intersection_with(rect_2);
+        common_rect.width() > 0 && common_rect.height() > 0
+    }
+}
+
 #[cfg(debug_assertions)]
 #[derive(Resource)]
 pub struct CollidersDebugConfig {
     is_debug_draw_enabled: bool,
 }
 
+#[cfg(debug_assertions)]
 pub struct ColliderEcs;
 
+#[cfg(debug_assertions)]
 impl ColliderEcs {
     #[cfg(debug_assertions)]
     pub fn r_debug_config() -> CollidersDebugConfig {

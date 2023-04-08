@@ -9,9 +9,11 @@ use brp_game_base::{
 };
 use canvas::{Canvas, CanvasEcs};
 use chicken::ChickenEcs;
+#[cfg(debug_assertions)]
 use collider::ColliderEcs;
 use images::Images;
 use input::KeyboardControlsEcs;
+use logic::chickens_catching::ChickensCatchingEcs;
 use pico8_color::Pico8Color;
 use rail::RailEcs;
 use robot::RobotEcs;
@@ -64,6 +66,7 @@ impl Game {
                 RobotEcs::s_update.after(KeyboardControlsEcs::s_handle_keyboard_input),
                 ChickenEcs::s_spawn,
                 ChickenEcs::s_update,
+                ChickensCatchingEcs::s_catch_chickens.after(ChickenEcs::s_update),
             )
                 .in_set(BrpSystemSet::Update)
                 .distributive_run_if(in_state(BrpGameState::InGame)),
