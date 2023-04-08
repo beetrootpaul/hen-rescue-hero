@@ -13,7 +13,7 @@ pub struct BrpDrawingPlugin {
 }
 
 impl BrpDrawingPlugin {
-    fn sys_update_pixels_on_window_scale_factor_changed(
+    fn s_update_pixels_on_window_scale_factor_changed(
         mut window_backend_scale_factor_changed_events: EventReader<
             WindowBackendScaleFactorChanged,
         >,
@@ -33,7 +33,7 @@ impl BrpDrawingPlugin {
         }
     }
 
-    fn sys_update_pixels_on_window_resize(
+    fn s_update_pixels_on_window_resize(
         mut window_resized_events: EventReader<WindowResized>,
         mut query: Query<
             (
@@ -81,7 +81,7 @@ impl BrpDrawingPlugin {
         let _ = wrapper.pixels.resize_surface(window_w, window_h);
     }
 
-    fn sys_resize_pixels_buffer_if_needed(
+    fn s_resize_pixels_buffer_if_needed(
         mut query: Query<
             (&mut bevy_pixels::PixelsWrapper, &bevy_pixels::PixelsOptions),
             Changed<bevy_pixels::PixelsOptions>,
@@ -129,17 +129,17 @@ impl Plugin for BrpDrawingPlugin {
 
         app.add_systems(
             (
-                Self::sys_update_pixels_on_window_scale_factor_changed,
-                Self::sys_update_pixels_on_window_resize,
-                Self::sys_resize_pixels_buffer_if_needed
-                    .after(Self::sys_update_pixels_on_window_resize),
+                Self::s_update_pixels_on_window_scale_factor_changed,
+                Self::s_update_pixels_on_window_resize,
+                Self::s_resize_pixels_buffer_if_needed
+                    .after(Self::s_update_pixels_on_window_resize),
             )
                 .in_base_set(CoreSet::PreUpdate),
         );
 
         app.insert_resource(BrpDrawQueue::default());
         app.add_system(
-            BrpDrawQueue::sys_draw_queued_commands
+            BrpDrawQueue::s_draw_queued_commands
                 .in_base_set(CoreSet::PostUpdate)
                 .after(bevy_pixels::PixelsSet::Draw),
         );

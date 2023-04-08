@@ -9,8 +9,11 @@ use brp_game_base::{
 };
 use canvas::{Canvas, CanvasEcs};
 use chicken::ChickenEcs;
+#[cfg(debug_assertions)]
+use collider::ColliderEcs;
 use images::Images;
 use input::KeyboardControlsEcs;
+use logic::chickens_catching::ChickensCatchingEcs;
 use pico8_color::Pico8Color;
 use rail::RailEcs;
 use robot::RobotEcs;
@@ -43,33 +46,43 @@ impl Game {
         // RESOURCES
         app.insert_resource(BrpImageAssets::from(Images));
         app.insert_resource(ChickenEcs::r_spawn_timer());
+        #[cfg(debug_assertions)]
+        app.insert_resource(ColliderEcs::r_debug_config());
 
         // STARTUP systems
         app.add_startup_system(RobotEcs::ss_spawn);
 
         // UPDATE systems
-        app.add_system(KeyboardControlsEcs::s_handle_keyboard_input.in_set(BrpSystemSet::Update));
+        app.add_systems(
+            (
+                KeyboardControlsEcs::s_handle_keyboard_input,
+                #[cfg(debug_assertions)]
+                ColliderEcs::s_toggle_debug_draw,
+            )
+                .in_set(BrpSystemSet::Update),
+        );
         app.add_systems(
             (
                 RobotEcs::s_update.after(KeyboardControlsEcs::s_handle_keyboard_input),
                 ChickenEcs::s_spawn,
                 ChickenEcs::s_update,
+                ChickensCatchingEcs::s_catch_chickens.after(ChickenEcs::s_update),
             )
                 .in_set(BrpSystemSet::Update)
                 .distributive_run_if(in_state(BrpGameState::InGame)),
         );
 
-        app.add_system(CanvasEcs::s_draw_bg.in_set(BrpSystemSet::Update));
-
         // DRAW systems
         app.add_systems(
             (
-                // CanvasEcs::s_draw_bg,
+                CanvasEcs::s_draw_bg,
                 CanvasEcs::s_start_clipping_to_game_area,
                 RailEcs::s_draw,
                 RobotEcs::s_draw,
                 ChickenEcs::s_draw,
                 CanvasEcs::s_end_clipping_to_game_area,
+                #[cfg(debug_assertions)]
+                ColliderEcs::s_debug_draw_colliders.run_if(ColliderEcs::c_is_debug_draw_enabled),
             )
                 .chain()
                 .in_set(BrpSystemSet::Draw)
