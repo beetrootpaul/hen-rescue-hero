@@ -1,3 +1,5 @@
+use std::time::Duration;
+
 use bevy::math::{ivec2, uvec2};
 use bevy::prelude::*;
 
@@ -5,6 +7,7 @@ use brp_game_base::{BrpDrawCommand, BrpDrawQueue, Rect};
 use canvas::Canvas;
 use collider::Collider;
 use game_objects::pile_of_chickens::PileOfChickens;
+use logic::overheating::OverheatingTimer;
 use position::Position;
 use sprites::Sprites;
 
@@ -17,6 +20,7 @@ struct RobotBundle {
     pile_of_chickens: PileOfChickens,
     collider: Collider,
     state: RobotState,
+    overheating_timer: OverheatingTimer,
 }
 
 #[derive(Component)]
@@ -57,24 +61,31 @@ impl RobotSpeed {
         match *state {
             RobotState::Good => RobotSpeed(100.0),
             RobotState::Tired => RobotSpeed(80.0),
-            _ => RobotSpeed(60.0),
+            RobotState::VeryTired => RobotSpeed(60.0),
+            RobotState::Overheated => RobotSpeed(0.0),
         }
     }
 }
 
-#[derive(Component)]
+#[derive(Component, Eq, PartialEq, Hash, Clone, Debug)]
 pub enum RobotState {
     Good,
     Tired,
     VeryTired,
+    Overheated,
 }
 
 impl RobotState {
     pub fn for_pile(pile: &PileOfChickens) -> Self {
         match pile.amount() {
-            0..=5 => RobotState::Good,
-            6..=10 => RobotState::Tired,
-            _ => RobotState::VeryTired,
+            // 0..=5 => RobotState::Good,
+            // 6..=10 => RobotState::Tired,
+            // 11..=15 => RobotState::VeryTired,
+            // _ => RobotState::Overheated,
+            0..=1 => RobotState::Good,
+            2..=2 => RobotState::Tired,
+            3..=3 => RobotState::VeryTired,
+            _ => RobotState::Overheated,
         }
     }
 
@@ -83,6 +94,7 @@ impl RobotState {
             RobotState::Good => ivec2(0, 0),
             RobotState::Tired => ivec2(0, 1),
             RobotState::VeryTired => ivec2(0, 2),
+            RobotState::Overheated => ivec2(0, 2),
         }
     }
 }
@@ -95,6 +107,7 @@ impl RobotEcs {
 
     pub fn ss_spawn(mut commands: Commands) {
         let pile = PileOfChickens::default();
+
         let robot_position = Position(
             ivec2(
                 Canvas::GAME_AREA_SIZE.x as i32 / 2,
@@ -102,12 +115,20 @@ impl RobotEcs {
             )
             .as_vec2(),
         );
+
         let state = RobotState::for_pile(&pile);
+
         let direction = RobotDirection::LeftStaying;
+
         let collider = Collider {
             rect: Robot::collider_rect_for(&pile, &state, &direction),
         };
+
         let speed = RobotSpeed::for_state(&state);
+
+        let mut overheating_timer_inner = Timer::from_seconds(2.0, TimerMode::Once);
+        overheating_timer_inner.set_elapsed(Duration::ZERO);
+
         commands.spawn(RobotBundle {
             token: RobotToken,
             position: robot_position,
@@ -116,6 +137,7 @@ impl RobotEcs {
             pile_of_chickens: pile,
             collider,
             state,
+            overheating_timer: OverheatingTimer(overheating_timer_inner),
         });
     }
 
@@ -161,6 +183,7 @@ impl RobotEcs {
                 RobotState::Good => Sprites::RobotFace1,
                 RobotState::Tired => Sprites::RobotFace2,
                 RobotState::VeryTired => Sprites::RobotFace3,
+                RobotState::Overheated => Sprites::RobotFace5,
             };
             let flip_offset = match flip {
                 true => ivec2(8, 0),

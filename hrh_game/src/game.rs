@@ -21,6 +21,7 @@ use game_objects::side::SideEcs;
 use images::Images;
 use input::KeyboardControlsEcs;
 use logic::chickens_go_to_nest::ChickensGoToNestEcs;
+use logic::overheating::OverheatingEcs;
 use logic::robot_catches_chickens::RobotCachesChickensEcs;
 use pico8_color::Pico8Color;
 
@@ -70,6 +71,8 @@ impl Game {
                 ChickenEcs::s_update,
                 RobotCachesChickensEcs::s_perform.after(ChickenEcs::s_update),
                 ChickensGoToNestEcs::s_perform.after(RobotCachesChickensEcs::s_perform),
+                OverheatingEcs::s_advance_timer.after(ChickensGoToNestEcs::s_perform),
+                OverheatingEcs::s_start_timer.after(OverheatingEcs::s_advance_timer),
             )
                 .in_set(BrpSystemSet::Update)
                 .distributive_run_if(in_state(BrpGameState::InGame)),

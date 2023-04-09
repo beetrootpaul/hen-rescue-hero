@@ -7,10 +7,6 @@ use game_objects::robot::{Robot, RobotDirection, RobotSpeed, RobotState, RobotTo
 use game_objects::score::Score;
 use position::Position;
 
-type NestAndNotRobot = (With<NestToken>, Without<RobotToken>);
-
-pub struct ChickensGoToNestEcs;
-
 type RobotComponents<'a, 'b, 'c, 'd, 'e, 'f> = (
     &'a mut Collider,
     &'b Position,
@@ -19,6 +15,10 @@ type RobotComponents<'a, 'b, 'c, 'd, 'e, 'f> = (
     &'e mut RobotSpeed,
     &'f RobotDirection,
 );
+
+type NestAndNotRobot = (With<NestToken>, Without<RobotToken>);
+
+pub struct ChickensGoToNestEcs;
 
 impl ChickensGoToNestEcs {
     pub fn s_perform(

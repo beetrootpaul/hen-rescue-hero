@@ -6,10 +6,6 @@ use game_objects::pile_of_chickens::PileOfChickens;
 use game_objects::robot::{Robot, RobotDirection, RobotSpeed, RobotState, RobotToken};
 use position::Position;
 
-type ChickenAndNotRobot = (With<ChickenToken>, Without<RobotToken>);
-
-pub struct RobotCachesChickensEcs;
-
 type RobotComponents<'a, 'b, 'c, 'd, 'e, 'f> = (
     &'a mut Collider,
     &'b Position,
@@ -18,6 +14,10 @@ type RobotComponents<'a, 'b, 'c, 'd, 'e, 'f> = (
     &'e mut RobotSpeed,
     &'f RobotDirection,
 );
+
+type ChickenAndNotRobot = (With<ChickenToken>, Without<RobotToken>);
+
+pub struct RobotCachesChickensEcs;
 
 impl RobotCachesChickensEcs {
     pub fn s_perform(
@@ -34,6 +34,9 @@ impl RobotCachesChickensEcs {
             robot_direction,
         ) in q_robot.iter_mut()
         {
+            if *robot_state == RobotState::Overheated {
+                continue;
+            }
             for (chicken_entity, chicken_collider, chicken_position) in q_chicken.iter() {
                 if Collider::are_colliding(
                     robot_collider.as_ref(),
