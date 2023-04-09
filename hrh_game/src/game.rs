@@ -10,13 +10,18 @@ use brp_game_base::{
 use canvas::{Canvas, CanvasEcs};
 #[cfg(debug_assertions)]
 use collider::ColliderEcs;
+use font::FontEcs;
 use game_objects::chicken::ChickenEcs;
+use game_objects::nest::NestEcs;
 use game_objects::pile_of_chickens::PileOfChickensEcs;
 use game_objects::rail::RailEcs;
 use game_objects::robot::RobotEcs;
+use game_objects::score::ScoreEcs;
+use game_objects::side::SideEcs;
 use images::Images;
 use input::KeyboardControlsEcs;
-use logic::chickens_catching::ChickensCatchingEcs;
+use logic::chickens_go_to_nest::ChickensGoToNestEcs;
+use logic::robot_catches_chickens::RobotCachesChickensEcs;
 use pico8_color::Pico8Color;
 
 const GAME_TITLE: &str = "Hen Rescue Hero";
@@ -46,12 +51,15 @@ impl Game {
 
         // RESOURCES
         app.insert_resource(BrpImageAssets::from(Images));
+        app.insert_resource(FontEcs::r_font_config());
         app.insert_resource(ChickenEcs::r_spawn_timer());
         #[cfg(debug_assertions)]
         app.insert_resource(ColliderEcs::r_debug_config());
+        app.insert_resource(ScoreEcs::r_score());
 
         // STARTUP systems
         app.add_startup_system(RobotEcs::ss_spawn);
+        app.add_startup_system(NestEcs::ss_spawn);
 
         // UPDATE systems
         app.add_system(KeyboardControlsEcs::s_handle_keyboard_input.in_set(BrpSystemSet::Update));
@@ -60,7 +68,8 @@ impl Game {
                 RobotEcs::s_update.after(KeyboardControlsEcs::s_handle_keyboard_input),
                 ChickenEcs::s_spawn,
                 ChickenEcs::s_update,
-                ChickensCatchingEcs::s_catch_chickens.after(ChickenEcs::s_update),
+                RobotCachesChickensEcs::s_perform.after(ChickenEcs::s_update),
+                ChickensGoToNestEcs::s_perform.after(RobotCachesChickensEcs::s_perform),
             )
                 .in_set(BrpSystemSet::Update)
                 .distributive_run_if(in_state(BrpGameState::InGame)),
@@ -70,12 +79,18 @@ impl Game {
         app.add_systems(
             (
                 CanvasEcs::s_draw_bg,
+                //
                 CanvasEcs::s_start_clipping_to_game_area,
                 RailEcs::s_draw,
+                SideEcs::s_draw,
+                NestEcs::s_draw,
                 RobotEcs::s_draw,
                 PileOfChickensEcs::s_draw,
                 ChickenEcs::s_draw,
                 CanvasEcs::s_end_clipping_to_game_area,
+                //
+                ScoreEcs::s_draw,
+                //
                 #[cfg(debug_assertions)]
                 ColliderEcs::s_debug_draw_colliders.run_if(ColliderEcs::c_is_debug_draw_enabled),
             )

@@ -42,6 +42,9 @@ impl ColliderEcs {
     #[cfg(debug_assertions)]
     pub fn r_debug_config() -> CollidersDebugConfig {
         CollidersDebugConfig {
+            #[cfg(debug_assertions)]
+            is_debug_draw_enabled: true,
+            #[cfg(not(debug_assertions))]
             is_debug_draw_enabled: false,
         }
     }

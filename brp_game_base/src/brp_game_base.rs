@@ -1,11 +1,12 @@
 use bevy::prelude::*;
 
 use brp_assets::BrpAssetEcs;
+#[cfg(debug_assertions)]
+use brp_debug::BrpDebugPausePlugin;
 use brp_drawing::BrpDrawingPlugin;
+use brp_font::BrpFontPlugin;
 use brp_game_config::BrpGameConfig;
 use brp_game_state::BrpGameState;
-#[cfg(debug_assertions)]
-use debug::DebugPausePlugin;
 use {BrpImageAssets, BrpSystemSet};
 
 pub struct BrpGameBase {
@@ -75,13 +76,15 @@ impl BrpGameBase {
         app.insert_resource(self.config.clone());
 
         #[cfg(debug_assertions)]
-        app.add_plugin(DebugPausePlugin);
+        app.add_plugin(BrpDebugPausePlugin);
 
         app.add_plugin(BrpDrawingPlugin {
             canvas_margin_color: self.config.canvas_margin_color,
             landscape_canvas_size: self.config.landscape_canvas_size,
             portrait_canvas_size: self.config.portrait_canvas_size,
         });
+
+        app.add_plugin(BrpFontPlugin);
 
         app.add_state::<BrpGameState>();
 
