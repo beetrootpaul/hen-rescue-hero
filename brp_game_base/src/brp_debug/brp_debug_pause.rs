@@ -2,9 +2,9 @@ use bevy::prelude::*;
 
 use {BrpGameState, BrpSystemSet};
 
-pub struct DebugPausePlugin;
+pub struct BrpDebugPausePlugin;
 
-impl DebugPausePlugin {
+impl BrpDebugPausePlugin {
     fn s_update_game_state(
         keyboard_input: Res<Input<KeyCode>>,
         current_state: Res<State<BrpGameState>>,
@@ -42,7 +42,7 @@ impl DebugPausePlugin {
     }
 }
 
-impl Plugin for DebugPausePlugin {
+impl Plugin for BrpDebugPausePlugin {
     fn build(&self, app: &mut App) {
         app.add_system(Self::s_update_game_state.in_set(BrpSystemSet::Update));
     }
