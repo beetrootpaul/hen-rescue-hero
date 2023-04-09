@@ -1,9 +1,10 @@
-use bevy::math::ivec2;
+use bevy::math::{ivec2, vec2};
 use bevy::prelude::*;
 
 use brp_game_base::{rect, BrpDrawCommand, BrpDrawQueue};
 use canvas::Canvas;
 use collider::Collider;
+use game_objects::pile_of_chickens::PileOfChickensBundle;
 use position::Position;
 use sprites::Sprites;
 
@@ -33,20 +34,25 @@ impl RobotEcs {
     const BOUNDARY_OFFSET_RIGHT: f32 = -10.0;
 
     pub fn ss_spawn(mut commands: Commands) {
-        commands.spawn(RobotBundle {
-            token: RobotToken,
-            position: Position(
-                ivec2(
-                    Canvas::GAME_AREA_SIZE.x as i32 / 2,
-                    (Canvas::GAME_AREA_TILES.y as i32 - 2) * Sprites::TILE_ISIZE.y - 2,
-                )
-                .as_vec2(),
-            ),
-            direction: RobotDirection::None,
-            collider: Collider {
-                rect: rect(16, 4).at(-8, -13),
-            },
-        });
+        let robot_position = Position(
+            ivec2(
+                Canvas::GAME_AREA_SIZE.x as i32 / 2,
+                (Canvas::GAME_AREA_TILES.y as i32 - 2) * Sprites::TILE_ISIZE.y - 2,
+            )
+            .as_vec2(),
+        );
+        commands
+            .spawn(RobotBundle {
+                token: RobotToken,
+                position: robot_position.clone(),
+                direction: RobotDirection::None,
+                collider: Collider {
+                    rect: rect(16, 4).at(-8, -13),
+                },
+            })
+            .with_children(|parent| {
+                parent.spawn(PileOfChickensBundle::new(vec2(0.0, -11.0)));
+            });
     }
 
     pub fn s_update(
@@ -74,15 +80,15 @@ impl RobotEcs {
     ) {
         for position in query.iter() {
             draw_queue.enqueue(BrpDrawCommand::Sprite(
-                canvas.xy_of_position_within_game_area(position),
+                canvas.xy_of_position_within_game_area(*position),
                 Sprites::RobotLeg.into(),
             ));
             draw_queue.enqueue(BrpDrawCommand::Sprite(
-                canvas.xy_of_position_within_game_area(position),
+                canvas.xy_of_position_within_game_area(*position),
                 Sprites::RobotBody.into(),
             ));
             draw_queue.enqueue(BrpDrawCommand::Sprite(
-                canvas.xy_of_position_within_game_area(position),
+                canvas.xy_of_position_within_game_area(*position),
                 Sprites::RobotFace1.into(),
             ));
         }

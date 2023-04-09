@@ -61,7 +61,7 @@ impl ColliderEcs {
             draw_queue.enqueue(BrpDrawCommand::Rect(
                 collider
                     .rect
-                    .move_by(canvas.xy_of_position_within_game_area(position)),
+                    .move_by(canvas.xy_of_position_within_game_area(*position)),
                 Pico8Color::Yellow.into(),
             ));
         }

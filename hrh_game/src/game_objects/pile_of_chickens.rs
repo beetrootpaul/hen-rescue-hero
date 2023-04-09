@@ -14,11 +14,11 @@ pub struct PileOfChickensBundle {
 }
 
 impl PileOfChickensBundle {
-    pub fn new(x: f32, y: f32, amount: u32) -> Self {
+    pub fn new(relative_xy: Vec2) -> Self {
         Self {
             token: PileOfChickensToken,
-            amount: AmountOfChickens(amount),
-            position: Position(vec2(x, y)),
+            amount: AmountOfChickens(0),
+            position: Position(relative_xy),
         }
     }
 }
@@ -29,17 +29,36 @@ pub struct PileOfChickensToken;
 #[derive(Component)]
 pub struct AmountOfChickens(u32);
 
+impl AmountOfChickens {
+    pub fn increment(&mut self) {
+        self.0 += 1;
+    }
+}
+
 pub struct PileOfChickensEcs;
 
 impl PileOfChickensEcs {
     const SEGMENT_OF_8_STACKABLE_Y: i32 = 3 * Sprites::TILE_ISIZE.y;
 
     pub fn s_draw(
-        query: Query<(&AmountOfChickens, &Position), With<PileOfChickensToken>>,
+        q_pile: Query<(Option<&Parent>, &AmountOfChickens, &Position), With<PileOfChickensToken>>,
+        q_position: Query<(&Position)>,
+        commands: Commands,
         mut draw_queue: ResMut<BrpDrawQueue>,
         canvas: Canvas,
     ) {
-        for (amount, position) in query.iter() {
+        for (maybe_parent, amount, relative_position) in q_pile.iter() {
+            let position: Position = match maybe_parent {
+                None => *relative_position,
+                Some(parent) => {
+                    if let Ok(parent_position) = q_position.get(parent.get()) {
+                        Position(parent_position.0 + relative_position.0)
+                    } else {
+                        *relative_position
+                    }
+                },
+            };
+
             let segments_of_8 = amount.0 / 8;
             let top_sprite = match amount.0 - segments_of_8 * 8 {
                 0 => None,
