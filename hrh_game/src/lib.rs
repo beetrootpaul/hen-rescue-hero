@@ -4,6 +4,7 @@ extern crate rand;
 
 mod canvas;
 mod collider;
+mod font;
 mod game;
 mod game_objects;
 mod images;

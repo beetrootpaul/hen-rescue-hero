@@ -1,4 +1,10 @@
+use bevy::math::ivec2;
 use bevy::prelude::*;
+
+use brp_game_base::{BrpDrawCommand, BrpDrawQueue};
+use canvas::Canvas;
+use pico8_color::Pico8Color;
+use sprites::Sprites;
 
 #[derive(Resource)]
 pub struct Score {
@@ -20,8 +26,17 @@ impl ScoreEcs {
         }
     }
 
-    pub fn s_draw(score: Res<Score>) {
-        // TODO: DRAW SCORE IN THE TOP BAR
-        println!("score: {}", score.rescued_chickens);
+    pub fn s_draw(mut draw_queue: ResMut<BrpDrawQueue>, canvas: Canvas, score: Res<Score>) {
+        let nest_xy = canvas.top_bar_rect().left_top + ivec2(12, 13);
+        draw_queue.enqueue(BrpDrawCommand::Sprite(
+            nest_xy + ivec2(0, -2),
+            Sprites::Chicken.into(),
+        ));
+        draw_queue.enqueue(BrpDrawCommand::Sprite(nest_xy, Sprites::Nest.into()));
+        draw_queue.enqueue(BrpDrawCommand::Text(
+            nest_xy + ivec2(11, -10),
+            format!("{}", score.rescued_chickens),
+            Pico8Color::LightPeach.into(),
+        ));
     }
 }

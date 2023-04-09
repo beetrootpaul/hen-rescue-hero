@@ -5,6 +5,7 @@ pub use brp_color::BrpColor;
 pub use brp_drawing::BrpSprite;
 pub use brp_drawing::{BrpCanvasVariant, BrpCurrentCanvasVariant};
 pub use brp_drawing::{BrpDrawCommand, BrpDrawQueue};
+pub use brp_font::{BrpFontConfig, BrpFontGlyph};
 pub use brp_game_base::BrpGameBase;
 pub use brp_game_config::BrpGameConfig;
 pub use brp_game_state::{BrpGameState, BrpGameStateEcs};
@@ -19,6 +20,7 @@ mod brp_color;
 #[cfg(debug_assertions)]
 mod brp_debug;
 mod brp_drawing;
+mod brp_font;
 mod brp_game_base;
 mod brp_game_config;
 mod brp_game_state;

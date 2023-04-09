@@ -2,8 +2,10 @@ use std::collections::VecDeque;
 
 use bevy::math::uvec2;
 use bevy::prelude::*;
+use bevy::utils::hashbrown::HashMap;
 
 use brp_drawing::brp_draw::BrpDraw;
+use brp_font::{BrpFontConfig, BrpFontGlyph};
 use BrpImageAssets;
 use BrpSprite;
 use {BrpColor, Rect};
@@ -17,6 +19,8 @@ pub enum BrpDrawCommand {
     Ellipse(Rect, BrpColor),
     EllipseFilled(Rect, BrpColor),
     Sprite(IVec2, BrpSprite),
+    //
+    Text(IVec2, String, BrpColor),
     //
     StartClipping(Rect),
     StopClipping,
@@ -33,6 +37,7 @@ impl BrpDrawQueue {
         mut draw_queue: ResMut<BrpDrawQueue>,
         brp_image_assets: Res<BrpImageAssets>,
         bevy_image_assets: Res<Assets<Image>>,
+        font_config: Res<BrpFontConfig>,
     ) {
         if let Ok((pixels_options, mut pixels_wrapper)) = pixels_query.get_single_mut() {
             let mut draw = BrpDraw {
@@ -82,6 +87,44 @@ impl BrpDrawQueue {
                             source_rect,
                             color_replacements,
                         );
+                    },
+                    //
+                    BrpDrawCommand::Text(xy, text, text_color) => {
+                        if let Some(font_image_path) = font_config.image_path {
+                            let font_image_handle = brp_image_assets.get(font_image_path);
+                            let font_image = bevy_image_assets
+                                .get(&font_image_handle)
+                                .expect("should have a font image for a given handle");
+
+                            let mut current_xy = xy;
+                            let jump_x: i32 = font_config.glyph_size.as_ivec2().x + 1;
+                            let mut color_replacements: HashMap<BrpColor, BrpColor> =
+                                HashMap::new();
+                            if let Some(t1) = font_config.source_color_transparent_1 {
+                                color_replacements.insert(t1, BrpColor::Transparent);
+                            }
+                            if let Some(t2) = font_config.source_color_transparent_2 {
+                                color_replacements.insert(t2, BrpColor::Transparent);
+                            }
+                            color_replacements.insert(font_config.source_color_font, text_color);
+
+                            for symbol in text.chars() {
+                                let glyph = BrpFontGlyph::of(symbol);
+                                if let Some(source_rect) =
+                                    font_config.glyph_to_source_rect.get(&glyph)
+                                {
+                                    draw.draw_sprite(
+                                        frame,
+                                        current_xy,
+                                        font_image.size().x as usize,
+                                        &font_image.data,
+                                        *source_rect,
+                                        color_replacements.clone(),
+                                    );
+                                    current_xy.x += jump_x;
+                                }
+                            }
+                        }
                     },
                     //
                     BrpDrawCommand::StartClipping(clipping_rect) => {

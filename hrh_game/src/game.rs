@@ -10,6 +10,7 @@ use brp_game_base::{
 use canvas::{Canvas, CanvasEcs};
 #[cfg(debug_assertions)]
 use collider::ColliderEcs;
+use font::FontEcs;
 use game_objects::chicken::ChickenEcs;
 use game_objects::nest::NestEcs;
 use game_objects::pile_of_chickens::PileOfChickensEcs;
@@ -50,6 +51,7 @@ impl Game {
 
         // RESOURCES
         app.insert_resource(BrpImageAssets::from(Images));
+        app.insert_resource(FontEcs::r_font_config());
         app.insert_resource(ChickenEcs::r_spawn_timer());
         #[cfg(debug_assertions)]
         app.insert_resource(ColliderEcs::r_debug_config());

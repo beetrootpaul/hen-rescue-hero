@@ -4,6 +4,7 @@ use brp_assets::BrpAssetEcs;
 #[cfg(debug_assertions)]
 use brp_debug::BrpDebugPausePlugin;
 use brp_drawing::BrpDrawingPlugin;
+use brp_font::BrpFontPlugin;
 use brp_game_config::BrpGameConfig;
 use brp_game_state::BrpGameState;
 use {BrpImageAssets, BrpSystemSet};
@@ -82,6 +83,8 @@ impl BrpGameBase {
             landscape_canvas_size: self.config.landscape_canvas_size,
             portrait_canvas_size: self.config.portrait_canvas_size,
         });
+
+        app.add_plugin(BrpFontPlugin);
 
         app.add_state::<BrpGameState>();
 
