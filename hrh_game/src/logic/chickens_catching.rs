@@ -5,7 +5,7 @@ use brp_game_base::Rect;
 use collider::Collider;
 use game_objects::chicken::ChickenToken;
 use game_objects::pile_of_chickens::PileOfChickens;
-use game_objects::robot::RobotToken;
+use game_objects::robot::{RobotState, RobotToken};
 use position::Position;
 
 type ChickenAndNotRobot = (With<ChickenToken>, Without<RobotToken>);
@@ -14,11 +14,19 @@ pub struct ChickensCatchingEcs;
 
 impl ChickensCatchingEcs {
     pub fn s_catch_chickens(
-        mut q_robot: Query<(&mut Collider, &Position, &mut PileOfChickens), With<RobotToken>>,
+        mut q_robot: Query<
+            (
+                &mut Collider,
+                &Position,
+                &mut PileOfChickens,
+                &mut RobotState,
+            ),
+            With<RobotToken>,
+        >,
         q_chicken: Query<(Entity, &Collider, &Position), ChickenAndNotRobot>,
         mut commands: Commands,
     ) {
-        for (mut robot_collider, robot_position, mut pile) in q_robot.iter_mut() {
+        for (mut robot_collider, robot_position, mut pile, mut robot_state) in q_robot.iter_mut() {
             for (chicken_entity, chicken_collider, chicken_position) in q_chicken.iter() {
                 if Collider::are_colliding(
                     robot_collider.as_ref(),
@@ -37,6 +45,12 @@ impl ChickensCatchingEcs {
                         ),
                         size: uvec2(robot_collider.rect.size.x, pile.amount() * 3 + 7),
                     };
+
+                    *robot_state = match pile.amount() {
+                        0..=5 => RobotState::Good,
+                        6..=8 => RobotState::Tired,
+                        _ => RobotState::VeryTired,
+                    }
                 }
             }
         }

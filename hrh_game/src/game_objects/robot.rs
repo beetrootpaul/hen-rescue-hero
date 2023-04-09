@@ -18,6 +18,13 @@ pub enum RobotDirection {
     Right,
 }
 
+#[derive(Component)]
+pub enum RobotState {
+    Good,
+    Tired,
+    VeryTired,
+}
+
 #[derive(Bundle)]
 struct RobotBundle {
     token: RobotToken,
@@ -25,6 +32,7 @@ struct RobotBundle {
     direction: RobotDirection,
     pile_of_chickens: PileOfChickens,
     collider: Collider,
+    state: RobotState,
 }
 
 pub struct RobotEcs;
@@ -50,6 +58,7 @@ impl RobotEcs {
             collider: Collider {
                 rect: rect(17, 4).at(-8, -13),
             },
+            state: RobotState::Good,
         });
     }
 
@@ -72,22 +81,29 @@ impl RobotEcs {
     }
 
     pub fn s_draw(
-        query: Query<&Position, With<RobotToken>>,
+        query: Query<(&Position, &RobotState), With<RobotToken>>,
         mut draw_queue: ResMut<BrpDrawQueue>,
         canvas: Canvas,
     ) {
-        for position in query.iter() {
+        for (position, state) in query.iter() {
             draw_queue.enqueue(BrpDrawCommand::Sprite(
                 canvas.xy_of_position_within_game_area(*position),
                 Sprites::RobotLeg.into(),
             ));
+
             draw_queue.enqueue(BrpDrawCommand::Sprite(
                 canvas.xy_of_position_within_game_area(*position),
                 Sprites::RobotBody.into(),
             ));
+
+            let face_sprite = match state {
+                RobotState::Good => Sprites::RobotFace1,
+                RobotState::Tired => Sprites::RobotFace2,
+                RobotState::VeryTired => Sprites::RobotFace3,
+            };
             draw_queue.enqueue(BrpDrawCommand::Sprite(
                 canvas.xy_of_position_within_game_area(*position),
-                Sprites::RobotFace1.into(),
+                face_sprite.into(),
             ));
         }
     }
