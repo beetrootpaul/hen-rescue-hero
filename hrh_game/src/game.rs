@@ -18,7 +18,8 @@ use game_objects::robot::RobotEcs;
 use game_objects::side::SideEcs;
 use images::Images;
 use input::KeyboardControlsEcs;
-use logic::chickens_catching::ChickensCatchingEcs;
+use logic::chickens_go_to_nest::ChickensGoToNestEcs;
+use logic::robot_catches_chickens::RobotCachesChickensEcs;
 use pico8_color::Pico8Color;
 
 const GAME_TITLE: &str = "Hen Rescue Hero";
@@ -63,7 +64,8 @@ impl Game {
                 RobotEcs::s_update.after(KeyboardControlsEcs::s_handle_keyboard_input),
                 ChickenEcs::s_spawn,
                 ChickenEcs::s_update,
-                ChickensCatchingEcs::s_catch_chickens.after(ChickenEcs::s_update),
+                RobotCachesChickensEcs::s_perform.after(ChickenEcs::s_update),
+                ChickensGoToNestEcs::s_perform.after(RobotCachesChickensEcs::s_perform),
             )
                 .in_set(BrpSystemSet::Update)
                 .distributive_run_if(in_state(BrpGameState::InGame)),

@@ -1,7 +1,7 @@
-use bevy::math::ivec2;
+use bevy::math::{ivec2, uvec2};
 use bevy::prelude::*;
 
-use brp_game_base::{rect, BrpDrawCommand, BrpDrawQueue};
+use brp_game_base::{rect, BrpDrawCommand, BrpDrawQueue, Rect};
 use canvas::Canvas;
 use collider::Collider;
 use game_objects::pile_of_chickens::PileOfChickens;
@@ -26,6 +26,14 @@ pub enum RobotState {
 }
 
 impl RobotState {
+    pub fn for_pile(pile: &PileOfChickens) -> Self {
+        match pile.amount() {
+            0..=5 => RobotState::Good,
+            6..=8 => RobotState::Tired,
+            _ => RobotState::VeryTired,
+        }
+    }
+
     pub fn body_offset(&self) -> IVec2 {
         match *self {
             RobotState::Good => ivec2(0, 0),
@@ -60,15 +68,18 @@ impl RobotEcs {
             )
             .as_vec2(),
         );
+        let pile = PileOfChickens::default();
+        let state = RobotState::for_pile(&pile);
+        let collider = Collider {
+            rect: Robot::collider_rect_for(-8, 17, &pile, &state),
+        };
         commands.spawn(RobotBundle {
             token: RobotToken,
             position: robot_position,
             direction: RobotDirection::None,
-            pile_of_chickens: PileOfChickens::default(),
-            collider: Collider {
-                rect: rect(17, 4).at(-8, -13),
-            },
-            state: RobotState::Good,
+            pile_of_chickens: pile,
+            collider,
+            state,
         });
     }
 
@@ -115,6 +126,31 @@ impl RobotEcs {
                 canvas.xy_of_position_within_game_area(*position) + state.body_offset(),
                 face_sprite.into(),
             ));
+        }
+    }
+}
+
+pub struct Robot;
+
+impl Robot {
+    pub fn collider_rect_for(
+        x: i32,
+        w: u32,
+        pile_of_chickens: &PileOfChickens,
+        robot_state: &RobotState,
+    ) -> Rect {
+        let chicken_amount = pile_of_chickens.amount();
+        let top = match chicken_amount {
+            0 => -13,
+            _ => chicken_amount as i32 * -3 - 16,
+        };
+        let height = match chicken_amount {
+            0 => 4,
+            _ => chicken_amount * 3 + 7,
+        };
+        Rect {
+            left_top: ivec2(x, top) + robot_state.body_offset(),
+            size: uvec2(w, height),
         }
     }
 }

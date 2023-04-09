@@ -5,15 +5,15 @@ use brp_game_base::Rect;
 use collider::Collider;
 use game_objects::chicken::ChickenToken;
 use game_objects::pile_of_chickens::PileOfChickens;
-use game_objects::robot::{RobotState, RobotToken};
+use game_objects::robot::{Robot, RobotState, RobotToken};
 use position::Position;
 
 type ChickenAndNotRobot = (With<ChickenToken>, Without<RobotToken>);
 
-pub struct ChickensCatchingEcs;
+pub struct RobotCachesChickensEcs;
 
-impl ChickensCatchingEcs {
-    pub fn s_catch_chickens(
+impl RobotCachesChickensEcs {
+    pub fn s_perform(
         mut q_robot: Query<
             (
                 &mut Collider,
@@ -38,19 +38,14 @@ impl ChickensCatchingEcs {
 
                     pile.increment();
 
-                    *robot_state = match pile.amount() {
-                        0..=5 => RobotState::Good,
-                        6..=8 => RobotState::Tired,
-                        _ => RobotState::VeryTired,
-                    };
+                    *robot_state = RobotState::for_pile(pile.as_ref());
 
-                    robot_collider.rect = Rect {
-                        left_top: ivec2(
-                            robot_collider.rect.left_top.x,
-                            pile.amount() as i32 * -3 - 16,
-                        ) + robot_state.body_offset(),
-                        size: uvec2(robot_collider.rect.size.x, pile.amount() * 3 + 7),
-                    };
+                    robot_collider.rect = Robot::collider_rect_for(
+                        robot_collider.rect.left_top.x,
+                        robot_collider.rect.size.x,
+                        pile.as_ref(),
+                        robot_state.as_ref(),
+                    );
                 }
             }
         }

@@ -17,6 +17,9 @@ impl PileOfChickens {
     pub fn increment(&mut self) {
         self.0 += 1;
     }
+    pub fn take_all(&mut self) {
+        self.0 = 0;
+    }
 }
 
 pub struct PileOfChickensEcs;
