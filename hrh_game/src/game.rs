@@ -54,6 +54,7 @@ impl Game {
 
         // STARTUP systems
         app.add_startup_system(RobotEcs::ss_spawn);
+        app.add_startup_system(NestEcs::ss_spawn);
 
         // UPDATE systems
         app.add_system(KeyboardControlsEcs::s_handle_keyboard_input.in_set(BrpSystemSet::Update));
