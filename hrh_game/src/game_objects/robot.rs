@@ -1,10 +1,10 @@
-use bevy::math::{ivec2, vec2};
+use bevy::math::ivec2;
 use bevy::prelude::*;
 
 use brp_game_base::{rect, BrpDrawCommand, BrpDrawQueue};
 use canvas::Canvas;
 use collider::Collider;
-use game_objects::pile_of_chickens::PileOfChickensBundle;
+use game_objects::pile_of_chickens::PileOfChickens;
 use position::Position;
 use sprites::Sprites;
 
@@ -23,6 +23,7 @@ struct RobotBundle {
     token: RobotToken,
     position: Position,
     direction: RobotDirection,
+    pile_of_chickens: PileOfChickens,
     collider: Collider,
 }
 
@@ -41,18 +42,15 @@ impl RobotEcs {
             )
             .as_vec2(),
         );
-        commands
-            .spawn(RobotBundle {
-                token: RobotToken,
-                position: robot_position.clone(),
-                direction: RobotDirection::None,
-                collider: Collider {
-                    rect: rect(16, 4).at(-8, -13),
-                },
-            })
-            .with_children(|parent| {
-                parent.spawn(PileOfChickensBundle::new(vec2(0.0, -11.0)));
-            });
+        commands.spawn(RobotBundle {
+            token: RobotToken,
+            position: robot_position,
+            direction: RobotDirection::None,
+            pile_of_chickens: PileOfChickens::default(),
+            collider: Collider {
+                rect: rect(17, 4).at(-8, -13),
+            },
+        });
     }
 
     pub fn s_update(

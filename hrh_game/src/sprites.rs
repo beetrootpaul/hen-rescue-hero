@@ -43,14 +43,14 @@ impl From<Sprites> for BrpSprite {
             Sprites::RobotFace1 => s([0, 2, 2, 1], [12, 11], Sprites::COLOR_REPLACEMENTS_1),
             Sprites::Chain => s([2, 3, 1, 1], [0, 0], Sprites::COLOR_REPLACEMENTS_1),
             Sprites::Chicken => s([3, 0, 2, 2], [8, 16], Sprites::COLOR_REPLACEMENTS_2),
-            Sprites::PileOfChicken1 => s([3, 2, 2, 2], [7, 16], Sprites::COLOR_REPLACEMENTS_2),
-            Sprites::PileOfChicken2 => s([3, 4, 2, 2], [7, 16], Sprites::COLOR_REPLACEMENTS_2),
-            Sprites::PileOfChicken3 => s([3, 6, 2, 3], [7, 24], Sprites::COLOR_REPLACEMENTS_2),
-            Sprites::PileOfChicken4 => s([3, 9, 2, 3], [7, 24], Sprites::COLOR_REPLACEMENTS_2),
-            Sprites::PileOfChicken5 => s([5, 0, 2, 3], [7, 24], Sprites::COLOR_REPLACEMENTS_2),
-            Sprites::PileOfChicken6 => s([5, 3, 2, 4], [7, 32], Sprites::COLOR_REPLACEMENTS_2),
-            Sprites::PileOfChicken7 => s([5, 7, 2, 4], [7, 32], Sprites::COLOR_REPLACEMENTS_2),
-            Sprites::PileOfChicken8 => s([7, 0, 2, 4], [7, 32], Sprites::COLOR_REPLACEMENTS_2),
+            Sprites::PileOfChicken1 => s([3, 2, 2, 2], [7, 16 + 11], Sprites::COLOR_REPLACEMENTS_2),
+            Sprites::PileOfChicken2 => s([3, 4, 2, 2], [7, 16 + 11], Sprites::COLOR_REPLACEMENTS_2),
+            Sprites::PileOfChicken3 => s([3, 6, 2, 3], [7, 24 + 11], Sprites::COLOR_REPLACEMENTS_2),
+            Sprites::PileOfChicken4 => s([3, 9, 2, 3], [7, 24 + 11], Sprites::COLOR_REPLACEMENTS_2),
+            Sprites::PileOfChicken5 => s([5, 0, 2, 3], [7, 24 + 11], Sprites::COLOR_REPLACEMENTS_2),
+            Sprites::PileOfChicken6 => s([5, 3, 2, 4], [7, 32 + 11], Sprites::COLOR_REPLACEMENTS_2),
+            Sprites::PileOfChicken7 => s([5, 7, 2, 4], [7, 32 + 11], Sprites::COLOR_REPLACEMENTS_2),
+            Sprites::PileOfChicken8 => s([7, 0, 2, 4], [7, 32 + 11], Sprites::COLOR_REPLACEMENTS_2),
         }
     }
 }
