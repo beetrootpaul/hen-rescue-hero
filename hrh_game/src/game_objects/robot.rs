@@ -8,6 +8,17 @@ use game_objects::pile_of_chickens::PileOfChickens;
 use position::Position;
 use sprites::Sprites;
 
+#[derive(Bundle)]
+struct RobotBundle {
+    token: RobotToken,
+    position: Position,
+    direction: RobotDirection,
+    speed: RobotSpeed,
+    pile_of_chickens: PileOfChickens,
+    collider: Collider,
+    state: RobotState,
+}
+
 #[derive(Component)]
 pub struct RobotToken;
 
@@ -16,6 +27,19 @@ pub enum RobotDirection {
     None,
     Left,
     Right,
+}
+
+#[derive(Component)]
+pub struct RobotSpeed(pub f32);
+
+impl RobotSpeed {
+    pub fn for_state(state: &RobotState) -> Self {
+        match *state {
+            RobotState::Good => RobotSpeed(100.0),
+            RobotState::Tired => RobotSpeed(80.0),
+            _ => RobotSpeed(60.0),
+        }
+    }
 }
 
 #[derive(Component)]
@@ -29,7 +53,7 @@ impl RobotState {
     pub fn for_pile(pile: &PileOfChickens) -> Self {
         match pile.amount() {
             0..=5 => RobotState::Good,
-            6..=8 => RobotState::Tired,
+            6..=10 => RobotState::Tired,
             _ => RobotState::VeryTired,
         }
     }
@@ -43,20 +67,9 @@ impl RobotState {
     }
 }
 
-#[derive(Bundle)]
-struct RobotBundle {
-    token: RobotToken,
-    position: Position,
-    direction: RobotDirection,
-    pile_of_chickens: PileOfChickens,
-    collider: Collider,
-    state: RobotState,
-}
-
 pub struct RobotEcs;
 
 impl RobotEcs {
-    const SPEED_PER_SECOND: f32 = 200.0;
     const BOUNDARY_OFFSET_LEFT: f32 = 10.0;
     const BOUNDARY_OFFSET_RIGHT: f32 = -10.0;
 
@@ -70,6 +83,7 @@ impl RobotEcs {
         );
         let pile = PileOfChickens::default();
         let state = RobotState::for_pile(&pile);
+        let speed = RobotSpeed::for_state(&state);
         let collider = Collider {
             rect: Robot::collider_rect_for(-8, 17, &pile, &state),
         };
@@ -77,6 +91,7 @@ impl RobotEcs {
             token: RobotToken,
             position: robot_position,
             direction: RobotDirection::None,
+            speed,
             pile_of_chickens: pile,
             collider,
             state,
@@ -85,10 +100,10 @@ impl RobotEcs {
 
     pub fn s_update(
         time: Res<Time>,
-        mut query: Query<(&mut Position, &RobotDirection), With<RobotToken>>,
+        mut query: Query<(&mut Position, &RobotDirection, &RobotSpeed), With<RobotToken>>,
     ) {
-        let diff = Self::SPEED_PER_SECOND * time.delta_seconds();
-        for (mut position, direction) in query.iter_mut() {
+        for (mut position, direction, speed) in query.iter_mut() {
+            let diff = speed.0 * time.delta_seconds();
             match direction {
                 RobotDirection::Left => position.0.x -= diff,
                 RobotDirection::Right => position.0.x += diff,
