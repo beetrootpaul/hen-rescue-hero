@@ -38,19 +38,19 @@ impl ChickensCatchingEcs {
 
                     pile.increment();
 
-                    robot_collider.rect = Rect {
-                        left_top: ivec2(
-                            robot_collider.rect.left_top.x,
-                            pile.amount() as i32 * -3 - 16,
-                        ),
-                        size: uvec2(robot_collider.rect.size.x, pile.amount() * 3 + 7),
-                    };
-
                     *robot_state = match pile.amount() {
                         0..=5 => RobotState::Good,
                         6..=8 => RobotState::Tired,
                         _ => RobotState::VeryTired,
-                    }
+                    };
+
+                    robot_collider.rect = Rect {
+                        left_top: ivec2(
+                            robot_collider.rect.left_top.x,
+                            pile.amount() as i32 * -3 - 16,
+                        ) + robot_state.body_offset(),
+                        size: uvec2(robot_collider.rect.size.x, pile.amount() * 3 + 7),
+                    };
                 }
             }
         }

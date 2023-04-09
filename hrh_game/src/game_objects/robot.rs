@@ -25,6 +25,16 @@ pub enum RobotState {
     VeryTired,
 }
 
+impl RobotState {
+    pub fn body_offset(&self) -> IVec2 {
+        match *self {
+            RobotState::Good => ivec2(0, 0),
+            RobotState::Tired => ivec2(0, 1),
+            RobotState::VeryTired => ivec2(0, 2),
+        }
+    }
+}
+
 #[derive(Bundle)]
 struct RobotBundle {
     token: RobotToken,
@@ -92,7 +102,7 @@ impl RobotEcs {
             ));
 
             draw_queue.enqueue(BrpDrawCommand::Sprite(
-                canvas.xy_of_position_within_game_area(*position),
+                canvas.xy_of_position_within_game_area(*position) + state.body_offset(),
                 Sprites::RobotBody.into(),
             ));
 
@@ -102,7 +112,7 @@ impl RobotEcs {
                 RobotState::VeryTired => Sprites::RobotFace3,
             };
             draw_queue.enqueue(BrpDrawCommand::Sprite(
-                canvas.xy_of_position_within_game_area(*position),
+                canvas.xy_of_position_within_game_area(*position) + state.body_offset(),
                 face_sprite.into(),
             ));
         }
