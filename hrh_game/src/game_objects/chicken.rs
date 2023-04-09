@@ -1,7 +1,8 @@
+use std::ops::Range;
+
 use bevy::math::vec2;
 use bevy::prelude::*;
 use rand::Rng;
-use std::ops::Range;
 
 use brp_game_base::{rect, BrpDrawCommand, BrpDrawQueue};
 use canvas::Canvas;
@@ -79,7 +80,7 @@ impl ChickenEcs {
         for position in query.iter() {
             let brp_sprite = Sprites::Chicken.into();
             draw_queue.enqueue(BrpDrawCommand::Sprite(
-                canvas.xy_of_position_within_game_area(position),
+                canvas.xy_of_position_within_game_area(*position),
                 brp_sprite,
             ));
         }

@@ -9,58 +9,48 @@ pub enum Sprites {
     RobotBody,
     RobotLeg,
     RobotFace1,
-    Chicken,
     Chain,
+    Chicken,
+    PileOfChicken1,
+    PileOfChicken2,
+    PileOfChicken3,
+    PileOfChicken4,
+    PileOfChicken5,
+    PileOfChicken6,
+    PileOfChicken7,
+    PileOfChicken8,
 }
 
 impl Sprites {
     pub const TILE_USIZE: UVec2 = uvec2(8, 8);
     pub const TILE_ISIZE: IVec2 = ivec2(Self::TILE_USIZE.x as i32, Self::TILE_USIZE.y as i32);
+
+    const COLOR_REPLACEMENTS_1: [(Pico8Color, Pico8Color); 2] = [
+        (Pico8Color::Yellow, Pico8Color::None),
+        (Pico8Color::Peach, Pico8Color::None),
+    ];
+    const COLOR_REPLACEMENTS_2: [(Pico8Color, Pico8Color); 2] = [
+        (Pico8Color::Yellow, Pico8Color::None),
+        (Pico8Color::LimeGreen, Pico8Color::None),
+    ];
 }
 
 impl From<Sprites> for BrpSprite {
     fn from(sprite: Sprites) -> Self {
         match sprite {
-            Sprites::RobotBody => s(
-                [0, 0, 3, 2],
-                [12, 16],
-                [
-                    (Pico8Color::Yellow, Pico8Color::None),
-                    (Pico8Color::Peach, Pico8Color::None),
-                ],
-            ),
-            Sprites::RobotLeg => s(
-                [2, 2, 1, 1],
-                [4, 0],
-                [
-                    (Pico8Color::Yellow, Pico8Color::None),
-                    (Pico8Color::Peach, Pico8Color::None),
-                ],
-            ),
-            Sprites::RobotFace1 => s(
-                [0, 2, 2, 1],
-                [12, 11],
-                [
-                    (Pico8Color::Yellow, Pico8Color::None),
-                    (Pico8Color::Peach, Pico8Color::None),
-                ],
-            ),
-            Sprites::Chicken => s(
-                [3, 0, 2, 2],
-                [8, 16],
-                [
-                    (Pico8Color::Yellow, Pico8Color::None),
-                    (Pico8Color::LimeGreen, Pico8Color::None),
-                ],
-            ),
-            Sprites::Chain => s(
-                [2, 3, 1, 1],
-                [0, 0],
-                [
-                    (Pico8Color::Yellow, Pico8Color::None),
-                    (Pico8Color::Peach, Pico8Color::None),
-                ],
-            ),
+            Sprites::RobotBody => s([0, 0, 3, 2], [12, 16], Sprites::COLOR_REPLACEMENTS_1),
+            Sprites::RobotLeg => s([2, 2, 1, 1], [4, 0], Sprites::COLOR_REPLACEMENTS_1),
+            Sprites::RobotFace1 => s([0, 2, 2, 1], [12, 11], Sprites::COLOR_REPLACEMENTS_1),
+            Sprites::Chain => s([2, 3, 1, 1], [0, 0], Sprites::COLOR_REPLACEMENTS_1),
+            Sprites::Chicken => s([3, 0, 2, 2], [8, 16], Sprites::COLOR_REPLACEMENTS_2),
+            Sprites::PileOfChicken1 => s([3, 2, 2, 2], [7, 16 + 11], Sprites::COLOR_REPLACEMENTS_2),
+            Sprites::PileOfChicken2 => s([3, 4, 2, 2], [7, 16 + 11], Sprites::COLOR_REPLACEMENTS_2),
+            Sprites::PileOfChicken3 => s([3, 6, 2, 3], [7, 24 + 11], Sprites::COLOR_REPLACEMENTS_2),
+            Sprites::PileOfChicken4 => s([3, 9, 2, 3], [7, 24 + 11], Sprites::COLOR_REPLACEMENTS_2),
+            Sprites::PileOfChicken5 => s([5, 0, 2, 3], [7, 24 + 11], Sprites::COLOR_REPLACEMENTS_2),
+            Sprites::PileOfChicken6 => s([5, 3, 2, 4], [7, 32 + 11], Sprites::COLOR_REPLACEMENTS_2),
+            Sprites::PileOfChicken7 => s([5, 7, 2, 4], [7, 32 + 11], Sprites::COLOR_REPLACEMENTS_2),
+            Sprites::PileOfChicken8 => s([7, 0, 2, 4], [7, 32 + 11], Sprites::COLOR_REPLACEMENTS_2),
         }
     }
 }

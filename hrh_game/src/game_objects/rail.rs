@@ -20,7 +20,7 @@ impl RailEcs {
                     .as_vec2(),
             );
             draw_queue.enqueue(BrpDrawCommand::Sprite(
-                canvas.xy_of_position_within_game_area(&position),
+                canvas.xy_of_position_within_game_area(position),
                 Sprites::Chain.into(),
             ));
         }
