@@ -3,7 +3,7 @@ use bevy::prelude::*;
 
 use brp_game_base::{BrpDrawCommand, BrpDrawQueue};
 use canvas::Canvas;
-use game_objects::robot::RobotState;
+use game_objects::robot::{RobotDirection, RobotState};
 use position::Position;
 use sprites::Sprites;
 
@@ -30,15 +30,28 @@ impl PileOfChickensEcs {
     const SEGMENT_OF_8_STACKABLE_Y: i32 = 3 * Sprites::TILE_ISIZE.y;
 
     pub fn s_draw(
-        q_pile: Query<(&PileOfChickens, &Position, Option<&RobotState>)>,
+        q_pile: Query<(
+            &PileOfChickens,
+            &Position,
+            Option<&RobotState>,
+            Option<&RobotDirection>,
+        )>,
         mut draw_queue: ResMut<BrpDrawQueue>,
         canvas: Canvas,
     ) {
-        for (pile, position, maybe_robot_state) in q_pile.iter() {
-            let offset = match maybe_robot_state {
+        for (pile, position, maybe_robot_state, maybe_robot_direction) in q_pile.iter() {
+            let mut offset = match maybe_robot_state {
                 Some(robot_state) => robot_state.body_offset(),
                 None => IVec2::ZERO,
             };
+            let mut flip = false;
+
+            if let Some(direction) = maybe_robot_direction {
+                if direction.is_right() {
+                    flip = true;
+                    offset += ivec2(-2, 0);
+                }
+            }
 
             let segments_of_8 = pile.0 / 8;
             let top_sprite = match pile.0 - segments_of_8 * 8 {
@@ -59,6 +72,7 @@ impl PileOfChickensEcs {
                         - ivec2(0, Self::SEGMENT_OF_8_STACKABLE_Y * segments_of_8 as i32)
                         + offset,
                     s,
+                    flip,
                 ));
             }
 
@@ -68,6 +82,7 @@ impl PileOfChickensEcs {
                         - ivec2(0, Self::SEGMENT_OF_8_STACKABLE_Y * segment as i32)
                         + offset,
                     Sprites::PileOfChicken8.into(),
+                    flip,
                 ));
             }
         }

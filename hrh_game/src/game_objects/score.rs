@@ -31,8 +31,9 @@ impl ScoreEcs {
         draw_queue.enqueue(BrpDrawCommand::Sprite(
             nest_xy + ivec2(0, -2),
             Sprites::Chicken.into(),
+            false,
         ));
-        draw_queue.enqueue(BrpDrawCommand::Sprite(nest_xy, Sprites::Nest.into()));
+        draw_queue.enqueue(BrpDrawCommand::Sprite(nest_xy, Sprites::Nest.into(), false));
         draw_queue.enqueue(BrpDrawCommand::Text(
             nest_xy + ivec2(11, -10),
             format!("{}", score.rescued_chickens),

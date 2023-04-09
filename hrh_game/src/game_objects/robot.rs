@@ -24,9 +24,29 @@ pub struct RobotToken;
 
 #[derive(Component, PartialEq, Eq, Hash, Clone, Debug)]
 pub enum RobotDirection {
-    None,
-    Left,
-    Right,
+    LeftStaying,
+    LeftMoving,
+    RightStaying,
+    RightMoving,
+}
+
+impl RobotDirection {
+    pub fn is_right(&self) -> bool {
+        match *self {
+            RobotDirection::LeftStaying => false,
+            RobotDirection::LeftMoving => false,
+            RobotDirection::RightStaying => true,
+            RobotDirection::RightMoving => true,
+        }
+    }
+    pub fn to_staying(&self) -> RobotDirection {
+        match *self {
+            RobotDirection::LeftStaying => RobotDirection::LeftStaying,
+            RobotDirection::LeftMoving => RobotDirection::LeftStaying,
+            RobotDirection::RightStaying => RobotDirection::RightStaying,
+            RobotDirection::RightMoving => RobotDirection::RightStaying,
+        }
+    }
 }
 
 #[derive(Component)]
@@ -74,6 +94,7 @@ impl RobotEcs {
     const BOUNDARY_OFFSET_RIGHT: f32 = -10.0;
 
     pub fn ss_spawn(mut commands: Commands) {
+        let pile = PileOfChickens::default();
         let robot_position = Position(
             ivec2(
                 Canvas::GAME_AREA_SIZE.x as i32 / 2,
@@ -81,16 +102,16 @@ impl RobotEcs {
             )
             .as_vec2(),
         );
-        let pile = PileOfChickens::default();
         let state = RobotState::for_pile(&pile);
-        let speed = RobotSpeed::for_state(&state);
+        let direction = RobotDirection::LeftStaying;
         let collider = Collider {
-            rect: Robot::collider_rect_for(-8, 17, &pile, &state),
+            rect: Robot::collider_rect_for(&pile, &state, &direction),
         };
+        let speed = RobotSpeed::for_state(&state);
         commands.spawn(RobotBundle {
             token: RobotToken,
             position: robot_position,
-            direction: RobotDirection::None,
+            direction,
             speed,
             pile_of_chickens: pile,
             collider,
@@ -105,9 +126,9 @@ impl RobotEcs {
         for (mut position, direction, speed) in query.iter_mut() {
             let diff = speed.0 * time.delta_seconds();
             match direction {
-                RobotDirection::Left => position.0.x -= diff,
-                RobotDirection::Right => position.0.x += diff,
-                RobotDirection::None => {},
+                RobotDirection::LeftMoving => position.0.x -= diff,
+                RobotDirection::RightMoving => position.0.x += diff,
+                _ => {},
             }
             position.0.x = position.0.x.clamp(
                 Self::BOUNDARY_OFFSET_LEFT,
@@ -117,19 +138,23 @@ impl RobotEcs {
     }
 
     pub fn s_draw(
-        query: Query<(&Position, &RobotState), With<RobotToken>>,
+        query: Query<(&Position, &RobotState, &RobotDirection), With<RobotToken>>,
         mut draw_queue: ResMut<BrpDrawQueue>,
         canvas: Canvas,
     ) {
-        for (position, state) in query.iter() {
+        for (position, state, direction) in query.iter() {
+            let flip = direction.is_right();
+
             draw_queue.enqueue(BrpDrawCommand::Sprite(
                 canvas.xy_of_position_within_game_area(*position),
                 Sprites::RobotLeg.into(),
+                flip,
             ));
 
             draw_queue.enqueue(BrpDrawCommand::Sprite(
                 canvas.xy_of_position_within_game_area(*position) + state.body_offset(),
                 Sprites::RobotBody.into(),
+                flip,
             ));
 
             let face_sprite = match state {
@@ -137,9 +162,16 @@ impl RobotEcs {
                 RobotState::Tired => Sprites::RobotFace2,
                 RobotState::VeryTired => Sprites::RobotFace3,
             };
+            let flip_offset = match flip {
+                true => ivec2(8, 0),
+                false => IVec2::ZERO,
+            };
             draw_queue.enqueue(BrpDrawCommand::Sprite(
-                canvas.xy_of_position_within_game_area(*position) + state.body_offset(),
+                canvas.xy_of_position_within_game_area(*position)
+                    + state.body_offset()
+                    + flip_offset,
                 face_sprite.into(),
+                flip,
             ));
         }
     }
@@ -149,10 +181,9 @@ pub struct Robot;
 
 impl Robot {
     pub fn collider_rect_for(
-        x: i32,
-        w: u32,
         pile_of_chickens: &PileOfChickens,
         robot_state: &RobotState,
+        robot_direction: &RobotDirection,
     ) -> Rect {
         let chicken_amount = pile_of_chickens.amount();
         let top = match chicken_amount {
@@ -163,9 +194,14 @@ impl Robot {
             0 => 4,
             _ => chicken_amount * 3 + 7,
         };
-        Rect {
-            left_top: ivec2(x, top) + robot_state.body_offset(),
-            size: uvec2(w, height),
+        let collider_rect = Rect {
+            left_top: ivec2(-8, top) + robot_state.body_offset(),
+            size: uvec2(17, height),
+        };
+        if robot_direction.is_right() {
+            collider_rect.move_by(ivec2(-1, 0))
+        } else {
+            collider_rect
         }
     }
 }

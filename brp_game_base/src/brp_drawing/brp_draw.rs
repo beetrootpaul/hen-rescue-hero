@@ -105,6 +105,7 @@ impl BrpDraw {
         }
     }
 
+    #[allow(clippy::too_many_arguments)]
     pub fn draw_sprite(
         &self,
         frame: &mut [u8],
@@ -113,6 +114,7 @@ impl BrpDraw {
         source_image_data: &[u8],
         source_rect: Rect,
         color_replacements: HashMap<BrpColor, BrpColor>,
+        flip: bool,
     ) {
         let target_rect = source_rect.at(xy.x, xy.y);
         let clipped_target_rect =
@@ -138,8 +140,12 @@ impl BrpDraw {
                 for sprite_column in 0..sprite_w {
                     let target_i = pixel_index
                         + (sprite_row * (self.canvas_size.x as usize) + sprite_column) * PX_LEN;
+                    let sprite_effective_column = match flip {
+                        true => sprite_w - 1 - sprite_column,
+                        false => sprite_column,
+                    };
                     let source_i = ((clipped_source_rect.top() as usize + sprite_row) * image_w
-                        + (clipped_source_rect.left() as usize + sprite_column))
+                        + (clipped_source_rect.left() as usize + sprite_effective_column))
                         * PX_LEN;
                     let source_rgba = &source_image_data[source_i..(source_i + PX_LEN)];
 
@@ -574,6 +580,7 @@ mod tests {
             &img.data,
             rect(4, 2).at(1, 2),
             HashMap::new(),
+            false,
         );
 
         h.assert_frame_pixels(
@@ -582,6 +589,51 @@ mod tests {
                 ------
                 -#%:%-
                 -::%:-
+                ------
+            ",
+        );
+    }
+
+    #[test]
+    fn test_draw_sprite_flipped() {
+        let mut h = TestHelper::for_canvas_size(6, 5);
+        let color_bg = color_solid(9, 8, 7);
+        let color_1 = color_solid(11, 12, 13);
+        let color_2 = color_solid(21, 22, 23);
+        let color_3 = color_solid(31, 32, 33);
+        let color_symbols = vec![
+            ("-", color_bg),
+            (":", color_1),
+            ("#", color_2),
+            ("%", color_3),
+        ];
+        let img = TestImage::from_pixels(
+            color_symbols.clone(),
+            "
+            :::#%:
+            ::#%::
+            :#%:::
+        ",
+        );
+
+        h.draw.clear(&mut h.frame, color_bg);
+        h.draw.draw_sprite(
+            &mut h.frame,
+            ivec2(1, 1),
+            img.width,
+            &img.data,
+            rect(4, 3).at(1, 0),
+            HashMap::new(),
+            true,
+        );
+
+        h.assert_frame_pixels(
+            color_symbols,
+            "
+                ------
+                -%#::-
+                -:%#:-
+                -::%#-
                 ------
             ",
         );
@@ -654,6 +706,7 @@ mod tests {
             &img1.data,
             rect(3, 3),
             HashMap::new(),
+            false,
         );
         // clipped from the right
         h.draw.draw_sprite(
@@ -663,6 +716,7 @@ mod tests {
             &img2.data,
             rect(3, 3),
             HashMap::new(),
+            false,
         );
         // clipped from the top
         h.draw.draw_sprite(
@@ -672,6 +726,7 @@ mod tests {
             &img3.data,
             rect(3, 3),
             HashMap::new(),
+            false,
         );
         // clipped from the bottom
         h.draw.draw_sprite(
@@ -681,6 +736,7 @@ mod tests {
             &img4.data,
             rect(3, 3),
             HashMap::new(),
+            false,
         );
         // drawn last, but clipped entirely
         h.draw.draw_sprite(
@@ -690,6 +746,7 @@ mod tests {
             &img5.data,
             rect(3, 3),
             HashMap::new(),
+            false,
         );
 
         h.assert_frame_pixels(
@@ -736,6 +793,7 @@ mod tests {
             &img.data,
             rect(4, 2),
             HashMap::from([(color_1, BrpColor::Transparent), (color_2, color_4)]),
+            false,
         );
 
         h.assert_frame_pixels(
@@ -753,6 +811,7 @@ mod tests {
             &img.data,
             rect(4, 2),
             HashMap::from([(color_1, color_5), (color_2, BrpColor::Transparent)]),
+            false,
         );
 
         h.assert_frame_pixels(

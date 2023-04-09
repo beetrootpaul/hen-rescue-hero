@@ -18,7 +18,7 @@ pub enum BrpDrawCommand {
     RectFilled(Rect, BrpColor),
     Ellipse(Rect, BrpColor),
     EllipseFilled(Rect, BrpColor),
-    Sprite(IVec2, BrpSprite),
+    Sprite(IVec2, BrpSprite, bool),
     //
     Text(IVec2, String, BrpColor),
     //
@@ -74,6 +74,7 @@ impl BrpDrawQueue {
                             anchor,
                             color_replacements,
                         },
+                        flip,
                     ) => {
                         let image_handle = brp_image_assets.get(image_path);
                         let image = bevy_image_assets
@@ -86,6 +87,7 @@ impl BrpDrawQueue {
                             &image.data,
                             source_rect,
                             color_replacements,
+                            flip,
                         );
                     },
                     //
@@ -120,6 +122,7 @@ impl BrpDrawQueue {
                                         &font_image.data,
                                         *source_rect,
                                         color_replacements.clone(),
+                                        false,
                                     );
                                     current_xy.x += jump_x;
                                 }
