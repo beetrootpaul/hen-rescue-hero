@@ -1,7 +1,7 @@
 use bevy::math::{ivec2, uvec2};
 use bevy::prelude::*;
 
-use brp_game_base::{rect, BrpDrawCommand, BrpDrawQueue, Rect};
+use brp_game_base::{BrpDrawCommand, BrpDrawQueue, Rect};
 use canvas::Canvas;
 use collider::Collider;
 use game_objects::pile_of_chickens::PileOfChickens;

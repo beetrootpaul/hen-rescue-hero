@@ -1,7 +1,5 @@
-use bevy::math::{ivec2, uvec2};
 use bevy::prelude::*;
 
-use brp_game_base::Rect;
 use collider::Collider;
 use game_objects::chicken::ChickenToken;
 use game_objects::pile_of_chickens::PileOfChickens;

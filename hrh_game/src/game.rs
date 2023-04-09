@@ -15,6 +15,7 @@ use game_objects::nest::NestEcs;
 use game_objects::pile_of_chickens::PileOfChickensEcs;
 use game_objects::rail::RailEcs;
 use game_objects::robot::RobotEcs;
+use game_objects::score::ScoreEcs;
 use game_objects::side::SideEcs;
 use images::Images;
 use input::KeyboardControlsEcs;
@@ -52,6 +53,7 @@ impl Game {
         app.insert_resource(ChickenEcs::r_spawn_timer());
         #[cfg(debug_assertions)]
         app.insert_resource(ColliderEcs::r_debug_config());
+        app.insert_resource(ScoreEcs::r_score());
 
         // STARTUP systems
         app.add_startup_system(RobotEcs::ss_spawn);
@@ -75,6 +77,7 @@ impl Game {
         app.add_systems(
             (
                 CanvasEcs::s_draw_bg,
+                //
                 CanvasEcs::s_start_clipping_to_game_area,
                 RailEcs::s_draw,
                 SideEcs::s_draw,
@@ -83,6 +86,9 @@ impl Game {
                 PileOfChickensEcs::s_draw,
                 ChickenEcs::s_draw,
                 CanvasEcs::s_end_clipping_to_game_area,
+                //
+                ScoreEcs::s_draw,
+                //
                 #[cfg(debug_assertions)]
                 ColliderEcs::s_debug_draw_colliders.run_if(ColliderEcs::c_is_debug_draw_enabled),
             )

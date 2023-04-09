@@ -1,12 +1,10 @@
-use bevy::math::{ivec2, uvec2};
 use bevy::prelude::*;
 
-use brp_game_base::Rect;
 use collider::Collider;
-use game_objects::chicken::ChickenToken;
 use game_objects::nest::NestToken;
 use game_objects::pile_of_chickens::PileOfChickens;
 use game_objects::robot::{Robot, RobotState, RobotToken};
+use game_objects::score::Score;
 use position::Position;
 
 type NestAndNotRobot = (With<NestToken>, Without<RobotToken>);
@@ -25,6 +23,7 @@ impl ChickensGoToNestEcs {
             With<RobotToken>,
         >,
         q_nest: Query<(&Collider, &Position), NestAndNotRobot>,
+        mut score: ResMut<Score>,
     ) {
         for (mut robot_collider, robot_position, mut pile, mut robot_state) in q_robot.iter_mut() {
             for (nest_collider, nest_position) in q_nest.iter() {
@@ -34,7 +33,8 @@ impl ChickensGoToNestEcs {
                     nest_collider,
                     nest_position,
                 ) {
-                    pile.take_all();
+                    let rescued_amount = pile.take_all();
+                    score.add_to_rescued_chickens(rescued_amount);
 
                     *robot_state = RobotState::for_pile(pile.as_ref());
 

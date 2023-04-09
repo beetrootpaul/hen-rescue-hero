@@ -17,8 +17,10 @@ impl PileOfChickens {
     pub fn increment(&mut self) {
         self.0 += 1;
     }
-    pub fn take_all(&mut self) {
+    pub fn take_all(&mut self) -> u32 {
+        let prev_amount = self.0;
         self.0 = 0;
+        prev_amount
     }
 }
 
