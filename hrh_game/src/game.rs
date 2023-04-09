@@ -11,9 +11,11 @@ use canvas::{Canvas, CanvasEcs};
 #[cfg(debug_assertions)]
 use collider::ColliderEcs;
 use game_objects::chicken::ChickenEcs;
+use game_objects::nest::NestEcs;
 use game_objects::pile_of_chickens::PileOfChickensEcs;
 use game_objects::rail::RailEcs;
 use game_objects::robot::RobotEcs;
+use game_objects::side::SideEcs;
 use images::Images;
 use input::KeyboardControlsEcs;
 use logic::chickens_catching::ChickensCatchingEcs;
@@ -72,6 +74,8 @@ impl Game {
                 CanvasEcs::s_draw_bg,
                 CanvasEcs::s_start_clipping_to_game_area,
                 RailEcs::s_draw,
+                SideEcs::s_draw,
+                NestEcs::s_draw,
                 RobotEcs::s_draw,
                 PileOfChickensEcs::s_draw,
                 ChickenEcs::s_draw,
