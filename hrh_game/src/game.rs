@@ -12,7 +12,7 @@ use canvas::{Canvas, CanvasEcs};
 use collider::ColliderEcs;
 use font::FontEcs;
 use game_objects::chicken::ChickenEcs;
-use game_objects::countdown::{Countdown, CountdownEcs};
+use game_objects::countdown::CountdownEcs;
 use game_objects::nest::NestEcs;
 use game_objects::pile_of_chickens::PileOfChickensEcs;
 use game_objects::rail::RailEcs;
@@ -20,7 +20,7 @@ use game_objects::robot::RobotEcs;
 use game_objects::score::ScoreEcs;
 use game_objects::side::SideEcs;
 use images::Images;
-use input::{GamepadControlsEcs, InputEcs, KeyboardControlsEcs};
+use input::{ControlsEcs, InputEcs};
 use logic::chickens_go_to_nest::ChickensGoToNestEcs;
 use logic::overheating::OverheatingEcs;
 use logic::robot_catches_chickens::RobotCachesChickensEcs;
@@ -87,8 +87,7 @@ impl Game {
         app.add_systems(
             (
                 InputEcs::s_update,
-                KeyboardControlsEcs::s_handle_keyboard_input.after(InputEcs::s_update),
-                GamepadControlsEcs::s_handle_gamepad_input.after(InputEcs::s_update),
+                ControlsEcs::s_handle_input.after(InputEcs::s_update),
             )
                 .in_set(BrpSystemSet::Update),
         );
@@ -100,9 +99,7 @@ impl Game {
         app.add_systems(
             (
                 CountdownEcs::s_update,
-                RobotEcs::s_update
-                    .after(KeyboardControlsEcs::s_handle_keyboard_input)
-                    .after(GamepadControlsEcs::s_handle_gamepad_input),
+                RobotEcs::s_update.after(ControlsEcs::s_handle_input),
                 ChickenEcs::s_spawn,
                 ChickenEcs::s_update,
                 RobotCachesChickensEcs::s_perform.after(ChickenEcs::s_update),

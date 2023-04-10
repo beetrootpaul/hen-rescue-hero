@@ -8,12 +8,18 @@ use game_objects::pile_of_chickens::PileOfChickens;
 use game_objects::robot::Robot;
 use input::InputMode;
 
-pub struct KeyboardControlsEcs;
+pub struct ControlsEcs;
 
-impl KeyboardControlsEcs {
-    pub fn s_handle_keyboard_input(
-        keyboard_input: Res<Input<KeyCode>>,
+impl ControlsEcs {
+    const LEFT_STICK_THRESHOLD: f32 = 0.5;
+    const RIGHT_STICK_THRESHOLD: f32 = 0.5;
+
+    pub fn s_handle_input(
         #[cfg(debug_assertions)] mut colliders_debug_config: ResMut<CollidersDebugConfig>,
+        keyboard_input: Res<Input<KeyCode>>,
+        gamepads: Res<Gamepads>,
+        gamepad_button_inputs: Res<Input<GamepadButton>>,
+        gamepad_axis: Res<Axis<GamepadAxis>>,
         input_mode: Res<InputMode>,
         current_state: Res<State<BrpGameState>>,
         mut next_state: ResMut<NextState<BrpGameState>>,
@@ -27,9 +33,30 @@ impl KeyboardControlsEcs {
         }
 
         if !input_mode.is_input_blocked() {
-            let left = keyboard_input.pressed(KeyCode::Left) || keyboard_input.pressed(KeyCode::A);
-            let right =
+            let mut left =
+                keyboard_input.pressed(KeyCode::Left) || keyboard_input.pressed(KeyCode::A);
+            let mut right =
                 keyboard_input.pressed(KeyCode::Right) || keyboard_input.pressed(KeyCode::D);
+
+            for gamepad in gamepads.iter() {
+                let left_stick_x = GamepadAxis::new(gamepad, GamepadAxisType::LeftStickX);
+                let left_stick_x_value = gamepad_axis.get(left_stick_x).unwrap_or(0.0);
+
+                let right_stick_x = GamepadAxis::new(gamepad, GamepadAxisType::RightStickX);
+                let right_stick_x_value = gamepad_axis.get(right_stick_x).unwrap_or(0.0);
+
+                let dpad_left = GamepadButton::new(gamepad, GamepadButtonType::DPadLeft);
+                let dpad_right = GamepadButton::new(gamepad, GamepadButtonType::DPadRight);
+
+                left = left
+                    || left_stick_x_value < -Self::LEFT_STICK_THRESHOLD
+                    || right_stick_x_value < -Self::RIGHT_STICK_THRESHOLD
+                    || gamepad_button_inputs.pressed(dpad_left);
+                right = right
+                    || left_stick_x_value > Self::LEFT_STICK_THRESHOLD
+                    || right_stick_x_value > Self::RIGHT_STICK_THRESHOLD
+                    || gamepad_button_inputs.pressed(dpad_right);
+            }
 
             match current_state.0 {
                 BrpGameState::Loading => {},

@@ -4,7 +4,7 @@ use bevy::window::{WindowBackendScaleFactorChanged, WindowResized};
 use brp_drawing::brp_canvas_variant::{BrpCanvasVariant, BrpCurrentCanvasVariant};
 use brp_drawing::brp_draw_queue::BrpDrawQueue;
 use brp_game_config::BrpGameConfig;
-use brp_input::{BrpInputConfig, BrpInputPlugin};
+use brp_input::BrpInputConfig;
 use BrpColor;
 
 pub struct BrpDrawingPlugin {

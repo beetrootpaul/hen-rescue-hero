@@ -3,11 +3,9 @@ use std::time::Duration;
 use bevy::prelude::{Res, ResMut, Resource, Timer, TimerMode};
 use bevy::time::Time;
 
-pub use crate::input::gamepad_controls::GamepadControlsEcs;
-pub use crate::input::keyboard_controls::KeyboardControlsEcs;
+pub use crate::input::controls::ControlsEcs;
 
-mod gamepad_controls;
-mod keyboard_controls;
+mod controls;
 
 #[derive(Resource)]
 pub struct InputMode {
