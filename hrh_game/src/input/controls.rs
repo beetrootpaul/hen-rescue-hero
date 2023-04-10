@@ -14,6 +14,7 @@ impl ControlsEcs {
     const LEFT_STICK_THRESHOLD: f32 = 0.5;
     const RIGHT_STICK_THRESHOLD: f32 = 0.5;
 
+    #[allow(clippy::too_many_arguments)]
     pub fn s_handle_input(
         #[cfg(debug_assertions)] mut colliders_debug_config: ResMut<CollidersDebugConfig>,
         keyboard_input: Res<Input<KeyCode>>,

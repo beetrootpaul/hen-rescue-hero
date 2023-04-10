@@ -15,7 +15,7 @@ pub struct Countdown {
 }
 
 impl Countdown {
-    const GAMEPLAY_DURATION_SECONDS: u32 = 6;
+    const GAMEPLAY_DURATION_SECONDS: u32 = 60;
 
     pub fn advance_by(&mut self, delta_time: Duration) {
         self.timer.tick(delta_time);
