@@ -1,7 +1,7 @@
 use bevy::math::{ivec2, uvec2, IVec2, UVec2};
 use bevy::utils::HashMap;
 
-use brp_game_base::{BrpSprite, Rect};
+use brp_game_base::{rect, BrpSprite, Rect};
 use images::Images;
 use pico8_color::Pico8Color;
 
@@ -28,6 +28,8 @@ pub enum Sprite {
     //
     Side,
     Nest,
+    //
+    OverheatedBg,
 }
 
 impl Sprite {
@@ -68,6 +70,13 @@ impl From<Sprite> for BrpSprite {
             //
             Sprite::Side => s([0, 9, 2, 3], [8, 24], Sprite::COLOR_REPLACEMENTS_1),
             Sprite::Nest => s([0, 8, 2, 1], [8, 6], Sprite::COLOR_REPLACEMENTS_1),
+            //
+            Sprite::OverheatedBg => BrpSprite {
+                image_path: Images::OVERHEATED_BG,
+                source_rect: rect(192, 900),
+                anchor: IVec2::ZERO,
+                color_replacements: HashMap::new(),
+            },
         }
     }
 }

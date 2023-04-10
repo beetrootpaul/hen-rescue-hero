@@ -87,6 +87,10 @@ impl Robot {
         }
     }
 
+    pub fn overheating_elapsed(&self) -> Duration {
+        self.overheating_timer.elapsed()
+    }
+
     //
 
     pub fn update_for_pile(&mut self, pile: &PileOfChickens) {

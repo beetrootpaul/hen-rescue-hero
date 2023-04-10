@@ -83,6 +83,7 @@ impl Game {
                 CanvasEcs::s_draw_bg,
                 //
                 CanvasEcs::s_start_clipping_to_game_area,
+                OverheatingEcs::s_draw,
                 RailEcs::s_draw,
                 SideEcs::s_draw,
                 NestEcs::s_draw,
