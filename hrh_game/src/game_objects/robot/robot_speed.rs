@@ -1,4 +1,5 @@
 use bevy::prelude::*;
+
 use game_objects::robot::robot_state::RobotState;
 
 #[derive(Component)]
@@ -10,6 +11,7 @@ impl RobotSpeed {
             RobotState::Good => RobotSpeed(100.0),
             RobotState::Tired => RobotSpeed(80.0),
             RobotState::VeryTired => RobotSpeed(60.0),
+            RobotState::AboutToOverheat => RobotSpeed(60.0),
             RobotState::Overheated => RobotSpeed(0.0),
         }
     }

@@ -89,7 +89,7 @@ impl BrpGameBase {
         app.add_state::<BrpGameState>();
 
         app.init_resource::<BrpImageAssets>();
-        app.add_startup_system(BrpAssetEcs::ss_start_loading);
+        app.add_startup_system(BrpAssetEcs::s_start_loading);
         app.add_system(
             BrpAssetEcs::s_wait_for_loading_to_complete
                 .run_if(in_state(BrpGameState::Loading))

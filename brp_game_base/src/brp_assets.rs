@@ -24,7 +24,7 @@ impl BrpImageAssets {
 pub struct BrpAssetEcs;
 
 impl BrpAssetEcs {
-    pub fn ss_start_loading(
+    pub fn s_start_loading(
         mut image_assets: ResMut<BrpImageAssets>,
         asset_server: Res<AssetServer>,
     ) {
@@ -50,7 +50,7 @@ impl BrpAssetEcs {
                     },
                 });
         if are_images_loaded {
-            next_state.set(BrpGameState::InGame);
+            next_state.set(BrpGameState::Menu);
         }
     }
 }

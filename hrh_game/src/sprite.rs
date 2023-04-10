@@ -11,6 +11,7 @@ pub enum Sprite {
     RobotFace1,
     RobotFace2,
     RobotFace3,
+    RobotFace4,
     RobotFace5,
     //
     Chain,
@@ -28,6 +29,9 @@ pub enum Sprite {
     //
     Side,
     Nest,
+    //
+    LeftArrow,
+    LeftArrowPressed,
     //
     OverheatedBg,
 }
@@ -54,22 +58,26 @@ impl From<Sprite> for BrpSprite {
             Sprite::RobotFace1 => s([0, 2, 2, 1], [12, 11], Sprite::COLOR_REPLACEMENTS_1),
             Sprite::RobotFace2 => s([0, 3, 2, 1], [12, 11], Sprite::COLOR_REPLACEMENTS_1),
             Sprite::RobotFace3 => s([0, 4, 2, 1], [12, 11], Sprite::COLOR_REPLACEMENTS_1),
+            Sprite::RobotFace4 => s([0, 5, 2, 1], [12, 11], Sprite::COLOR_REPLACEMENTS_1),
             Sprite::RobotFace5 => s([0, 6, 2, 1], [12, 11], Sprite::COLOR_REPLACEMENTS_1),
             //
             Sprite::Chain => s([2, 3, 1, 1], [0, 0], Sprite::COLOR_REPLACEMENTS_1),
             //
             Sprite::Chicken => s([3, 0, 2, 2], [8, 16], Sprite::COLOR_REPLACEMENTS_2),
-            Sprite::PileOfChicken1 => s([3, 2, 2, 2], [7, 16 + 11], Sprite::COLOR_REPLACEMENTS_2),
-            Sprite::PileOfChicken2 => s([3, 4, 2, 2], [7, 16 + 11], Sprite::COLOR_REPLACEMENTS_2),
-            Sprite::PileOfChicken3 => s([3, 6, 2, 3], [7, 24 + 11], Sprite::COLOR_REPLACEMENTS_2),
-            Sprite::PileOfChicken4 => s([3, 9, 2, 3], [7, 24 + 11], Sprite::COLOR_REPLACEMENTS_2),
-            Sprite::PileOfChicken5 => s([5, 0, 2, 3], [7, 24 + 11], Sprite::COLOR_REPLACEMENTS_2),
-            Sprite::PileOfChicken6 => s([5, 3, 2, 4], [7, 32 + 11], Sprite::COLOR_REPLACEMENTS_2),
-            Sprite::PileOfChicken7 => s([5, 7, 2, 4], [7, 32 + 11], Sprite::COLOR_REPLACEMENTS_2),
-            Sprite::PileOfChicken8 => s([7, 0, 2, 4], [7, 32 + 11], Sprite::COLOR_REPLACEMENTS_2),
+            Sprite::PileOfChicken1 => s([3, 3, 2, 2], [7, 16 + 11], Sprite::COLOR_REPLACEMENTS_2),
+            Sprite::PileOfChicken2 => s([3, 5, 2, 2], [7, 16 + 11], Sprite::COLOR_REPLACEMENTS_2),
+            Sprite::PileOfChicken3 => s([3, 7, 2, 3], [7, 24 + 11], Sprite::COLOR_REPLACEMENTS_2),
+            Sprite::PileOfChicken4 => s([3, 10, 2, 3], [7, 24 + 11], Sprite::COLOR_REPLACEMENTS_2),
+            Sprite::PileOfChicken5 => s([3, 13, 2, 3], [7, 24 + 11], Sprite::COLOR_REPLACEMENTS_2),
+            Sprite::PileOfChicken6 => s([5, 4, 2, 4], [7, 32 + 11], Sprite::COLOR_REPLACEMENTS_2),
+            Sprite::PileOfChicken7 => s([5, 8, 2, 4], [7, 32 + 11], Sprite::COLOR_REPLACEMENTS_2),
+            Sprite::PileOfChicken8 => s([5, 12, 2, 4], [7, 32 + 11], Sprite::COLOR_REPLACEMENTS_2),
             //
             Sprite::Side => s([0, 9, 2, 3], [8, 24], Sprite::COLOR_REPLACEMENTS_1),
             Sprite::Nest => s([0, 8, 2, 1], [8, 6], Sprite::COLOR_REPLACEMENTS_1),
+            //
+            Sprite::LeftArrow => s([5, 0, 2, 2], [0, 0], Sprite::COLOR_REPLACEMENTS_1),
+            Sprite::LeftArrowPressed => s([5, 2, 2, 2], [0, 0], Sprite::COLOR_REPLACEMENTS_1),
             //
             Sprite::OverheatedBg => BrpSprite {
                 image_path: Images::OVERHEATED_BG,

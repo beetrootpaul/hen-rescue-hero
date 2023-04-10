@@ -62,6 +62,7 @@ impl Robot {
             RobotState::Good => Sprite::RobotFace1,
             RobotState::Tired => Sprite::RobotFace2,
             RobotState::VeryTired => Sprite::RobotFace3,
+            RobotState::AboutToOverheat => Sprite::RobotFace4,
             RobotState::Overheated => Sprite::RobotFace5,
         }
     }

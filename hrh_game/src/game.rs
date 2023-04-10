@@ -23,6 +23,7 @@ use input::KeyboardControlsEcs;
 use logic::chickens_go_to_nest::ChickensGoToNestEcs;
 use logic::overheating::OverheatingEcs;
 use logic::robot_catches_chickens::RobotCachesChickensEcs;
+use menu::MenuEcs;
 use pico8_color::Pico8Color;
 
 const GAME_TITLE: &str = "Hen Rescue Hero";
@@ -59,11 +60,22 @@ impl Game {
         app.insert_resource(ScoreEcs::r_score());
 
         // STARTUP systems
-        app.add_startup_system(RobotEcs::ss_spawn);
-        app.add_startup_system(NestEcs::ss_spawn);
+        app.add_startup_system(RobotEcs::s_spawn);
+        app.add_startup_system(NestEcs::s_spawn);
+
+        // ENTER systems
+        app.add_system(MenuEcs::s_spawn_buttons.in_schedule(OnEnter(BrpGameState::Menu)));
+
+        // EXIT systems
+        app.add_system(MenuEcs::s_despawn_buttons.in_schedule(OnExit(BrpGameState::Menu)));
 
         // UPDATE systems
         app.add_system(KeyboardControlsEcs::s_handle_keyboard_input.in_set(BrpSystemSet::Update));
+        app.add_system(
+            MenuEcs::s_update
+                .in_set(BrpSystemSet::Update)
+                .run_if(BrpGameStateEcs::c_is_in_menu),
+        );
         app.add_systems(
             (
                 RobotEcs::s_update.after(KeyboardControlsEcs::s_handle_keyboard_input),
@@ -96,6 +108,8 @@ impl Game {
                 //
                 #[cfg(debug_assertions)]
                 ColliderEcs::s_debug_draw_colliders.run_if(ColliderEcs::c_is_debug_draw_enabled),
+                //
+                MenuEcs::s_draw.run_if(BrpGameStateEcs::c_is_in_menu),
             )
                 .chain()
                 .in_set(BrpSystemSet::Draw)
