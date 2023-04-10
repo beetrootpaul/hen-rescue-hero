@@ -69,6 +69,7 @@ impl Game {
 
         // ENTER systems
         app.add_system(MenuEcs::s_enter_menu.in_schedule(OnEnter(BrpGameState::Menu)));
+        app.add_system(ScoreEcs::s_reset.in_schedule(OnExit(BrpGameState::Menu)));
         app.add_system(CountdownEcs::s_reset.in_schedule(OnExit(BrpGameState::Menu)));
 
         // EXIT systems

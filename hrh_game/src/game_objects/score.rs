@@ -18,6 +18,9 @@ impl Score {
     pub fn add_to_rescued_chickens(&mut self, amount: u32) {
         self.rescued_chickens += amount;
     }
+    pub fn reset(&mut self) {
+        self.rescued_chickens = 0;
+    }
 }
 
 pub struct ScoreEcs;
@@ -27,6 +30,10 @@ impl ScoreEcs {
         Score {
             rescued_chickens: 0,
         }
+    }
+
+    pub fn s_reset(mut score: ResMut<Score>) {
+        score.reset();
     }
 
     pub fn s_draw(mut draw_queue: ResMut<BrpDrawQueue>, canvas: Canvas, score: Res<Score>) {
