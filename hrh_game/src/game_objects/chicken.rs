@@ -26,7 +26,7 @@ struct ChickenBundle {
 pub struct ChickenEcs;
 
 impl ChickenEcs {
-    const SPAWN_INTERVAL: f32 = 1.0;
+    const SPAWN_INTERVAL: f32 = 0.5;
 
     const NO_SPAWN_BORDER_W: f32 = Sprite::TILE_ISIZE.y as f32 * 4.0;
     const SPAWN_X_RANGE: Range<f32> = (6.0 + Self::NO_SPAWN_BORDER_W)

@@ -15,6 +15,8 @@ pub struct Countdown {
 }
 
 impl Countdown {
+    const GAMEPLAY_DURATION_SECONDS: u32 = 60;
+
     pub fn advance_by(&mut self, delta_time: Duration) {
         self.timer.tick(delta_time);
     }
@@ -34,7 +36,10 @@ pub struct CountdownEcs;
 impl CountdownEcs {
     pub fn r_countdown() -> Countdown {
         Countdown {
-            timer: Timer::from_seconds(3.0, TimerMode::Once),
+            timer: Timer::from_seconds(
+                Countdown::GAMEPLAY_DURATION_SECONDS as f32,
+                TimerMode::Once,
+            ),
         }
     }
 
@@ -74,9 +79,9 @@ impl CountdownEcs {
         ));
 
         let countdown_text = format!("{}", countdown.remaining_seconds());
-        let countdown_text_rect = font_config.rect_of(&countdown_text);
+        let countdown_text_size = font_config.size_of(&countdown_text);
         draw_queue.enqueue(BrpDrawCommand::Text(
-            clock_xy - ivec2(countdown_text_rect.x + 13, 11),
+            clock_xy - ivec2(countdown_text_size.x + 13, 11),
             countdown_text,
             Pico8Color::LightPeach.into(),
         ));

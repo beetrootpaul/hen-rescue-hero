@@ -12,6 +12,9 @@ pub struct Score {
 }
 
 impl Score {
+    pub fn rescued_chickens(&self) -> u32 {
+        self.rescued_chickens
+    }
     pub fn add_to_rescued_chickens(&mut self, amount: u32) {
         self.rescued_chickens += amount;
     }
@@ -36,7 +39,7 @@ impl ScoreEcs {
         draw_queue.enqueue(BrpDrawCommand::Sprite(nest_xy, Sprite::Nest.into(), false));
         draw_queue.enqueue(BrpDrawCommand::Text(
             nest_xy + ivec2(11, -10),
-            format!("{}", score.rescued_chickens),
+            format!("{}", score.rescued_chickens()),
             Pico8Color::LightPeach.into(),
         ));
     }

@@ -56,6 +56,7 @@ impl Game {
         app.insert_resource(BrpImageAssets::from(Images));
         app.insert_resource(FontEcs::r_font_config());
         app.insert_resource(InputEcs::r_input_mode());
+        app.insert_resource(MenuEcs::r_menu_mode());
         app.insert_resource(ChickenEcs::r_spawn_timer());
         #[cfg(debug_assertions)]
         app.insert_resource(ColliderEcs::r_debug_config());
@@ -67,11 +68,11 @@ impl Game {
         app.add_startup_system(NestEcs::s_spawn);
 
         // ENTER systems
-        app.add_system(MenuEcs::s_spawn_buttons.in_schedule(OnEnter(BrpGameState::Menu)));
+        app.add_system(MenuEcs::s_enter_menu.in_schedule(OnEnter(BrpGameState::Menu)));
         app.add_system(CountdownEcs::s_reset.in_schedule(OnExit(BrpGameState::Menu)));
 
         // EXIT systems
-        app.add_system(MenuEcs::s_despawn_buttons.in_schedule(OnExit(BrpGameState::Menu)));
+        app.add_system(MenuEcs::s_exit_menu.in_schedule(OnExit(BrpGameState::Menu)));
 
         // UPDATE systems
         app.add_systems(

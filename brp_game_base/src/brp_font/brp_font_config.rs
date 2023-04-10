@@ -18,7 +18,7 @@ pub struct BrpFontConfig {
 }
 
 impl BrpFontConfig {
-    pub fn rect_of(&self, text: &str) -> IVec2 {
+    pub fn size_of(&self, text: &str) -> IVec2 {
         ivec2(
             self.glyph_jump_to_next.x * text.len() as i32,
             self.glyph_jump_to_next.y,
