@@ -23,6 +23,7 @@ use input::KeyboardControlsEcs;
 use logic::chickens_go_to_nest::ChickensGoToNestEcs;
 use logic::overheating::OverheatingEcs;
 use logic::robot_catches_chickens::RobotCachesChickensEcs;
+use menu::MenuEcs;
 use pico8_color::Pico8Color;
 
 const GAME_TITLE: &str = "Hen Rescue Hero";
@@ -96,6 +97,8 @@ impl Game {
                 //
                 #[cfg(debug_assertions)]
                 ColliderEcs::s_debug_draw_colliders.run_if(ColliderEcs::c_is_debug_draw_enabled),
+                //
+                MenuEcs::s_draw.run_if(BrpGameStateEcs::c_is_in_menu),
             )
                 .chain()
                 .in_set(BrpSystemSet::Draw)

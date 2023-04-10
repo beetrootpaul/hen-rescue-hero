@@ -50,7 +50,7 @@ impl BrpAssetEcs {
                     },
                 });
         if are_images_loaded {
-            next_state.set(BrpGameState::InGame);
+            next_state.set(BrpGameState::Menu);
         }
     }
 }
