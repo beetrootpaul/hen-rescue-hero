@@ -18,8 +18,13 @@ impl<'w> Canvas<'w> {
     const CANVAS_INNER_TOP_LEFT: IVec2 =
         ivec2(Self::CANVAS_BORDER as i32, Self::CANVAS_BORDER as i32);
 
+    const CANVAS_TILES_SQUARE: UVec2 = uvec2(24, 24);
     const CANVAS_TILES_LANDSCAPE: UVec2 = uvec2(40, 24);
     const CANVAS_TILES_PORTRAIT: UVec2 = uvec2(24, 36);
+    pub const CANVAS_SIZE_SQUARE: UVec2 = uvec2(
+        Self::CANVAS_TILES_SQUARE.x * Sprite::TILE_USIZE.x + 2 * Self::CANVAS_BORDER,
+        Self::CANVAS_TILES_SQUARE.y * Sprite::TILE_USIZE.y + 2 * Self::CANVAS_BORDER,
+    );
     pub const CANVAS_SIZE_LANDSCAPE: UVec2 = uvec2(
         Self::CANVAS_TILES_LANDSCAPE.x * Sprite::TILE_USIZE.x + 2 * Self::CANVAS_BORDER,
         Self::CANVAS_TILES_LANDSCAPE.y * Sprite::TILE_USIZE.y + 2 * Self::CANVAS_BORDER,
@@ -39,8 +44,9 @@ impl<'w> Canvas<'w> {
 
     pub fn canvas_size(&self) -> UVec2 {
         match self.variant() {
-            BrpCanvasVariant::Landscape => Self::CANVAS_SIZE_LANDSCAPE,
-            BrpCanvasVariant::Portrait => Self::CANVAS_SIZE_PORTRAIT,
+            BrpCanvasVariant::NoTouchControls => Self::CANVAS_SIZE_SQUARE,
+            BrpCanvasVariant::TouchControlsLandscape => Self::CANVAS_SIZE_LANDSCAPE,
+            BrpCanvasVariant::TouchControlsPortrait => Self::CANVAS_SIZE_PORTRAIT,
         }
     }
 
@@ -53,8 +59,9 @@ impl<'w> Canvas<'w> {
 
     pub fn top_bar_rect(&self) -> brp_game_base::Rect {
         let offset_left = match self.variant() {
-            BrpCanvasVariant::Landscape => ivec2(8, 0),
-            BrpCanvasVariant::Portrait => ivec2(0, 0),
+            BrpCanvasVariant::NoTouchControls => ivec2(0, 0),
+            BrpCanvasVariant::TouchControlsLandscape => ivec2(8, 0),
+            BrpCanvasVariant::TouchControlsPortrait => ivec2(0, 0),
         };
         brp_game_base::Rect {
             left_top: Self::CANVAS_INNER_TOP_LEFT + offset_left * Sprite::TILE_ISIZE,

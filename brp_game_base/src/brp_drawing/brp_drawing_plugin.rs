@@ -1,13 +1,15 @@
 use bevy::prelude::*;
 use bevy::window::{WindowBackendScaleFactorChanged, WindowResized};
-use brp_drawing::brp_canvas_variant::{BrpCanvasVariant, BrpCurrentCanvasVariant};
 
+use brp_drawing::brp_canvas_variant::{BrpCanvasVariant, BrpCurrentCanvasVariant};
 use brp_drawing::brp_draw_queue::BrpDrawQueue;
 use brp_game_config::BrpGameConfig;
+use brp_input::BrpInputConfig;
 use BrpColor;
 
 pub struct BrpDrawingPlugin {
     pub canvas_margin_color: BrpColor,
+    pub square_canvas_size: UVec2,
     pub landscape_canvas_size: UVec2,
     pub portrait_canvas_size: UVec2,
 }
@@ -43,6 +45,7 @@ impl BrpDrawingPlugin {
             With<Window>,
         >,
         winit_windows: NonSend<bevy::winit::WinitWindows>,
+        input_config: Res<BrpInputConfig>,
         mut current_canvas_variant: ResMut<BrpCurrentCanvasVariant>,
         game_config: Res<BrpGameConfig>,
     ) {
@@ -54,15 +57,22 @@ impl BrpDrawingPlugin {
 
                     Self::resize_pixels_surface_to_window(&mut wrapper, window_w, window_h);
 
-                    let canvas_variant = match window_w > window_h {
-                        true => BrpCanvasVariant::Landscape,
-                        false => BrpCanvasVariant::Portrait,
-                    };
+                    let canvas_variant =
+                        match (input_config.is_touch_available, window_w > window_h) {
+                            (false, _) => BrpCanvasVariant::NoTouchControls,
+                            (true, true) => BrpCanvasVariant::TouchControlsLandscape,
+                            (true, false) => BrpCanvasVariant::TouchControlsPortrait,
+                        };
                     // mutate things only when really needed, in order to not trigger systems based on `Changed<_>` queries w/o need
                     if canvas_variant != current_canvas_variant.0 {
                         let new_canvas_size = match canvas_variant {
-                            BrpCanvasVariant::Landscape => game_config.landscape_canvas_size,
-                            BrpCanvasVariant::Portrait => game_config.portrait_canvas_size,
+                            BrpCanvasVariant::NoTouchControls => game_config.square_canvas_size,
+                            BrpCanvasVariant::TouchControlsLandscape => {
+                                game_config.landscape_canvas_size
+                            },
+                            BrpCanvasVariant::TouchControlsPortrait => {
+                                game_config.portrait_canvas_size
+                            },
                         };
                         options.width = new_canvas_size.x;
                         options.height = new_canvas_size.y;
@@ -101,8 +111,8 @@ impl Plugin for BrpDrawingPlugin {
         // https://crates.io/crates/bevy_pixels
         app.add_plugin(bevy_pixels::PixelsPlugin {
             primary_window: Some(bevy_pixels::PixelsOptions {
-                width: self.landscape_canvas_size.x,
-                height: self.landscape_canvas_size.y,
+                width: self.square_canvas_size.x,
+                height: self.square_canvas_size.y,
                 // has to set both values below to false, because we do custom resizing on our own
                 auto_resize_surface: false,
                 auto_resize_buffer: false,

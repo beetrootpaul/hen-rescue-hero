@@ -1,5 +1,7 @@
 extern crate bevy;
 extern crate bevy_pixels;
+#[cfg(target_arch = "wasm32")]
+extern crate wasm_bindgen;
 
 pub use brp_color::BrpColor;
 pub use brp_drawing::BrpSprite;
@@ -24,4 +26,5 @@ mod brp_font;
 mod brp_game_base;
 mod brp_game_config;
 mod brp_game_state;
+mod brp_input;
 mod rect;

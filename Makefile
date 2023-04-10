@@ -28,6 +28,8 @@ run: run_host_debug
 
 web: run_web_debug
 
+dist: dist_itch_io
+
 # # # # # # # # # # # # #
 # specialized commands
 #
@@ -37,6 +39,9 @@ update_rust_toolchain:
 
 clean_up:
 	trunk clean
+	trunk --config ./Trunk.release.toml clean
+	trunk --config ./Trunk.itch_io.toml clean
+	rm -rf ./dist/
 	cargo clean
 
 test:
@@ -74,7 +79,22 @@ run_host_release: build_host_release
 	./target/release/hen_rescue_hero
 
 run_web_debug:
+	mkdir -p ./dist/
 	$(rust_log_debug) trunk serve
 
 run_web_release:
-	$(rust_flags_release) trunk serve --release
+	mkdir -p ./dist/
+	$(rust_flags_release) trunk --config ./Trunk.release.toml serve
+
+# # # # # # # # #
+# dist commands
+#
+
+dist_itch_io:
+	mkdir -p ./dist/
+	trunk --config ./Trunk.itch_io.toml clean
+	$(rust_flags_release) trunk --config ./Trunk.itch_io.toml build
+	rm -f ./dist/hen_rescue_hero__itch_io.zip
+	rm -rf ./dist/hen_rescue_hero__itch_io/ # in case ZIP was extracted there
+	cd ./dist/itch_io/ && zip -r ../hen_rescue_hero__itch_io.zip ./
+	echo "✅ Dist package is ready: ./dist/hen_rescue_hero__itch_io.zip"

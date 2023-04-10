@@ -47,6 +47,13 @@ impl RobotEcs {
         });
     }
 
+    pub fn s_reset(q: Query<Entity, With<Robot>>, mut commands: Commands) {
+        for entity in q.iter() {
+            commands.entity(entity).despawn_recursive();
+        }
+        Self::s_spawn(commands);
+    }
+
     pub fn s_update(mut q: Query<(&mut Position, &Robot)>, time: Res<Time>) {
         for (mut position, robot) in q.iter_mut() {
             position.0 += robot.position_diff_after(time.delta());

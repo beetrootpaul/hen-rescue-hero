@@ -12,7 +12,7 @@ use canvas::{Canvas, CanvasEcs};
 use collider::ColliderEcs;
 use font::FontEcs;
 use game_objects::chicken::ChickenEcs;
-use game_objects::countdown::{Countdown, CountdownEcs};
+use game_objects::countdown::CountdownEcs;
 use game_objects::nest::NestEcs;
 use game_objects::pile_of_chickens::PileOfChickensEcs;
 use game_objects::rail::RailEcs;
@@ -20,7 +20,7 @@ use game_objects::robot::RobotEcs;
 use game_objects::score::ScoreEcs;
 use game_objects::side::SideEcs;
 use images::Images;
-use input::{InputEcs, KeyboardControlsEcs};
+use input::{ControlsEcs, InputEcs};
 use logic::chickens_go_to_nest::ChickensGoToNestEcs;
 use logic::overheating::OverheatingEcs;
 use logic::robot_catches_chickens::RobotCachesChickensEcs;
@@ -43,6 +43,7 @@ impl Game {
             title: GAME_TITLE.to_string(),
             // Same color as the one used for background around HTML canvas in web build
             canvas_margin_color: Pico8Color::DarkBlue.into(),
+            square_canvas_size: Canvas::CANVAS_SIZE_SQUARE,
             landscape_canvas_size: Canvas::CANVAS_SIZE_LANDSCAPE,
             portrait_canvas_size: Canvas::CANVAS_SIZE_PORTRAIT,
             #[cfg(not(target_arch = "wasm32"))]
@@ -69,8 +70,15 @@ impl Game {
 
         // ENTER systems
         app.add_system(MenuEcs::s_enter_menu.in_schedule(OnEnter(BrpGameState::Menu)));
-        app.add_system(ScoreEcs::s_reset.in_schedule(OnExit(BrpGameState::Menu)));
-        app.add_system(CountdownEcs::s_reset.in_schedule(OnExit(BrpGameState::Menu)));
+        app.add_systems(
+            (
+                CountdownEcs::s_reset,
+                ScoreEcs::s_reset,
+                RobotEcs::s_reset,
+                ChickenEcs::s_reset,
+            )
+                .in_schedule(OnExit(BrpGameState::Menu)),
+        );
 
         // EXIT systems
         app.add_system(MenuEcs::s_exit_menu.in_schedule(OnExit(BrpGameState::Menu)));
@@ -79,7 +87,7 @@ impl Game {
         app.add_systems(
             (
                 InputEcs::s_update,
-                KeyboardControlsEcs::s_handle_keyboard_input.after(InputEcs::s_update),
+                ControlsEcs::s_handle_input.after(InputEcs::s_update),
             )
                 .in_set(BrpSystemSet::Update),
         );
@@ -91,7 +99,7 @@ impl Game {
         app.add_systems(
             (
                 CountdownEcs::s_update,
-                RobotEcs::s_update.after(KeyboardControlsEcs::s_handle_keyboard_input),
+                RobotEcs::s_update.after(ControlsEcs::s_handle_input),
                 ChickenEcs::s_spawn,
                 ChickenEcs::s_update,
                 RobotCachesChickensEcs::s_perform.after(ChickenEcs::s_update),
