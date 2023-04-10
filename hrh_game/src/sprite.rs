@@ -11,6 +11,7 @@ pub enum Sprite {
     RobotFace1,
     RobotFace2,
     RobotFace3,
+    RobotFace4,
     RobotFace5,
     //
     Chain,
@@ -54,6 +55,7 @@ impl From<Sprite> for BrpSprite {
             Sprite::RobotFace1 => s([0, 2, 2, 1], [12, 11], Sprite::COLOR_REPLACEMENTS_1),
             Sprite::RobotFace2 => s([0, 3, 2, 1], [12, 11], Sprite::COLOR_REPLACEMENTS_1),
             Sprite::RobotFace3 => s([0, 4, 2, 1], [12, 11], Sprite::COLOR_REPLACEMENTS_1),
+            Sprite::RobotFace4 => s([0, 5, 2, 1], [12, 11], Sprite::COLOR_REPLACEMENTS_1),
             Sprite::RobotFace5 => s([0, 6, 2, 1], [12, 11], Sprite::COLOR_REPLACEMENTS_1),
             //
             Sprite::Chain => s([2, 3, 1, 1], [0, 0], Sprite::COLOR_REPLACEMENTS_1),
