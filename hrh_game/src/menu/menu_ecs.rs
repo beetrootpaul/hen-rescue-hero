@@ -4,6 +4,7 @@ use bevy::prelude::*;
 use animation::Animation;
 use brp_game_base::{BrpDrawCommand, BrpDrawQueue, Rect};
 use canvas::Canvas;
+use input::InputMode;
 use menu::menu_arrow_button::MenuArrowButton;
 use pico8_color::Pico8Color;
 use sprite::Sprite;
@@ -31,6 +32,7 @@ impl MenuEcs {
     pub fn s_draw(
         canvas: Canvas,
         mut draw_queue: ResMut<BrpDrawQueue>,
+        input_mode: Res<InputMode>,
         q_buttons: Query<&MenuArrowButton>,
     ) {
         let left_top = canvas.game_area_rect().left_top + ivec2(0, 8) * Sprite::TILE_ISIZE;
@@ -55,16 +57,18 @@ impl MenuEcs {
             Pico8Color::BlueGreen.into(),
         ));
 
-        for button in q_buttons.iter() {
-            let offset_tiles = match button.is_right {
-                false => ivec2(8, 2),
-                true => ivec2(14, 2),
-            };
-            draw_queue.enqueue(BrpDrawCommand::Sprite(
-                left_top + offset_tiles * Sprite::TILE_ISIZE,
-                button.current_sprite().into(),
-                button.is_right,
-            ));
+        if !input_mode.is_input_blocked() {
+            for button in q_buttons.iter() {
+                let offset_tiles = match button.is_right {
+                    false => ivec2(8, 2),
+                    true => ivec2(14, 2),
+                };
+                draw_queue.enqueue(BrpDrawCommand::Sprite(
+                    left_top + offset_tiles * Sprite::TILE_ISIZE,
+                    button.current_sprite().into(),
+                    button.is_right,
+                ));
+            }
         }
     }
 }
