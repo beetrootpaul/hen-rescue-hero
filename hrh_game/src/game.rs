@@ -72,7 +72,6 @@ impl Game {
                 RobotCachesChickensEcs::s_perform.after(ChickenEcs::s_update),
                 ChickensGoToNestEcs::s_perform.after(RobotCachesChickensEcs::s_perform),
                 OverheatingEcs::s_advance_timer.after(ChickensGoToNestEcs::s_perform),
-                OverheatingEcs::s_start_timer.after(OverheatingEcs::s_advance_timer),
             )
                 .in_set(BrpSystemSet::Update)
                 .distributive_run_if(in_state(BrpGameState::InGame)),

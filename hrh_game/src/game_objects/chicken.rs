@@ -8,7 +8,7 @@ use brp_game_base::{rect, BrpDrawCommand, BrpDrawQueue};
 use canvas::Canvas;
 use collider::Collider;
 use position::Position;
-use sprites::Sprites;
+use sprite::Sprite;
 
 #[derive(Resource)]
 pub struct ChickenSpawnTimer(pub Timer);
@@ -28,7 +28,7 @@ pub struct ChickenEcs;
 impl ChickenEcs {
     const SPAWN_INTERVAL: f32 = 1.0;
 
-    const NO_SPAWN_BORDER_W: f32 = Sprites::TILE_ISIZE.y as f32 * 4.0;
+    const NO_SPAWN_BORDER_W: f32 = Sprite::TILE_ISIZE.y as f32 * 4.0;
     const SPAWN_X_RANGE: Range<f32> = (6.0 + Self::NO_SPAWN_BORDER_W)
         ..(Canvas::GAME_AREA_SIZE.x as f32 - 6.0 - Self::NO_SPAWN_BORDER_W);
     const SPAWN_Y: f32 = 0.0;
@@ -78,7 +78,7 @@ impl ChickenEcs {
         canvas: Canvas,
     ) {
         for position in query.iter() {
-            let brp_sprite = Sprites::Chicken.into();
+            let brp_sprite = Sprite::Chicken.into();
             draw_queue.enqueue(BrpDrawCommand::Sprite(
                 canvas.xy_of_position_within_game_area(*position),
                 brp_sprite,

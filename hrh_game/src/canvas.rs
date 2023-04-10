@@ -5,7 +5,7 @@ use bevy::prelude::*;
 use brp_game_base::{BrpCanvasVariant, BrpCurrentCanvasVariant, BrpDrawCommand, BrpDrawQueue};
 use pico8_color::Pico8Color;
 use position::Position;
-use sprites::Sprites;
+use sprite::Sprite;
 
 #[derive(SystemParam)]
 pub struct Canvas<'w> {
@@ -21,20 +21,20 @@ impl<'w> Canvas<'w> {
     const CANVAS_TILES_LANDSCAPE: UVec2 = uvec2(40, 24);
     const CANVAS_TILES_PORTRAIT: UVec2 = uvec2(24, 36);
     pub const CANVAS_SIZE_LANDSCAPE: UVec2 = uvec2(
-        Self::CANVAS_TILES_LANDSCAPE.x * Sprites::TILE_USIZE.x + 2 * Self::CANVAS_BORDER,
-        Self::CANVAS_TILES_LANDSCAPE.y * Sprites::TILE_USIZE.y + 2 * Self::CANVAS_BORDER,
+        Self::CANVAS_TILES_LANDSCAPE.x * Sprite::TILE_USIZE.x + 2 * Self::CANVAS_BORDER,
+        Self::CANVAS_TILES_LANDSCAPE.y * Sprite::TILE_USIZE.y + 2 * Self::CANVAS_BORDER,
     );
     pub const CANVAS_SIZE_PORTRAIT: UVec2 = uvec2(
-        Self::CANVAS_TILES_PORTRAIT.x * Sprites::TILE_USIZE.x + 2 * Self::CANVAS_BORDER,
-        Self::CANVAS_TILES_PORTRAIT.y * Sprites::TILE_USIZE.y + 2 * Self::CANVAS_BORDER,
+        Self::CANVAS_TILES_PORTRAIT.x * Sprite::TILE_USIZE.x + 2 * Self::CANVAS_BORDER,
+        Self::CANVAS_TILES_PORTRAIT.y * Sprite::TILE_USIZE.y + 2 * Self::CANVAS_BORDER,
     );
 
     const TOP_BAR_TILES: UVec2 = uvec2(Self::GAME_AREA_TILES.x, 2);
 
     pub const GAME_AREA_TILES: UVec2 = uvec2(24, 22);
     pub const GAME_AREA_SIZE: UVec2 = uvec2(
-        Self::GAME_AREA_TILES.x * Sprites::TILE_USIZE.x,
-        Self::GAME_AREA_TILES.y * Sprites::TILE_USIZE.y,
+        Self::GAME_AREA_TILES.x * Sprite::TILE_USIZE.x,
+        Self::GAME_AREA_TILES.y * Sprite::TILE_USIZE.y,
     );
 
     pub fn canvas_size(&self) -> UVec2 {
@@ -57,8 +57,8 @@ impl<'w> Canvas<'w> {
             BrpCanvasVariant::Portrait => ivec2(0, 0),
         };
         brp_game_base::Rect {
-            left_top: Self::CANVAS_INNER_TOP_LEFT + offset_left * Sprites::TILE_ISIZE,
-            size: Self::TOP_BAR_TILES * Sprites::TILE_USIZE,
+            left_top: Self::CANVAS_INNER_TOP_LEFT + offset_left * Sprite::TILE_ISIZE,
+            size: Self::TOP_BAR_TILES * Sprite::TILE_USIZE,
         }
     }
 

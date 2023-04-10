@@ -6,7 +6,7 @@ use bevy::prelude::*;
 use brp_game_base::{BrpDrawCommand, BrpDrawQueue};
 use canvas::Canvas;
 use position::Position;
-use sprites::Sprites;
+use sprite::Sprite;
 
 pub struct SideEcs;
 
@@ -15,12 +15,12 @@ impl SideEcs {
         let position = Position(
             uvec2(1, Canvas::GAME_AREA_TILES.y)
                 .as_ivec2()
-                .mul(Sprites::TILE_ISIZE)
+                .mul(Sprite::TILE_ISIZE)
                 .as_vec2(),
         );
         draw_queue.enqueue(BrpDrawCommand::Sprite(
             canvas.xy_of_position_within_game_area(position),
-            Sprites::Side.into(),
+            Sprite::Side.into(),
             false,
         ));
     }

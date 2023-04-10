@@ -7,7 +7,7 @@ use brp_game_base::{rect, BrpDrawCommand, BrpDrawQueue};
 use canvas::Canvas;
 use collider::Collider;
 use position::Position;
-use sprites::Sprites;
+use sprite::Sprite;
 
 #[derive(Bundle)]
 struct NestBundle {
@@ -28,7 +28,7 @@ impl NestEcs {
             position: Position(
                 uvec2(1, Canvas::GAME_AREA_TILES.y - 3)
                     .as_ivec2()
-                    .mul(Sprites::TILE_ISIZE)
+                    .mul(Sprite::TILE_ISIZE)
                     .as_vec2(),
             ),
             collider: Collider {
@@ -45,7 +45,7 @@ impl NestEcs {
         for position in q.iter() {
             draw_queue.enqueue(BrpDrawCommand::Sprite(
                 canvas.xy_of_position_within_game_area(*position),
-                Sprites::Nest.into(),
+                Sprite::Nest.into(),
                 false,
             ));
         }

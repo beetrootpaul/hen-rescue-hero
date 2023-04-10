@@ -12,6 +12,6 @@ mod input;
 mod logic;
 mod pico8_color;
 mod position;
-mod sprites;
+mod sprite;
 
 pub type HrhGame = game::Game;
