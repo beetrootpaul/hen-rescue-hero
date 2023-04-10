@@ -23,7 +23,7 @@ impl RobotEcs {
     const BOUNDARY_OFFSET_LEFT: f32 = 10.0;
     const BOUNDARY_OFFSET_RIGHT: f32 = -10.0;
 
-    pub fn ss_spawn(mut commands: Commands) {
+    pub fn s_spawn(mut commands: Commands) {
         let pile_of_chickens = PileOfChickens::default();
 
         let mut robot = Robot::new();

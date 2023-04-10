@@ -22,7 +22,7 @@ pub struct NestToken;
 pub struct NestEcs;
 
 impl NestEcs {
-    pub fn ss_spawn(mut commands: Commands) {
+    pub fn s_spawn(mut commands: Commands) {
         commands.spawn(NestBundle {
             token: NestToken,
             position: Position(

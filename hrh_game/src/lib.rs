@@ -2,6 +2,7 @@ extern crate bevy;
 extern crate brp_game_base;
 extern crate rand;
 
+mod animation;
 mod canvas;
 mod collider;
 mod font;

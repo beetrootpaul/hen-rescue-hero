@@ -60,11 +60,22 @@ impl Game {
         app.insert_resource(ScoreEcs::r_score());
 
         // STARTUP systems
-        app.add_startup_system(RobotEcs::ss_spawn);
-        app.add_startup_system(NestEcs::ss_spawn);
+        app.add_startup_system(RobotEcs::s_spawn);
+        app.add_startup_system(NestEcs::s_spawn);
+
+        // ENTER systems
+        app.add_system(MenuEcs::s_spawn_buttons.in_schedule(OnEnter(BrpGameState::Menu)));
+
+        // EXIT systems
+        app.add_system(MenuEcs::s_despawn_buttons.in_schedule(OnExit(BrpGameState::Menu)));
 
         // UPDATE systems
         app.add_system(KeyboardControlsEcs::s_handle_keyboard_input.in_set(BrpSystemSet::Update));
+        app.add_system(
+            MenuEcs::s_update
+                .in_set(BrpSystemSet::Update)
+                .run_if(BrpGameStateEcs::c_is_in_menu),
+        );
         app.add_systems(
             (
                 RobotEcs::s_update.after(KeyboardControlsEcs::s_handle_keyboard_input),

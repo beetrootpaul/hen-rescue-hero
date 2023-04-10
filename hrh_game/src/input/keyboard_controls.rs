@@ -11,7 +11,7 @@ pub struct KeyboardControlsEcs;
 
 impl KeyboardControlsEcs {
     pub fn s_handle_keyboard_input(
-        mut keyboard_input: ResMut<Input<KeyCode>>,
+        keyboard_input: Res<Input<KeyCode>>,
         current_state: Res<State<BrpGameState>>,
         mut next_state: ResMut<NextState<BrpGameState>>,
         mut q_robot: Query<(&mut Robot, &mut Collider, &PileOfChickens)>,

@@ -31,6 +31,7 @@ pub enum Sprite {
     Nest,
     //
     LeftArrow,
+    LeftArrowPressed,
     //
     OverheatedBg,
 }
@@ -76,6 +77,7 @@ impl From<Sprite> for BrpSprite {
             Sprite::Nest => s([0, 8, 2, 1], [8, 6], Sprite::COLOR_REPLACEMENTS_1),
             //
             Sprite::LeftArrow => s([5, 0, 2, 2], [0, 0], Sprite::COLOR_REPLACEMENTS_1),
+            Sprite::LeftArrowPressed => s([5, 2, 2, 2], [0, 0], Sprite::COLOR_REPLACEMENTS_1),
             //
             Sprite::OverheatedBg => BrpSprite {
                 image_path: Images::OVERHEATED_BG,
