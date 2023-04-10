@@ -10,7 +10,9 @@
       <excludeFolder url="file://$MODULE_DIR$/hrh_game/abc_def/target" />
       <excludeFolder url="file://$MODULE_DIR$/target" />
       <excludeFolder url="file://$MODULE_DIR$/tmp" />
-      <excludeFolder url="file://$MODULE_DIR$/dist" />
+      <excludeFolder url="file://$MODULE_DIR$/dist/itch_io" />
+      <excludeFolder url="file://$MODULE_DIR$/dist/web_debug" />
+      <excludeFolder url="file://$MODULE_DIR$/dist/web_release" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />

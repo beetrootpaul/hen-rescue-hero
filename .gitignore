@@ -6,8 +6,9 @@
 /target/
 
 # output from trunk
-/dist/*
-!/dist/*.zip
+/dist/web_debug/
+/dist/web_release/
+/dist/itch_io/
 
 # # # # #
 # other
