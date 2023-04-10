@@ -4,8 +4,10 @@ use bevy::prelude::{Res, ResMut, Resource, Timer, TimerMode};
 use bevy::time::Time;
 
 pub use crate::input::keyboard_controls::KeyboardControlsEcs;
+pub use crate::input::touch_controls::TouchControlsEcs;
 
 mod keyboard_controls;
+mod touch_controls;
 
 #[derive(Resource)]
 pub struct InputMode {

@@ -6,7 +6,7 @@ extern crate wasm_bindgen;
 pub use brp_color::BrpColor;
 pub use brp_drawing::BrpSprite;
 pub use brp_drawing::{BrpCanvasVariant, BrpCurrentCanvasVariant};
-pub use brp_drawing::{BrpDrawCommand, BrpDrawQueue};
+pub use brp_drawing::{BrpDrawCommand, BrpDrawQueue, BrpDrawingInfo};
 pub use brp_font::{BrpFontConfig, BrpFontGlyph};
 pub use brp_game_base::BrpGameBase;
 pub use brp_game_config::BrpGameConfig;

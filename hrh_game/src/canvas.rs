@@ -1,5 +1,5 @@
 use bevy::ecs::system::SystemParam;
-use bevy::math::{ivec2, uvec2};
+use bevy::math::{ivec2, uvec2, DVec2};
 use bevy::prelude::*;
 
 use brp_game_base::{BrpCanvasVariant, BrpCurrentCanvasVariant, BrpDrawCommand, BrpDrawQueue};
