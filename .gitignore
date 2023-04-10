@@ -5,8 +5,9 @@
 # output from Cargo
 /target/
 
-# output from trunkn
-/dist/
+# output from trunk
+/dist/*
+!/dist/*.zip
 
 # # # # #
 # other
