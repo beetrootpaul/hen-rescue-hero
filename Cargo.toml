@@ -30,3 +30,4 @@ resolver = "2"
 bevy = { version = "0.10.1", default-features = false, features = ["bevy_asset", "bevy_winit", "png"] }
 bevy_pixels = { version = "0.9.0", default-features = false, features = [] }
 rand = { version = "0.8.5", default-features = false, features = ["std", "std_rng"] }
+wasm-bindgen = { version = "0.2.84" }

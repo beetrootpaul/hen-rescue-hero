@@ -6,6 +6,7 @@ use BrpColor;
 pub struct BrpGameConfig {
     pub title: String,
     pub canvas_margin_color: BrpColor,
+    pub square_canvas_size: UVec2,
     pub landscape_canvas_size: UVec2,
     pub portrait_canvas_size: UVec2,
     #[cfg(not(target_arch = "wasm32"))]

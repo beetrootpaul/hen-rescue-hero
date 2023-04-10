@@ -7,6 +7,7 @@ use brp_drawing::BrpDrawingPlugin;
 use brp_font::BrpFontPlugin;
 use brp_game_config::BrpGameConfig;
 use brp_game_state::BrpGameState;
+use brp_input::BrpInputPlugin;
 use {BrpImageAssets, BrpSystemSet};
 
 pub struct BrpGameBase {
@@ -41,8 +42,8 @@ impl BrpGameBase {
                 title: self.config.title.clone(),
                 #[cfg(not(target_arch = "wasm32"))]
                 resolution: bevy::window::WindowResolution::new(
-                    (self.config.landscape_canvas_size.x * self.config.initial_canvas_zoom) as f32,
-                    (self.config.landscape_canvas_size.y * self.config.initial_canvas_zoom) as f32,
+                    (self.config.square_canvas_size.x * self.config.initial_canvas_zoom) as f32,
+                    (self.config.square_canvas_size.y * self.config.initial_canvas_zoom) as f32,
                 ),
                 #[cfg(target_arch = "wasm32")]
                 canvas: Some(self.config.html_canvas_selector.clone()),
@@ -78,8 +79,11 @@ impl BrpGameBase {
         #[cfg(debug_assertions)]
         app.add_plugin(BrpDebugPausePlugin);
 
+        app.add_plugin(BrpInputPlugin);
+
         app.add_plugin(BrpDrawingPlugin {
             canvas_margin_color: self.config.canvas_margin_color,
+            square_canvas_size: self.config.square_canvas_size,
             landscape_canvas_size: self.config.landscape_canvas_size,
             portrait_canvas_size: self.config.portrait_canvas_size,
         });
