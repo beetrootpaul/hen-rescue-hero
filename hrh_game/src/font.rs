@@ -1,3 +1,4 @@
+use bevy::math::{ivec2, IVec2};
 use bevy::utils::HashMap;
 
 use brp_game_base::{rect, BrpFontConfig, BrpFontGlyph};
@@ -12,6 +13,7 @@ impl FontEcs {
         BrpFontConfig {
             image_path: Some(Images::FONT),
             glyph_size: glyph_rect.size,
+            glyph_jump_to_next: glyph_rect.size.as_ivec2() * IVec2::X + ivec2(2, 0),
             source_color_font: Pico8Color::Red.into(),
             source_color_transparent_1: Some(Pico8Color::LightPeach.into()),
             source_color_transparent_2: Some(Pico8Color::LightGrey.into()),

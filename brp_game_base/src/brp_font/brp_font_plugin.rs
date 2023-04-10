@@ -1,4 +1,4 @@
-use bevy::math::uvec2;
+use bevy::math::{ivec2, uvec2};
 use bevy::prelude::*;
 use bevy::utils::hashbrown::HashMap;
 
@@ -12,6 +12,7 @@ impl Plugin for BrpFontPlugin {
         app.insert_resource(BrpFontConfig {
             image_path: None,
             glyph_size: uvec2(3, 5),
+            glyph_jump_to_next: ivec2(4, 0),
             source_color_font: BrpColor::Solid {
                 r: 0xff,
                 g: 0xff,

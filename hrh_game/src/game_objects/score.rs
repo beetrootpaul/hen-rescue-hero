@@ -12,8 +12,14 @@ pub struct Score {
 }
 
 impl Score {
+    pub fn rescued_chickens(&self) -> u32 {
+        self.rescued_chickens
+    }
     pub fn add_to_rescued_chickens(&mut self, amount: u32) {
         self.rescued_chickens += amount;
+    }
+    pub fn reset(&mut self) {
+        self.rescued_chickens = 0;
     }
 }
 
@@ -26,6 +32,10 @@ impl ScoreEcs {
         }
     }
 
+    pub fn s_reset(mut score: ResMut<Score>) {
+        score.reset();
+    }
+
     pub fn s_draw(mut draw_queue: ResMut<BrpDrawQueue>, canvas: Canvas, score: Res<Score>) {
         let nest_xy = canvas.top_bar_rect().left_top + ivec2(12, 13);
         draw_queue.enqueue(BrpDrawCommand::Sprite(
@@ -36,7 +46,7 @@ impl ScoreEcs {
         draw_queue.enqueue(BrpDrawCommand::Sprite(nest_xy, Sprite::Nest.into(), false));
         draw_queue.enqueue(BrpDrawCommand::Text(
             nest_xy + ivec2(11, -10),
-            format!("{}", score.rescued_chickens),
+            format!("{}", score.rescued_chickens()),
             Pico8Color::LightPeach.into(),
         ));
     }

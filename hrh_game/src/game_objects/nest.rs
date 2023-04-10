@@ -32,7 +32,7 @@ impl NestEcs {
                     .as_vec2(),
             ),
             collider: Collider {
-                rect: rect(10, 12).at(-8, -10),
+                rect: rect(12, 12).at(-8, -10),
             },
         });
     }

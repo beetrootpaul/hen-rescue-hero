@@ -99,7 +99,6 @@ impl BrpDrawQueue {
                                 .expect("should have a font image for a given handle");
 
                             let mut current_xy = xy;
-                            let jump_x: i32 = font_config.glyph_size.as_ivec2().x + 1;
                             let mut color_replacements: HashMap<BrpColor, BrpColor> =
                                 HashMap::new();
                             if let Some(t1) = font_config.source_color_transparent_1 {
@@ -124,7 +123,7 @@ impl BrpDrawQueue {
                                         color_replacements.clone(),
                                         false,
                                     );
-                                    current_xy.x += jump_x;
+                                    current_xy += font_config.glyph_jump_to_next;
                                 }
                             }
                         }
