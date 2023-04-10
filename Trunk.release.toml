@@ -1,0 +1,14 @@
+# Look for available options and their descriptions in: https://github.com/thedodd/trunk/blob/master/Trunk.toml
+
+[build]
+target = "dist_templates/web/index.html"
+release = true
+dist = "dist/web_release"
+filehash = true
+
+[serve]
+port = 9090
+open = true
+
+[clean]
+dist = "dist/web_release"
