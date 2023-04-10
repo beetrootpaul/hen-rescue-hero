@@ -6,7 +6,7 @@ use bevy::prelude::*;
 use brp_game_base::{BrpDrawCommand, BrpDrawQueue};
 use canvas::Canvas;
 use position::Position;
-use sprites::Sprites;
+use sprite::Sprite;
 
 pub struct RailEcs;
 
@@ -16,12 +16,12 @@ impl RailEcs {
             let position = Position(
                 uvec2(tile_x, Canvas::GAME_AREA_TILES.y - 2)
                     .as_ivec2()
-                    .mul(Sprites::TILE_ISIZE)
+                    .mul(Sprite::TILE_ISIZE)
                     .as_vec2(),
             );
             draw_queue.enqueue(BrpDrawCommand::Sprite(
                 canvas.xy_of_position_within_game_area(position),
-                Sprites::Chain.into(),
+                Sprite::Chain.into(),
                 false,
             ));
         }
