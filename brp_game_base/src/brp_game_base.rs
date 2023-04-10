@@ -68,6 +68,7 @@ impl BrpGameBase {
         app.add_plugin(ImagePlugin::default());
 
         app.add_plugin(bevy::input::InputPlugin::default());
+        app.add_plugin(bevy::gilrs::GilrsPlugin::default());
 
         #[cfg(debug_assertions)]
         app.add_system(bevy::window::close_on_esc);

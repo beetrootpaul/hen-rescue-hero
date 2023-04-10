@@ -13,7 +13,7 @@ pub struct KeyboardControlsEcs;
 impl KeyboardControlsEcs {
     pub fn s_handle_keyboard_input(
         keyboard_input: Res<Input<KeyCode>>,
-        #[cfg(debug_assertions)] mut config: ResMut<CollidersDebugConfig>,
+        #[cfg(debug_assertions)] mut colliders_debug_config: ResMut<CollidersDebugConfig>,
         input_mode: Res<InputMode>,
         current_state: Res<State<BrpGameState>>,
         mut next_state: ResMut<NextState<BrpGameState>>,
@@ -22,7 +22,8 @@ impl KeyboardControlsEcs {
         // "c" = toggle debug draw of [c]olliders
         #[cfg(debug_assertions)]
         if keyboard_input.just_pressed(KeyCode::C) {
-            config.is_debug_draw_enabled = !config.is_debug_draw_enabled;
+            colliders_debug_config.is_debug_draw_enabled =
+                !colliders_debug_config.is_debug_draw_enabled;
         }
 
         if !input_mode.is_input_blocked() {

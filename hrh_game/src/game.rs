@@ -20,7 +20,7 @@ use game_objects::robot::RobotEcs;
 use game_objects::score::ScoreEcs;
 use game_objects::side::SideEcs;
 use images::Images;
-use input::{InputEcs, KeyboardControlsEcs};
+use input::{GamepadControlsEcs, InputEcs, KeyboardControlsEcs};
 use logic::chickens_go_to_nest::ChickensGoToNestEcs;
 use logic::overheating::OverheatingEcs;
 use logic::robot_catches_chickens::RobotCachesChickensEcs;
@@ -81,6 +81,7 @@ impl Game {
             (
                 InputEcs::s_update,
                 KeyboardControlsEcs::s_handle_keyboard_input.after(InputEcs::s_update),
+                GamepadControlsEcs::s_handle_gamepad_input.after(InputEcs::s_update),
             )
                 .in_set(BrpSystemSet::Update),
         );
@@ -92,7 +93,9 @@ impl Game {
         app.add_systems(
             (
                 CountdownEcs::s_update,
-                RobotEcs::s_update.after(KeyboardControlsEcs::s_handle_keyboard_input),
+                RobotEcs::s_update
+                    .after(KeyboardControlsEcs::s_handle_keyboard_input)
+                    .after(GamepadControlsEcs::s_handle_gamepad_input),
                 ChickenEcs::s_spawn,
                 ChickenEcs::s_update,
                 RobotCachesChickensEcs::s_perform.after(ChickenEcs::s_update),
