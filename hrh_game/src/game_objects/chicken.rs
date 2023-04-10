@@ -58,6 +58,17 @@ impl ChickenEcs {
         }
     }
 
+    pub fn s_reset(
+        mut timer: ResMut<ChickenSpawnTimer>,
+        q: Query<Entity, With<ChickenToken>>,
+        mut commands: Commands,
+    ) {
+        timer.0.reset();
+        for entity in q.iter() {
+            commands.entity(entity).despawn_recursive();
+        }
+    }
+
     pub fn s_update(
         time: Res<Time>,
         mut query: Query<(Entity, &mut Position), With<ChickenToken>>,
