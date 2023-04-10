@@ -23,7 +23,9 @@ impl Plugin for BrpInputPlugin {
             #[cfg(not(target_arch = "wasm32"))]
             is_touch_available: false,
             #[cfg(target_arch = "wasm32")]
-            is_touch_available: __is_touch_available__(),
+            is_touch_available: false,
+            // TODO: uncomment and implement remaining bits of touch support
+            // is_touch_available: __is_touch_available__(),
         });
     }
 }
