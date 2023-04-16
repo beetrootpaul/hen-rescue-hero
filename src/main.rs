@@ -1,5 +1,5 @@
-use hrh_game::HrhGame;
+use beet_core::BeetCore;
 
 fn main() {
-    HrhGame::create_bevy_app().run();
+    BeetCore::hello();
 }

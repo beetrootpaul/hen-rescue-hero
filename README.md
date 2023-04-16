@@ -1,8 +1,6 @@
 # Hen Rescue Hero
 
-A simple web game in which as a tiny robot you try to rescue as many falling hens as possible. Made for Bevy Jam #3.
-
-Deployed to: https://beetrootpaul.itch.io/hen-rescue-hero
+A simple web game in which as a tiny robot you try to rescue as many falling hens as possible. Made for Bevy Jam #3. Rewrote later to use [Beet Core](https://github.com/beetrootpaul/beet_core) instead of Bevy.
 
 ## License
 

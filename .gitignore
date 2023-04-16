@@ -5,11 +5,6 @@
 # output from Cargo
 /target/
 
-# output from trunk
-/dist/web_debug/
-/dist/web_release/
-/dist/itch_io/
-
 # # # # #
 # other
 #
